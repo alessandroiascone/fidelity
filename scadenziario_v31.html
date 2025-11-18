@@ -732,16 +732,18 @@
     };
     function syncBadge(ok){ syncState.textContent= ok?'Sync: Connesso':'Sync: Disconnesso'; syncState.classList.toggle('good',ok); syncState.classList.toggle('bad',!ok); }
     cfgBtn.addEventListener('click', async ()=>{
-      const owner=prompt('Owner GitHub','alessandroiascone')||'';
-      const repo=prompt('Repository','relong-nfc')||'';
-      const branch=prompt('Branch','main')||'main';
-      const path=prompt('Percorso file dati','data/items.json')||'data/items.json';
-      const token=prompt('Token (classic, scope repo)','')||'';
-      if(!owner||!repo||!token) return alert('Compila owner/repo/token');
-      localStorage.setItem(GH_CFG_KEY, JSON.stringify({owner,repo,branch,path,tokenStored:true}));
-      localStorage.setItem(GH_TOKEN_KEY, token);
-      syncBadge(true); showToast('Sync configurato ✅');
-      await saveToGitHub();
+  const owner=prompt('Owner GitHub','alessandroiascone')||'';
+  const repo=prompt('Repository','fidelity')||'';  // ✅ nuova repo
+  const branch=prompt('Branch','main')||'main';
+  const path=prompt('Percorso file dati','data/items.json')||'data/items.json';
+  const token=prompt('Token (classic, scope repo)','')||'';
+  if(!owner||!repo||!token) return alert('Compila owner/repo/token');
+  localStorage.setItem(GH_CFG_KEY, JSON.stringify({owner,repo,branch,path,tokenStored:true}));
+  localStorage.setItem(GH_TOKEN_KEY, token);
+  syncBadge(true); showToast('Sync configurato ✅');
+  await saveToGitHub();
+});
+
     });
 
     let items=[];
