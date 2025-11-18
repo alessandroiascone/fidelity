@@ -784,7 +784,7 @@
 
   <script>
     const HUB_URL = "https://alessandroiascone.github.io/relong-nfc/relong-hub-v2.html";
-    const DATA_URL = "https://raw.githubusercontent.com/alessandroiascone/fidelity/main/items.json";
+    const DATA_URL = "https://raw.githubusercontent.com/alessandroiascone/relong-nfc/main/data/items.json";
 
     const rewardsConfig = [
       { threshold:150, label:"Pellicola Gel Ultra Crystal Premium Quality" },
@@ -815,71 +815,76 @@
     const historyList = document.getElementById("historyList");
 
     function fallbackCodeFromId(id){
-      if(!id) return "000000";
-      let s = String(id).replace(/\D/g,"");
-      if(!s) s = "000000";
-      if(s.length < 6) s = s.padStart(6,"0");
-      if(s.length > 6) s = s.slice(-6);
-      return s;
+      const digits = String(id||"").replace(/\D/g,"") || String(Date.now());
+      const last6 = digits.slice(-6);
+      return last6.padStart(6,"0");
+    }
+
+    // Livello Fidelity (stessa logica del gestionale)
+    function getLevel(points){
+      const p = Number(points||0);
+      if(p>=1000) return {name:'BLACK', emoji:'🖤', class:'lvl-black', min:1000, next:null};
+      if(p>=500)  return {name:'GOLD',  emoji:'🥇', class:'lvl-gold',  min:500,  next:1000};
+      if(p>=150)  return {name:'SILVER',emoji:'🥈', class:'lvl-silver',min:150,  next:500};
+      return {name:'BRONZE',emoji:'🥉', class:'lvl-bronze',min:0,    next:150};
     }
 
     function computeProgress(points){
-      const thresholds = rewardsConfig.map(r=>r.threshold).sort((a,b)=>a-b);
-      if(!thresholds.length){
-        return { label:`${points} pt`, ratio:0 };
+      let currentTier = null;
+      let nextTier = null;
+      for(const r of rewardsConfig){
+        if(points >= r.threshold){
+          currentTier = r;
+        }else{
+          nextTier = r;
+          break;
+        }
       }
-      const max = thresholds[thresholds.length-1];
-      let next = thresholds.find(t=>points < t);
-      if(!next){
-        return { label:`Hai sbloccato tutti i premi 🎉`, ratio:1 };
+      if(!nextTier){
+        return {
+          current: currentTier,
+          next: null,
+          ratio:1,
+          label:`${points} pt • hai sbloccato tutti i premi`
+        };
       }
-      const prev = thresholds.reduce((acc,t)=> (t <= points ? t : acc),0);
-      const range = next - prev || 1;
-      const done = points - prev;
-      const ratio = Math.max(0,Math.min(1,done / range));
-      return { label:`${points} / ${next} pt`, ratio };
-    }
-
-    function getLevel(points){
-      if(points >= 1000){
-        return { name:"BLACK", emoji:"🖤", class:"lvl-black", next:null };
-      }
-      if(points >= 600){
-        return { name:"GOLD", emoji:"🥇", class:"lvl-gold", next:1000 };
-      }
-      if(points >= 300){
-        return { name:"SILVER", emoji:"🥈", class:"lvl-silver", next:600 };
-      }
-      return { name:"BRONZE", emoji:"🥉", class:"lvl-bronze", next:300 };
+      const base = currentTier ? currentTier.threshold : 0;
+      const span = nextTier.threshold - base;
+      const clamped = Math.max(0, Math.min(points - base, span));
+      const ratio = span>0 ? (clamped/span) : 0;
+      return {
+        current: currentTier,
+        next: nextTier,
+        ratio,
+        label:`${points} / ${nextTier.threshold} pt`
+      };
     }
 
     function renderTiers(points){
       elTiersRow.innerHTML = "";
-      const tiers = [
-        {label:"Bronze", threshold:0},
-        {label:"Silver", threshold:300},
-        {label:"Gold", threshold:600},
-        {label:"Black", threshold:1000}
-      ];
-      tiers.forEach(t=>{
+      rewardsConfig.forEach(r=>{
         const div = document.createElement("div");
-        div.className = "tier";
-        const active = points >= t.threshold;
-        if(active) div.classList.add("active");
-        div.innerHTML = `
-          <span class="label"><strong>${t.label}</strong> ${t.threshold>0? `• da ${t.threshold} pt`:""}</span>
-        `;
+        const unlocked = points >= r.threshold;
+        div.className = "tier" + (unlocked ? " active" : "");
+        div.innerHTML = `<span class="label"><strong>${r.threshold} pt</strong> • ${r.label}</span>`;
         elTiersRow.appendChild(div);
       });
     }
 
     function renderRewards(points){
       elRewardsList.innerHTML = "";
+      let nextAssigned = false;
       rewardsConfig.forEach(r=>{
         const div = document.createElement("div");
         div.className = "reward";
-        if(points >= r.threshold) div.classList.add("unlocked");
-        else div.classList.add("next");
+
+        if(points >= r.threshold){
+          div.classList.add("unlocked");
+        }else if(!nextAssigned){
+          div.classList.add("next");
+          nextAssigned = true;
+        }
+
         div.innerHTML = `
           <div>
             <strong>${r.threshold} punti</strong><br/>
