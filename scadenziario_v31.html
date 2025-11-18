@@ -448,6 +448,10 @@
 
           <div style="grid-column:1/-1"><label>Modello</label><input id="a_model" placeholder="iPhone 17 Pro Max, S25 Ultra…"></div>
           <div style="grid-column:1/-1"><label>Difetto</label><textarea id="a_issue" placeholder="Descrivi il problema…"></textarea></div>
+          <div style="grid-column:1/-1">
+            <label>Importo preventivo (opzionale)</label>
+            <input id="a_quote" type="number" min="0" step="1" placeholder="Es. 79">
+          </div>
         </div>
       </div>
 
@@ -803,6 +807,13 @@
       return walink(phone,t);
     }
 
+    function waQuote(name, phone, amount){
+      const amt = Number(amount||0);
+      const euro = amt.toFixed(2).replace('.',',');
+      const t=`Ciao ${name}, sono Alessandro di Re Long (${RELONG_PHONE}).\nIl preventivo per la tua riparazione è di € ${euro}.\nConfermi di procedere con l'intervento?`;
+      return walink(phone,t);
+    }
+
     function waRepairIntakeWithCard(it){
       const cardUrl = `${FIDELITY_URL}?id=${encodeURIComponent(it.id)}`;
       const t =
@@ -1073,13 +1084,17 @@ ${cardUrl}`;
           : (document.getElementById('a_brand').value || '');
         const model = document.getElementById('a_model').value || '';
         const issue = document.getElementById('a_issue').value || '';
+        const quoteRaw = document.getElementById('a_quote').value;
+        let quote = parseFloat(String(quoteRaw || '').replace(',','.'));
+        if(!Number.isFinite(quote) || quote<=0) quote = null;
 
         found.acceptance = {
           type:devType, brand, model, issue,
+          quote,
           createdAt:new Date().toISOString()
         };
         found.repairStatus = 'in_lavorazione';
-        found.quoteStatus = 'pending';
+        found.quoteStatus = quote ? 'pending' : null;
         found.deliveredAt = null;
 
         try{
@@ -1102,6 +1117,7 @@ ${cardUrl}`;
       nameInput.value=''; phoneInput.value='';
       document.getElementById('a_model').value='';
       document.getElementById('a_issue').value='';
+      document.getElementById('a_quote').value='';
       activeSet.clear(); $$('#toggles .tbtn').forEach(b=>b.classList.remove('active'));
       $('#acceptWrap').style.display='none';
       updateInsertState();
@@ -1402,12 +1418,8 @@ Per il saldo aggiornato scrivimi qui su WhatsApp o passa in negozio.`;
         const actSet=new Set(it.activated || []);
 
         servicesList.forEach(s=>{
-          // chiave salvata nei dati
           const storeKey = (s.key === 'fissomobile') ? 'fisso' : s.key;
 
-          // pillola accesa se:
-          // - sim/energia/rate: activated contiene quella chiave
-          // - fisso/ftth: activated contiene "fisso" o "fissomobile"
           const isOn = (s.key === 'fissomobile')
             ? (actSet.has('fisso') || actSet.has('fissomobile'))
             : actSet.has(s.key);
@@ -1453,7 +1465,10 @@ Per il saldo aggiornato scrivimi qui su WhatsApp o passa in negozio.`;
             const line=document.createElement('div');
             const d = r.createdAt ? fmt(r.createdAt) : (it.createdAt ? fmt(it.createdAt) : '');
             const prefix = d ? d+' • ' : '';
-            line.textContent = `${prefix}${r.type||''} ${r.brand||''} ${r.model||''} – ${r.issue||''}`;
+            const quoteTxt = (r.quote && Number(r.quote)>0)
+              ? ` • Preventivo: € ${Number(r.quote).toFixed(2).replace('.',',')}`
+              : '';
+            line.textContent = `${prefix}${r.type||''} ${r.brand||''} ${r.model||''} – ${r.issue||''}${quoteTxt}`;
             boxRep.appendChild(line);
 
             if(idx === repairs.length-1){
@@ -1469,7 +1484,12 @@ Per il saldo aggiornato scrivimi qui su WhatsApp o passa in negozio.`;
                     : 'Preventivo accettato';
                 const chip1=document.createElement('span');
                 chip1.className='label';
-                chip1.textContent=st;
+                let txt = st;
+                const q = Number(it.acceptance?.quote || 0);
+                if(Number.isFinite(q) && q>0){
+                  txt += ' • € ' + q.toFixed(2).replace('.',',');
+                }
+                chip1.textContent=txt;
                 chips.appendChild(chip1);
               }
               if(it.deliveredAt){
@@ -1505,13 +1525,53 @@ Per il saldo aggiornato scrivimi qui su WhatsApp o passa in negozio.`;
         appendQuickWA(actions, it);
 
         if(it.acceptance){
-          if(it.quoteStatus==='pending'){
-            actions.append(btn('Invia preventivo', ()=>{
-              it.quoteStatus='sent'; it.updatedAt=new Date().toISOString(); saveLocal(); saveToGitHub(); render();
+          // Badge importo preventivo
+          let quoteVal = Number(it.acceptance.quote || 0);
+          let hasQuote = Number.isFinite(quoteVal) && quoteVal>0;
+          if(hasQuote && !it.quoteStatus){
+            it.quoteStatus='pending';
+          }
+          if(hasQuote){
+            const quoteBadge=document.createElement('span');
+            quoteBadge.className='badge-mini';
+            quoteBadge.textContent = '💰 Preventivo: € ' + quoteVal.toFixed(2).replace('.',',');
+            services.appendChild(quoteBadge);
+          }
+
+          // Pulsante imposta/modifica preventivo
+          actions.append(btn('Imposta / modifica preventivo', ()=>{
+            const current = hasQuote ? quoteVal.toFixed(2).replace('.',',') : '';
+            const val = prompt('Inserisci l\'importo del preventivo (es. 79 oppure 79,90):', current);
+            if(val===null) return;
+            const q = parseFloat(String(val).replace(',','.'));
+            if(!Number.isFinite(q) || q<=0){
+              alert('Importo non valido');
+              return;
+            }
+            it.acceptance.quote = q;
+            it.quoteStatus = 'pending';
+            it.updatedAt = new Date().toISOString();
+            saveLocal(); saveToGitHub(); render();
+          }));
+
+          // Invio preventivo / accettazione
+          quoteVal = Number(it.acceptance.quote || 0);
+          const hasQuoteNow = Number.isFinite(quoteVal) && quoteVal>0;
+
+          if(hasQuoteNow && (it.quoteStatus==='pending' || !it.quoteStatus)){
+            actions.append(btn('Invia preventivo su WhatsApp', ()=>{
+              try{
+                window.open(waQuote(it.name, it.phone, quoteVal),'_blank','noopener');
+              }catch{}
+              it.quoteStatus='sent';
+              it.updatedAt=new Date().toISOString();
+              saveLocal(); saveToGitHub(); render();
             }));
           } else if(it.quoteStatus==='sent'){
-            actions.append(btn('Accetta preventivo', ()=>{
-              it.quoteStatus='accepted'; it.updatedAt=new Date().toISOString(); saveLocal(); saveToGitHub(); render();
+            actions.append(btn('Preventivo accettato', ()=>{
+              it.quoteStatus='accepted';
+              it.updatedAt=new Date().toISOString();
+              saveLocal(); saveToGitHub(); render();
             }));
           }
 
@@ -1571,9 +1631,10 @@ Per il saldo aggiornato scrivimi qui su WhatsApp o passa in negozio.`;
             lab.textContent = 'Pratica completata';
             actions.append(lab);
           }
-
-          actions.append(btnDelete(it));
         }
+
+        // Tasto elimina SEMPRE disponibile
+        actions.append(btnDelete(it));
 
         // Strumenti Fidelity singolo cliente
         const fidRow = document.createElement('div');
