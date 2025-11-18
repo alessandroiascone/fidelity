@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>ReLong • Accesso Fidelity Card</title>
+  <meta name="theme-color" content="#0a0a0a" />
+
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+    html,body{height:100%}
+    body{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Inter",Roboto,sans-serif;
+      background:radial-gradient(circle at top,#1b0c08 0,#050507 55%,#020203 100%);
+      color:#f9fafb;
+      padding:18px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .orb{
+      position:absolute;
+      border-radius:999px;
+      filter:blur(52px);
+      opacity:.45;
+      pointer-events:none;
+      z-index:0;
+    }
+    .orb-1{
+      width:240px;height:240px;
+      background:#ff7a1a;
+      top:-70px;left:-50px;
+    }
+    .orb-2{
+      width:260px;height:260px;
+      background:#ff3131;
+      bottom:-90px;right:-40px;
+    }
+
+    .card-wrap{
+      position:relative;
+      z-index:1;
+      width:100%;
+      max-width:480px;
+      padding:1px;
+      border-radius:26px;
+      background:linear-gradient(135deg,rgba(255,122,26,.9),rgba(255,255,255,.08),rgba(255,49,49,.9));
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.04),
+        0 22px 60px rgba(0,0,0,.9);
+    }
+    .card{
+      border-radius:24px;
+      background:radial-gradient(circle at top,#1a100c 0,rgba(10,10,12,.96) 40%,#050507 100%);
+      padding:22px 20px 20px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:.8rem;
+      padding:4px 11px;
+      border-radius:999px;
+      background:rgba(255,122,26,.14);
+      border:1px solid rgba(255,122,26,.7);
+      margin-bottom:10px;
+      box-shadow:0 0 18px rgba(255,122,26,.35);
+    }
+    .pill span.emoji{font-size:1.15rem;}
+
+    h1{
+      font-size:1.4rem;
+      margin-bottom:6px;
+    }
+    h1 span{font-weight:700;}
+
+    p{
+      font-size:.95rem;
+      line-height:1.5;
+      color:rgba(248,250,252,.92);
+      margin-bottom:10px;
+    }
+
+    form{
+      margin-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    label{
+      font-size:.82rem;
+      color:rgba(235,235,245,.9);
+      margin-bottom:2px;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      width:100%;
+      flex-wrap:wrap;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      flex:1 1 0;
+      min-width:0;
+    }
+
+    input{
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(5,5,7,.9);
+      color:#f9fafb;
+      padding:9px 13px;
+      font-size:.95rem;
+      outline:none;
+      transition:border-color .15s ease,box-shadow .15s ease,background .15s ease,transform .1s ease;
+      width:100%;
+    }
+    input::placeholder{
+      color:rgba(200,200,210,.75);
+      font-size:.9rem;
+    }
+    input:focus{
+      border-color:#ff7a1a;
+      box-shadow:0 0 0 1px rgba(255,122,26,.6);
+      background:rgba(15,15,18,.98);
+      transform:translateY(-1px);
+    }
+
+    .hint{
+      font-size:.8rem;
+      color:rgba(230,230,240,.88);
+      margin-top:4px;
+    }
+    .hint span{
+      font-weight:600;
+      color:#ffb347;
+    }
+
+    .error{
+      font-size:.8rem;
+      color:#ff6b6b;
+      margin-top:4px;
+      min-height:16px;
+    }
+
+    /* Pulsante WhatsApp animato */
+    button{
+      width:100%;
+      margin-top:8px;
+      border:none;
+      border-radius:999px;
+      padding:12px 20px;
+      font-size:.98rem;
+      font-weight:600;
+      cursor:pointer;
+      background:linear-gradient(135deg,#25D366,#1fb257);
+      color:#051b0d;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,.8) inset,
+        0 14px 30px rgba(0,0,0,.85),
+        0 0 22px rgba(37,211,102,.8);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      transition:transform .12s ease,filter .12s ease,box-shadow .12s ease;
+      position:relative;
+      overflow:hidden;
+      animation:pulse 2.2s ease-in-out infinite;
+    }
+    button::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,.18),transparent 55%);
+      opacity:.0;
+      transition:opacity .15s ease;
+    }
+    button:hover{
+      transform:translateY(-2px) scale(1.01);
+      filter:brightness(1.04);
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,.8) inset,
+        0 18px 36px rgba(0,0,0,.9),
+        0 0 26px rgba(37,211,102,1);
+    }
+    button:hover::before{
+      opacity:.5;
+    }
+    button:active{
+      transform:translateY(1px) scale(.98);
+      filter:brightness(.96);
+      animation:none;
+    }
+    button span.icon{
+      width:26px;
+      height:26px;
+      border-radius:999px;
+      background:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:1.2rem;
+    }
+
+    @keyframes pulse{
+      0%{transform:translateY(0) scale(1);box-shadow:0 14px 30px rgba(0,0,0,.85),0 0 18px rgba(37,211,102,.6);}
+      50%{transform:translateY(-1px) scale(1.02);box-shadow:0 14px 34px rgba(0,0,0,.9),0 0 26px rgba(37,211,102,.9);}
+      100%{transform:translateY(0) scale(1);box-shadow:0 14px 30px rgba(0,0,0,.85),0 0 18px rgba(37,211,102,.6);}
+    }
+
+    .info-small{
+      margin-top:10px;
+      font-size:.78rem;
+      color:rgba(230,230,240,.8);
+    }
+
+    @media (max-width:480px){
+      .card{padding:18px 16px 16px;}
+      h1{font-size:1.3rem;}
+      .row{flex-direction:column;gap:8px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="card-wrap">
+    <div class="card">
+      <div class="pill">
+        <span class="emoji">💳</span>
+        <span>Area Cliente • Fidelity Card ReLong</span>
+      </div>
+
+      <h1><span>Accedi alla tua Fidelity Card</span> ReLong</h1>
+      <p>
+        Inserisci il tuo <strong>Nome</strong> e <strong>Cognome</strong> e richiedi in un tap
+        il link della tua Fidelity Card direttamente su WhatsApp.
+      </p>
+
+      <form id="fidelityForm">
+        <div class="row">
+          <div class="field">
+            <label for="nome">Nome</label>
+            <input id="nome" name="nome" autocomplete="off" placeholder="Es. Mario" />
+          </div>
+          <div class="field">
+            <label for="cognome">Cognome</label>
+            <input id="cognome" name="cognome" autocomplete="off" placeholder="Es. Rossi" />
+          </div>
+        </div>
+
+        <p class="hint">
+          Usa gli stessi <span>Nome</span> e <span>Cognome</span> che ci hai dato in negozio
+          quando abbiamo attivato la Fidelity.
+        </p>
+
+        <div id="errorMsg" class="error"></div>
+
+        <button type="submit" id="waButton">
+          <span class="icon">🟢</span>
+          <span>Richiedi link card su WhatsApp</span>
+        </button>
+      </form>
+
+      <p class="info-small">
+        Verrai reindirizzato su WhatsApp in chat con <strong>Re Long Informatica</strong>.
+        Ti basterà inviare il messaggio già pronto e ti risponderemo con il link alla tua Fidelity Card.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // Numero ufficiale Re Long per WhatsApp in formato internazionale
+    // +39 08119578844 -> "3908119578844"
+    const RELONG_WHATSAPP = "3908119578844";
+
+    const form = document.getElementById("fidelityForm");
+    const errorMsg = document.getElementById("errorMsg");
+    const waButton = document.getElementById("waButton");
+
+    function vibra(ms){
+      if (navigator.vibrate) {
+        navigator.vibrate(ms);
+      }
+    }
+
+    form.addEventListener("submit", function(e){
+      e.preventDefault();
+      errorMsg.textContent = "";
+
+      const nome = (document.getElementById("nome").value || "").trim();
+      const cognome = (document.getElementById("cognome").value || "").trim();
+
+      if (!nome || !cognome) {
+        errorMsg.textContent = "Inserisci sia il Nome che il Cognome per richiedere il link.";
+        vibra(80);
+        return;
+      }
+
+      // Vibrazione breve di conferma
+      vibra(40);
+
+      const testo = `Ciao Re Long, sono ${nome} ${cognome}.%0A%0APuoi inviarmi il link della mia Fidelity Card?`;
+      const url = `https://wa.me/${RELONG_WHATSAPP}?text=${testo}`;
+
+      window.location.href = url;
+    });
+
+    // Vibrazione anche sul tap diretto del bottone (per qualche browser che gestisce diversamente il submit)
+    waButton.addEventListener("click", function(){
+      vibra(30);
+    });
+  </script>
+</body>
+</html>

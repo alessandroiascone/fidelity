@@ -1,0 +1,52 @@
+{
+  "cards": [
+    {
+      "code": "RL-123456",
+      "nome": "Mario",
+      "cognome": "Rossi",
+      "points": 80,
+      "nextRewardAt": 100,
+      "history": [
+        {
+          "date": "2025-11-01",
+          "label": "Bonus benvenuto",
+          "points": 20
+        },
+        {
+          "date": "2025-11-05",
+          "label": "Attivazione SIM",
+          "points": 30
+        },
+        {
+          "date": "2025-11-10",
+          "label": "Energia Casa",
+          "points": 30
+        }
+      ]
+    },
+    {
+      "code": "RL-654321",
+      "nome": "Giulia",
+      "cognome": "Verdi",
+      "points": 145,
+      "nextRewardAt": 200,
+      "history": [
+        {
+          "date": "2025-11-02",
+          "label": "Bonus benvenuto",
+          "points": 20
+        },
+        {
+          "date": "2025-11-06",
+          "label": "Smartphone a rate",
+          "points": 80
+        },
+        {
+          "date": "2025-11-12",
+          "label": "Presenta un amico",
+          "points": 45
+        }
+      ]
+    }
+  ]
+}

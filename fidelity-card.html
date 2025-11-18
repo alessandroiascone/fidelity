@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>ReLong • La tua Fidelity Card</title>
+  <meta name="theme-color" content="#0a0a0a" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+    html,body{height:100%}
+    body{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Inter",Roboto,sans-serif;
+      background:
+        radial-gradient(circle at top,#1b0c08 0,#050507 55%,#020203 100%);
+      color:#f9fafb;
+      padding:18px;
+      position:relative;
+      overflow:hidden;
+    }
+    .orb{
+      position:absolute;border-radius:999px;filter:blur(52px);opacity:.45;pointer-events:none;z-index:0;
+    }
+    .orb-1{width:240px;height:240px;background:#ff7a1a;top:-70px;left:-50px;}
+    .orb-2{width:260px;height:260px;background:#ff3131;bottom:-90px;right:-40px;}
+
+    .card-wrap{
+      position:relative;z-index:1;width:100%;max-width:520px;padding:1px;border-radius:26px;
+      background:linear-gradient(135deg,rgba(255,122,26,.9),rgba(255,255,255,.08),rgba(255,49,49,.9));
+      box-shadow:0 0 0 1px rgba(255,255,255,.04),0 22px 60px rgba(0,0,0,.9);
+    }
+    .card{
+      border-radius:24px;
+      background:radial-gradient(circle at top,#1a100c 0,rgba(10,10,12,.96) 40%,#050507 100%);
+      padding:22px 20px 20px;
+    }
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;font-size:.8rem;
+      padding:4px 11px;border-radius:999px;
+      background:rgba(255,122,26,.14);border:1px solid rgba(255,122,26,.7);
+      margin-bottom:10px;box-shadow:0 0 18px rgba(255,122,26,.35);
+    }
+    .pill span.emoji{font-size:1.1rem;}
+
+    h1{font-size:1.35rem;margin-bottom:4px;}
+    h1 span{font-weight:700;}
+    .subtitle{
+      font-size:.9rem;
+      color:rgba(248,250,252,.9);
+      margin-bottom:10px;
+    }
+
+    .status-msg{
+      font-size:.85rem;
+      color:rgba(255,230,210,.92);
+      margin-bottom:8px;
+    }
+
+    .summary{
+      margin-top:10px;
+      padding:14px;
+      border-radius:18px;
+      background:rgba(0,0,0,.55);
+      border:1px solid rgba(255,255,255,.12);
+    }
+    .summary h2{
+      font-size:1.02rem;
+      margin-bottom:6px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-weight:800;
+    }
+
+    .label{
+      font-size:.8rem;
+      text-transform:uppercase;
+      letter-spacing:.11em;
+      color:rgba(255,230,210,.9);
+      margin-top:6px;
+    }
+    .value{
+      font-size:.95rem;
+      font-weight:600;
+      margin-top:2px;
+    }
+
+    /* punti */
+    .points-row{
+      display:flex;
+      align-items:flex-end;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+    .points-main{
+      font-size:2rem;
+      font-weight:900;
+      letter-spacing:.04em;
+    }
+    .points-label{
+      font-size:.8rem;
+      text-transform:uppercase;
+      color:rgba(255,230,210,.9);
+    }
+
+    /* barra avanzamento */
+    .progress-wrap{
+      margin-top:12px;
+    }
+    .progress-label{
+      font-size:.8rem;
+      color:rgba(235,235,245,.9);
+      margin-bottom:4px;
+    }
+    .progress-bar{
+      width:100%;
+      height:8px;
+      border-radius:999px;
+      background:rgba(255,255,255,.12);
+      overflow:hidden;
+    }
+    .progress-bar span{
+      display:block;
+      height:100%;
+      width:0;
+      border-radius:999px;
+      background:linear-gradient(90deg,#ff7a1a,#ffd766,#ff7a1a);
+      box-shadow:0 0 16px rgba(255,122,26,.85);
+      transition:width .5s ease-out;
+    }
+    .progress-text{
+      font-size:.82rem;
+      color:rgba(235,235,245,.88);
+      margin-top:4px;
+    }
+
+    /* storico */
+    .history{
+      margin-top:12px;
+      padding-top:10px;
+      border-top:1px dashed rgba(255,255,255,.18);
+    }
+    .history-title{
+      font-size:.85rem;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:rgba(255,230,210,.9);
+      margin-bottom:6px;
+    }
+    .history-list{
+      list-style:none;
+      max-height:160px;
+      overflow:auto;
+      padding-right:4px;
+    }
+    .history-item{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      font-size:.82rem;
+      padding:4px 0;
+      border-bottom:1px dashed rgba(255,255,255,.06);
+    }
+    .history-item:last-child{border-bottom:none;}
+    .history-label{
+      color:rgba(248,250,252,.95);
+    }
+    .history-date{
+      color:rgba(210,210,220,.8);
+      font-size:.78rem;
+    }
+    .history-points{
+      font-weight:700;
+    }
+
+    .warning{
+      margin-top:12px;
+      font-size:.8rem;
+      color:rgba(255,230,210,.9);
+    }
+    .warning strong{color:#ffd166;}
+
+    .back{
+      margin-top:14px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:.85rem;
+      color:rgba(255,255,255,.85);
+      text-decoration:none;
+    }
+    .back span.ico{font-size:1.1rem;}
+    .back:hover{text-decoration:underline;}
+
+    .error{
+      font-size:.9rem;
+      color:#ff6b6b;
+      margin-top:8px;
+    }
+
+    @media(max-width:480px){
+      .card{padding:18px 16px 16px;}
+      h1{font-size:1.25rem;}
+    }
+  </style>
+</head>
+<body>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="card-wrap">
+    <div class="card">
+      <div class="pill">
+        <span class="emoji">💳</span>
+        <span>La tua Fidelity Card ReLong</span>
+      </div>
+
+      <h1><span id="titleName">Benvenuto nella tua Fidelity Card</span></h1>
+      <p class="subtitle" id="intro">
+        Stiamo caricando i dati della tua card…
+      </p>
+
+      <p class="status-msg" id="statusMsg"></p>
+
+      <div class="summary" id="summary" style="display:none;">
+        <h2>👤 Dati intestatario</h2>
+        <div class="label">Codice Fidelity</div>
+        <div class="value" id="codeValue">–</div>
+
+        <div class="label">Intestatario</div>
+        <div class="value" id="nameValue">–</div>
+
+        <div class="label">Punti accumulati</div>
+        <div class="points-row">
+          <span class="points-main" id="pointsValue">0</span>
+          <span class="points-label">punti</span>
+        </div>
+
+        <div class="progress-wrap">
+          <div class="progress-label" id="progressLabel">Avanzamento verso il prossimo premio</div>
+          <div class="progress-bar">
+            <span id="progressBar"></span>
+          </div>
+          <div class="progress-text" id="progressText"></div>
+        </div>
+
+        <div class="history" id="historyBlock" style="display:none;">
+          <div class="history-title">Ultimi movimenti</div>
+          <ul class="history-list" id="historyList"></ul>
+        </div>
+
+        <p class="warning" id="warningText">
+          Questa è la <strong>vista cliente</strong>. I punti vengono aggiornati dopo ogni operazione fatta in negozio.
+        </p>
+      </div>
+
+      <p class="error" id="errorMsg"></p>
+
+      <a class="back" href="./relong-hub-v2.html">
+        <span class="ico">⬅️</span>
+        <span>Torna all’hub ReLong</span>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const params = new URLSearchParams(window.location.search);
+      const cardParam = (params.get('card') || '').trim().toUpperCase();
+      const nomeParam = (params.get('nome') || '').trim();
+      const cognomeParam = (params.get('cognome') || '').trim();
+      const view = (params.get('view') || 'cliente').toLowerCase();
+
+      const titleNameEl = document.getElementById('titleName');
+      const intro = document.getElementById('intro');
+      const statusMsg = document.getElementById('statusMsg');
+      const summary = document.getElementById('summary');
+      const codeValue = document.getElementById('codeValue');
+      const nameValue = document.getElementById('nameValue');
+      const pointsValue = document.getElementById('pointsValue');
+      const progressBar = document.getElementById('progressBar');
+      const progressText = document.getElementById('progressText');
+      const progressLabel = document.getElementById('progressLabel');
+      const historyBlock = document.getElementById('historyBlock');
+      const historyList = document.getElementById('historyList');
+      const warningText = document.getElementById('warningText');
+      const errorMsg = document.getElementById('errorMsg');
+
+      if(!cardParam || !nomeParam || !cognomeParam){
+        intro.textContent = "Dati incompleti. Torna all’hub e reinserisci il codice Fidelity, nome e cognome.";
+        statusMsg.textContent = "";
+        return;
+      }
+
+      // Mostra subito intestazione personalizzata
+      titleNameEl.textContent = `Ciao ${nomeParam}, questa è la tua Fidelity ReLong`;
+      intro.textContent = "Carichiamo i tuoi punti…";
+
+      function normalizeName(str){
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+      }
+
+      const nomeNorm = normalizeName(nomeParam);
+      const cognomeNorm = normalizeName(cognomeParam);
+
+      fetch('fidelity-db.json', {cache: 'no-store'})
+        .then(res => {
+          if(!res.ok) throw new Error('Impossibile leggere il database Fidelity.');
+          return res.json();
+        })
+        .then(data => {
+          const cards = data.cards || [];
+          const card = cards.find(c => {
+            const codeMatch = (c.code || '').toUpperCase().trim() === cardParam;
+            const nomeMatch = normalizeName(c.nome || '') === nomeNorm;
+            const cognomeMatch = normalizeName(c.cognome || '') === cognomeNorm;
+            return codeMatch && nomeMatch && cognomeMatch;
+          });
+
+          if(!card){
+            intro.textContent = "";
+            statusMsg.textContent = "";
+            errorMsg.textContent = "Non troviamo nessuna Fidelity con questi dati. Contattaci su WhatsApp o passa in negozio per verificare.";
+            return;
+          }
+
+          // Dati base
+          summary.style.display = 'block';
+          codeValue.textContent = card.code;
+          nameValue.textContent = card.nome + " " + card.cognome;
+
+          const points = Number(card.points || 0);
+          const nextRewardAt = Number(card.nextRewardAt || 100);
+
+          pointsValue.textContent = points;
+
+          // calcolo livello in base ai punti (se non specificato nel JSON)
+          let level = card.level;
+          if(!level){
+            if(points >= 500) level = "Platinum";
+            else if(points >= 250) level = "Gold";
+            else if(points >= 150) level = "Silver";
+            else level = "Bronze";
+          }
+
+          statusMsg.textContent = `Stato Fidelity: livello ${level}.`;
+
+          // progress
+          const ratio = Math.max(0, Math.min(1, points / nextRewardAt));
+          progressBar.style.width = (ratio * 100).toFixed(0) + "%";
+
+          if(points >= nextRewardAt){
+            progressText.textContent = "Hai raggiunto o superato la soglia del prossimo premio! Passa in negozio per riscattarlo 🎁";
+          } else {
+            const missing = nextRewardAt - points;
+            progressText.textContent = `Ti mancano ${missing} punti al prossimo premio (soglia ${nextRewardAt} punti).`;
+          }
+
+          // storico
+          const history = Array.isArray(card.history) ? card.history.slice().reverse() : [];
+          if(history.length){
+            historyBlock.style.display = 'block';
+            historyList.innerHTML = '';
+            history.slice(0,10).forEach(item => {
+              const li = document.createElement('li');
+              li.className = 'history-item';
+              const label = document.createElement('div');
+              label.className = 'history-label';
+              label.textContent = item.label || 'Operazione Fidelity';
+              const sub = document.createElement('div');
+              sub.className = 'history-date';
+              sub.textContent = item.date || '';
+              const pointsEl = document.createElement('div');
+              pointsEl.className = 'history-points';
+              const pts = Number(item.points || 0);
+              pointsEl.textContent = (pts >= 0 ? '+' : '') + pts;
+              li.appendChild(label);
+              const right = document.createElement('div');
+              right.style.textAlign = 'right';
+              right.appendChild(pointsEl);
+              if(sub.textContent) right.appendChild(sub);
+              li.appendChild(right);
+              historyList.appendChild(li);
+            });
+          } else {
+            historyBlock.style.display = 'none';
+          }
+
+          if(view === 'cliente'){
+            warningText.textContent = "Questa è la vista cliente. I punti vengono aggiornati dopo ogni operazione fatta in negozio (attivazioni, acquisti, bonus).";
+          } else {
+            warningText.textContent = "Modalità interna ReLong. I dati sono quelli visibili anche dal gestionale Fidelity.";
+          }
+
+          intro.textContent = "Ecco la situazione aggiornata della tua Fidelity.";
+        })
+        .catch(err => {
+          console.error(err);
+          intro.textContent = "";
+          errorMsg.textContent = "C'è stato un problema nel leggere i dati della Fidelity. Riprova più tardi o passa in negozio.";
+        });
+    })();
+  </script>
+</body>
+</html>
