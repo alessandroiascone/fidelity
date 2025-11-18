@@ -733,7 +733,7 @@
     function syncBadge(ok){ syncState.textContent= ok?'Sync: Connesso':'Sync: Disconnesso'; syncState.classList.toggle('good',ok); syncState.classList.toggle('bad',!ok); }
     cfgBtn.addEventListener('click', async ()=>{
       const owner=prompt('Owner GitHub','alessandroiascone')||'';
-      const repo=prompt('Repository','relong-nfc')||'';
+      const repo=prompt('Repository','fidelity')||'';
       const branch=prompt('Branch','main')||'main';
       const path=prompt('Percorso file dati','data/items.json')||'data/items.json';
       const token=prompt('Token (classic, scope repo)','')||'';
