@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Re Long • Totem Demo TV</title>
+  <meta name="description" content="Loop promozionale Re Long Informatica: smartphone a rate, noleggio business, energia, internet, assistenza PC e accessori. Marano di Napoli. Tel 08119578844.">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    :root{
+      --bg1:#050505;
+      --bg2:#000000;
+      --card:rgba(10,10,10,0.86);
+      --stroke:rgba(255,255,255,0.10);
+
+      /* Palette Vodafone / Fastweb */
+      --brand1:#ff0000;
+      --brand2:#ff7b00;
+      --brand3:#ffd500;
+
+      --muted:#f5f5f5;
+      --muted2:rgba(255,255,255,0.65);
+    }
+
+    body{
+      font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background: radial-gradient(circle at top left, #202020 0, #000 45%, #000 100%);
+      color:#fff;
+      overflow:hidden;
+    }
+
+    .app{
+      position:relative;
+      width:100vw;
+      height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:3vh 4vw;
+      background:
+        radial-gradient(circle at top left, rgba(255,0,0,0.18), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(255,214,0,0.14), transparent 55%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+    }
+
+    /* Effetto micro particelle energia */
+    .particles{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index:0;
+    }
+
+    .particle{
+      position:absolute;
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background: radial-gradient(circle, #ffffff 0, #ffd500 50%, transparent 70%);
+      opacity:0.18;
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp{
+      from{
+        transform:translate3d(var(--x), 110vh, 0);
+      }
+      to{
+        transform:translate3d(calc(var(--x) + 10px), -20vh, 0);
+      }
+    }
+
+    .frame{
+      position:relative;
+      z-index:1;
+      width:100%;
+      max-width:1920px;
+      height:100%;
+      max-height:1080px;
+      border-radius:32px;
+      border:1px solid rgba(255,255,255,0.12);
+      background: radial-gradient(circle at top, rgba(255,255,255,0.03), rgba(0,0,0,0.96));
+      box-shadow:
+        0 0 40px rgba(0,0,0,0.9),
+        0 0 80px rgba(255,0,0,0.25);
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+
+    .slides{
+      position:relative;
+      flex:1;
+      padding:4vh 5vw 3vh;
+      overflow:hidden;
+    }
+
+    .slide{
+      position:absolute;
+      inset:0;
+      padding:4vh 5vw 3vh;
+      display:flex;
+      flex-direction:row;
+      gap:4vw;
+      align-items:center;
+      justify-content:space-between;
+      opacity:0;
+      transform:translateX(40px);
+      transition:opacity 900ms ease, transform 900ms ease;
+    }
+
+    .slide.active{
+      opacity:1;
+      transform:translateX(0);
+    }
+
+    .slide-left{
+      max-width:55%;
+    }
+
+    .pill-tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.25);
+      background: radial-gradient(circle at top left, rgba(255,255,255,0.16), rgba(0,0,0,0.8));
+      font-size:0.9rem;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      color:var(--muted2);
+      margin-bottom:14px;
+    }
+
+    .pill-dot{
+      width:9px;
+      height:9px;
+      border-radius:999px;
+      background: radial-gradient(circle, var(--brand3), var(--brand2));
+      box-shadow:0 0 12px rgba(255,214,0,0.8);
+    }
+
+    .slide-title{
+      font-size:3.2rem;
+      line-height:1.05;
+      font-weight:800;
+      margin-bottom:16px;
+      text-wrap:balance;
+    }
+
+    .slide-title span.highlight{
+      background:linear-gradient(120deg, var(--brand1), var(--brand2), var(--brand3));
+      -webkit-background-clip:text;
+      color:transparent;
+    }
+
+    .slide-subtitle{
+      font-size:1.25rem;
+      color:var(--muted2);
+      margin-bottom:24px;
+      max-width:40rem;
+    }
+
+    .slide-bullets{
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px 18px;
+      margin-bottom:26px;
+    }
+
+    .chip{
+      padding:8px 14px;
+      border-radius:999px;
+      font-size:0.98rem;
+      border:1px solid rgba(255,255,255,0.18);
+      background: radial-gradient(circle at top left, rgba(255,255,255,0.08), rgba(0,0,0,0.8));
+      color:var(--muted);
+      backdrop-filter:blur(12px);
+    }
+
+    .cta-banner{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 16px;
+      border-radius:999px;
+      background:linear-gradient(120deg, var(--brand1), var(--brand2));
+      box-shadow:0 0 22px rgba(255,123,0,0.65);
+      font-size:1rem;
+      font-weight:600;
+    }
+
+    .cta-banner small{
+      font-weight:400;
+      opacity:.9;
+    }
+
+    .cta-wa{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      margin-left:4px;
+      padding:3px 9px;
+      border-radius:999px;
+      background:rgba(0,0,0,0.22);
+      font-size:0.9rem;
+    }
+
+    .cta-wa-dot{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:#25D366;
+      box-shadow:0 0 10px rgba(37,211,102,0.9);
+    }
+
+    .slide-right{
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .hero-card{
+      width:100%;
+      max-width:520px;
+      aspect-ratio:4/5;
+      border-radius:32px;
+      border:1px solid rgba(255,255,255,0.12);
+      background:
+        radial-gradient(circle at top, rgba(255,255,255,0.07), transparent 55%),
+        radial-gradient(circle at bottom, rgba(255,0,0,0.25), transparent 65%),
+        linear-gradient(145deg, rgba(10,10,10,0.98), rgba(0,0,0,1));
+      box-shadow:
+        0 25px 60px rgba(0,0,0,0.9),
+        0 0 40px rgba(255,0,0,0.35);
+      padding:24px 20px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero-label{
+      font-size:0.85rem;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:var(--muted2);
+      margin-bottom:6px;
+    }
+
+    .hero-main{
+      font-size:1.6rem;
+      font-weight:700;
+      margin-bottom:10px;
+    }
+
+    .hero-tagline{
+      font-size:0.98rem;
+      color:var(--muted2);
+      margin-bottom:18px;
+      max-width:18rem;
+    }
+
+    .hero-badges{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-bottom:18px;
+    }
+
+    .hero-badge{
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:0.82rem;
+      border:1px solid rgba(255,255,255,0.18);
+      background:rgba(0,0,0,0.55);
+    }
+
+    .hero-price-box{
+      margin-top:auto;
+      padding:14px 16px;
+      border-radius:24px;
+      background:radial-gradient(circle at top left, rgba(255,255,255,0.08), rgba(0,0,0,0.95));
+      border:1px solid rgba(255,255,255,0.16);
+    }
+
+    .hero-price-label{
+      font-size:0.85rem;
+      color:var(--muted2);
+      margin-bottom:4px;
+    }
+
+    .hero-price-row{
+      display:flex;
+      align-items:baseline;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .hero-price{
+      font-size:1.9rem;
+      font-weight:800;
+    }
+
+    .hero-price span{
+      font-size:1.1rem;
+      font-weight:600;
+      opacity:.9;
+    }
+
+    .hero-small{
+      font-size:0.78rem;
+      color:var(--muted2);
+    }
+
+    .hero-accent-tag{
+      position:absolute;
+      top:22px;
+      right:-40px;
+      transform:rotate(18deg);
+      padding:6px 40px;
+      font-size:0.78rem;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      background:linear-gradient(120deg,var(--brand2),var(--brand3));
+      color:#000;
+      font-weight:700;
+      box-shadow:0 0 18px rgba(255,214,0,0.8);
+    }
+
+    /* Footer */
+    .footer{
+      height:64px;
+      padding:0 5vw;
+      border-top:1px solid rgba(255,255,255,0.12);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      background:linear-gradient(to right, rgba(0,0,0,0.96), rgba(20,20,20,0.96));
+      backdrop-filter:blur(14px);
+    }
+
+    .footer-left{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+
+    .footer-brand{
+      font-size:1.1rem;
+      font-weight:700;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+
+    .footer-brand span{
+      background:linear-gradient(120deg, var(--brand1), var(--brand2), var(--brand3));
+      -webkit-background-clip:text;
+      color:transparent;
+    }
+
+    .footer-desc{
+      font-size:0.86rem;
+      color:var(--muted2);
+    }
+
+    .footer-right{
+      display:flex;
+      align-items:center;
+      gap:16px;
+      font-size:0.95rem;
+    }
+
+    .footer-pill{
+      padding:8px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.2);
+      background:radial-gradient(circle at top left, rgba(255,255,255,0.12), rgba(0,0,0,0.9));
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .footer-dot-wa{
+      width:9px;
+      height:9px;
+      border-radius:999px;
+      background:#25D366;
+      box-shadow:0 0 10px rgba(37,211,102,0.9);
+    }
+
+    .footer-phone{
+      font-weight:600;
+    }
+
+    .footer-note{
+      font-size:0.82rem;
+      color:var(--muted2);
+    }
+
+    /* Slide indicator */
+    .indicator{
+      position:absolute;
+      bottom:18px;
+      left:50%;
+      transform:translateX(-50%);
+      display:flex;
+      gap:8px;
+    }
+
+    .dot{
+      width:14px;
+      height:4px;
+      border-radius:999px;
+      background:rgba(255,255,255,0.25);
+      transition:all 280ms ease;
+    }
+
+    .dot.active{
+      width:26px;
+      background:linear-gradient(120deg,var(--brand1),var(--brand2));
+      box-shadow:0 0 12px rgba(255,123,0,0.72);
+    }
+
+    /* Responsive leggero per schermi più piccoli (test da PC) */
+    @media (max-width: 1024px){
+      .slide{
+        flex-direction:column;
+        align-items:flex-start;
+        justify-content:center;
+        gap:24px;
+      }
+      .slide-left{
+        max-width:100%;
+      }
+      .slide-title{
+        font-size:2.2rem;
+      }
+      .hero-card{
+        max-width:380px;
+        align-self:center;
+      }
+      .footer{
+        flex-direction:column;
+        align-items:flex-start;
+        justify-content:center;
+        gap:4px;
+        padding-inline:4vw;
+        height:auto;
+        padding-block:8px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Micro particelle energia -->
+  <div class="particles" id="particles"></div>
+
+  <div class="app">
+    <div class="frame">
+      <div class="slides" id="slides">
+
+        <!-- SLIDE 1: Smartphone a rate -->
+        <section class="slide active">
+          <div class="slide-left">
+            <div class="pill-tag">
+              <span class="pill-dot"></span>
+              Smartphone a rate senza busta paga
+            </div>
+            <h1 class="slide-title">
+              Il tuo <span class="highlight">nuovo smartphone</span>,  
+              pagato in piccole rate comode.
+            </h1>
+            <p class="slide-subtitle">
+              Selezione reale di smartphone top di gamma e fascia media, con
+              soluzioni studiate su misura per privati e partite IVA.
+            </p>
+            <div class="slide-bullets">
+              <div class="chip">iPhone, Samsung, Xiaomi e altro</div>
+              <div class="chip">Rate mensili chiare e trasparenti</div>
+              <div class="chip">Consulenza dedicata in negozio</div>
+              <div class="chip">Pratiche veloci, zero stress</div>
+            </div>
+            <div class="cta-banner">
+              Prenota ora una consulenza in negozio
+              <div class="cta-wa">
+                <span class="cta-wa-dot"></span>
+                WhatsApp 08119578844
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-right">
+            <div class="hero-card">
+              <div class="hero-accent-tag">Smartphone a Rate</div>
+              <div>
+                <div class="hero-label">Re Long • Telefonia</div>
+                <div class="hero-main">Passa oggi al tuo nuovo smartphone.</div>
+                <div class="hero-tagline">
+                  Finanziamenti dedicati, con supporto completo in ogni fase.
+                </div>
+                <div class="hero-badges">
+                  <span class="hero-badge">Gamma aggiornata quotidianamente</span>
+                  <span class="hero-badge">Valutazione esigenze reali</span>
+                  <span class="hero-badge">Niente sorprese in bolletta</span>
+                </div>
+              </div>
+
+              <div class="hero-price-box">
+                <div class="hero-price-label">Esempio reale di offerta</div>
+                <div class="hero-price-row">
+                  <div class="hero-price">da 24,90€<span>/mese</span></div>
+                  <div class="hero-small">per smartphone selezionati, offerte variabili in base al modello.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 2: Business Rent -->
+        <section class="slide">
+          <div class="slide-left">
+            <div class="pill-tag">
+              <span class="pill-dot"></span>
+              ReLong Business Rent
+            </div>
+            <h1 class="slide-title">
+              Noleggio <span class="highlight">smartphone professionali</span>  
+              per la tua attività.
+            </h1>
+            <p class="slide-subtitle">
+              Soluzioni di noleggio dedicate a partite IVA, negozi, aziende e professionisti 
+              che vogliono tenere sempre aggiornata la flotta di smartphone.
+            </p>
+            <div class="slide-bullets">
+              <div class="chip">Canone fisso mensile</div>
+              <div class="chip">Aggiornamento periodico dispositivi</div>
+              <div class="chip">Gestione centralizzata</div>
+              <div class="chip">Supporto e consulenza continua</div>
+            </div>
+            <div class="cta-banner">
+              Attiva il tuo piano Business Rent
+              <div class="cta-wa">
+                <span class="cta-wa-dot"></span>
+                Scrivici su WhatsApp
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-right">
+            <div class="hero-card">
+              <div class="hero-accent-tag">Business Rent</div>
+              <div>
+                <div class="hero-label">Re Long • Soluzioni Aziendali</div>
+                <div class="hero-main">Il parco smartphone aziendale, sotto controllo.</div>
+                <div class="hero-tagline">
+                  Noleggi, non immobilizzi capitale. Tu ti concentri sul lavoro, noi sulla tecnologia.
+                </div>
+                <div class="hero-badges">
+                  <span class="hero-badge">Partite IVA & Aziende</span>
+                  <span class="hero-badge">Consulenza personalizzata</span>
+                  <span class="hero-badge">Scalabile nel tempo</span>
+                </div>
+              </div>
+
+              <div class="hero-price-box">
+                <div class="hero-price-label">Esempio piano flotta</div>
+                <div class="hero-price-row">
+                  <div class="hero-price">da 29,90€<span>/mese cad.</span></div>
+                  <div class="hero-small">
+                    per smartphone in flotta, con configurazione e supporto inclusi.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 3: Energia & Internet -->
+        <section class="slide">
+          <div class="slide-left">
+            <div class="pill-tag">
+              <span class="pill-dot"></span>
+              Energia & Internet
+            </div>
+            <h1 class="slide-title">
+              <span class="highlight">Energia e connessione</span>  
+              studiate su misura per casa e business.
+            </h1>
+            <p class="slide-subtitle">
+              Analizziamo le tue bollette e la tua situazione reale, per proporti
+              solo soluzioni sensate con partner affidabili.
+            </p>
+            <div class="slide-bullets">
+              <div class="chip">Valutazione bolletta in negozio</div>
+              <div class="chip">Proposte chiare, niente tecnicismi inutili</div>
+              <div class="chip">Soluzioni casa e partita IVA</div>
+              <div class="chip">Internet veloce dove ti serve</div>
+            </div>
+            <div class="cta-banner">
+              Porta la tua bolletta, al resto pensiamo noi
+              <div class="cta-wa">
+                <span class="cta-wa-dot"></span>
+                Prenota un check veloce
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-right">
+            <div class="hero-card">
+              <div class="hero-accent-tag">Energia & Fibra</div>
+              <div>
+                <div class="hero-label">Re Long • Consulenza</div>
+                <div class="hero-main">Pagare il giusto, con la giusta offerta.</div>
+                <div class="hero-tagline">
+                  Niente caos di tariffe: analizziamo i tuoi consumi e ti aiutiamo a scegliere con criterio.
+                </div>
+                <div class="hero-badges">
+                  <span class="hero-badge">Valutazione gratuita</span>
+                  <span class="hero-badge">Report chiaro in pochi minuti</span>
+                  <span class="hero-badge">Soluzioni sostenibili</span>
+                </div>
+              </div>
+
+              <div class="hero-price-box">
+                <div class="hero-price-label">Obiettivo Re Long</div>
+                <div class="hero-price-row">
+                  <div class="hero-price">Taglia sprechi</div>
+                  <div class="hero-small">
+                    e ottimizza costi e servizi con un’unica consulenza in negozio.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 4: Assistenza PC & Servizi -->
+        <section class="slide">
+          <div class="slide-left">
+            <div class="pill-tag">
+              <span class="pill-dot"></span>
+              Assistenza PC & Servizi
+            </div>
+            <h1 class="slide-title">
+              <span class="highlight">PC lenti, problemi tecnici, caos dati?</span><br/>
+              Li mettiamo in riga noi.
+            </h1>
+            <p class="slide-subtitle">
+              Dall’assistenza base alla configurazione avanzata, backup, migrazioni
+              e sistemi per negozi e professionisti.
+            </p>
+            <div class="slide-bullets">
+              <div class="chip">Assistenza PC in laboratorio</div>
+              <div class="chip">Formattazioni e ripristini</div>
+              <div class="chip">Backup e salvataggio dati</div>
+              <div class="chip">Soluzioni lavoro & studio</div>
+            </div>
+            <div class="cta-banner">
+              Porta il tuo PC in negozio
+              <div class="cta-wa">
+                <span class="cta-wa-dot"></span>
+                Chiedi disponibilità ora
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-right">
+            <div class="hero-card">
+              <div class="hero-accent-tag">Assistenza Tecnica</div>
+              <div>
+                <div class="hero-label">Re Long • Informatica</div>
+                <div class="hero-main">Il tuo PC torna operativo, senza drammi.</div>
+                <div class="hero-tagline">
+                  Analisi chiara, tempi onesti, soluzioni concrete per la tua operatività quotidiana.
+                </div>
+                <div class="hero-badges">
+                  <span class="hero-badge">Preventivo prima dell’intervento</span>
+                  <span class="hero-badge">Approccio pratico e diretto</span>
+                  <span class="hero-badge">Supporto post intervento</span>
+                </div>
+              </div>
+
+              <div class="hero-price-box">
+                <div class="hero-price-label">Esempio intervento</div>
+                <div class="hero-price-row">
+                  <div class="hero-price">da 39€</div>
+                  <div class="hero-small">
+                    per interventi base di ottimizzazione e ripristino (costi variabili secondo necessità).
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SLIDE 5: Accessori & Pellicole -->
+        <section class="slide">
+          <div class="slide-left">
+            <div class="pill-tag">
+              <span class="pill-dot"></span>
+              Accessori & Protezione
+            </div>
+            <h1 class="slide-title">
+              <span class="highlight">Proteggi e completa</span>  
+              il tuo smartphone come si deve.
+            </h1>
+            <p class="slide-subtitle">
+              Pellicole, cover, accessori utili davvero: selezionati per durare e
+              per non rovinare l’esperienza d’uso.
+            </p>
+            <div class="slide-bullets">
+              <div class="chip">Pellicole applicate in negozio</div>
+              <div class="chip">Cover protettive e slim</div>
+              <div class="chip">Caricatori, cavi, supporti auto</div>
+              <div class="chip">Consigli in base al tuo uso reale</div>
+            </div>
+            <div class="cta-banner">
+              Passa in negozio e chiedi la protezione Re Long
+              <div class="cta-wa">
+                <span class="cta-wa-dot"></span>
+                Info rapide su WhatsApp
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-right">
+            <div class="hero-card">
+              <div class="hero-accent-tag">Accessori Selezionati</div>
+              <div>
+                <div class="hero-label">Re Long • Dettagli che contano</div>
+                <div class="hero-main">Accessori pensati per l’uso quotidiano.</div>
+                <div class="hero-tagline">
+                  Meno “gadget”, più prodotti sensati: scelti su esperienza e feedback reali.
+                </div>
+                <div class="hero-badges">
+                  <span class="hero-badge">Pellicole qualità premium</span>
+                  <span class="hero-badge">Cover per ogni esigenza</span>
+                  <span class="hero-badge">Setup completo in un’unica visita</span>
+                </div>
+              </div>
+
+              <div class="hero-price-box">
+                <div class="hero-price-label">Esempio combinazione</div>
+                <div class="hero-price-row">
+                  <div class="hero-price">da 24,90€</div>
+                  <div class="hero-small">
+                    pellicola + cover selezionata, con applicazione in negozio.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Indicatori -->
+        <div class="indicator" id="indicator">
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <div class="footer-left">
+          <div class="footer-brand"><span>Re Long</span> Informatica</div>
+          <div class="footer-desc">
+            Telefonia, Energia, Assistenza PC & Soluzioni Business – Marano di Napoli.
+          </div>
+        </div>
+        <div class="footer-right">
+          <div class="footer-pill">
+            <span class="footer-dot-wa"></span>
+            <span class="footer-phone">WhatsApp / Tel: 08119578844</span>
+          </div>
+          <div class="footer-note">
+            Chiedi al banco info sulle offerte viste sullo schermo.
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    // Particelle energia
+    (function(){
+      const container = document.getElementById('particles');
+      const total = 26;
+      for(let i = 0; i < total; i++){
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const x = Math.random()*100;
+        const delay = Math.random()*18;
+        const duration = 26 + Math.random()*20;
+        p.style.setProperty('--x', x+'vw');
+        p.style.animationDuration = duration+'s';
+        p.style.animationDelay = (-delay)+'s';
+        container.appendChild(p);
+      }
+    })();
+
+    // Slider automatico
+    (function(){
+      const slides = document.querySelectorAll('.slide');
+      const dots = document.querySelectorAll('.dot');
+      let current = 0;
+      const SLIDE_TIME = 9000; // ms
+
+      function goTo(index){
+        slides[current].classList.remove('active');
+        dots[current].classList.remove('active');
+        current = (index + slides.length) % slides.length;
+        slides[current].classList.add('active');
+        dots[current].classList.add('active');
+      }
+
+      setInterval(() => {
+        goTo(current + 1);
+      }, SLIDE_TIME);
+    })();
+  </script>
+</body>
+</html>
