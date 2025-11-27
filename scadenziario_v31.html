@@ -1443,9 +1443,19 @@ Per il saldo aggiornato scrivimi qui su WhatsApp o passa in negozio.`;
         pointsSpan.className='badge-top';
         pointsSpan.textContent=`⭐ ${it.points||0} pt`;
 
+        const editBtn=document.createElement('button');
+        editBtn.type='button';
+        editBtn.className='badge-mini';
+        editBtn.textContent='Modifica';
+        editBtn.addEventListener('click',(ev)=>{
+          ev.stopPropagation();
+          editClient(it.id);
+        });
+
         title.appendChild(nameSpan);
         title.appendChild(phoneSpan);
         title.appendChild(pointsSpan);
+        title.appendChild(editBtn);
 
         // Servizi attivi cliccabili (attiva/disattiva) – con mapping fisso/fissomobile
         const svcRow=document.createElement('div');
@@ -2070,7 +2080,25 @@ Per il saldo aggiornato scrivimi qui su WhatsApp o passa in negozio.`;
       await loadFromGitHubOrLocal();
       render();
     });
-  </script>
+  
+
+function editClient(id){
+  const it = items.find(c=>c.id===id);
+  if(!it) return;
+  const currentName = it.name || '';
+  const currentPhone = normalizePhone(it.phone || '');
+  const newName = prompt('Modifica nome e cognome:', currentName);
+  if(newName === null) return;
+  const newPhone = prompt('Modifica numero di telefono:', currentPhone);
+  if(newPhone === null) return;
+  it.name = (newName.trim() || currentName);
+  it.phone = normalizePhone(newPhone || currentPhone);
+  it.updatedAt = new Date().toISOString();
+  saveLocal();
+  saveToGitHub();
+  render();
+}
+</script>
 
 </body>
 </html>
