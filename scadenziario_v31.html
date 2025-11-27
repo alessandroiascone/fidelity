@@ -392,7 +392,10 @@
     <div class="status">
       <span id="syncState" class="pill bad">Sync: Disconnesso</span>
       <button id="openDash" class="btn ok">Dashboard</button>
+      <button id="backupBtn" class="btn">Backup clienti &amp; Fidelity</button>
+      <button id="importBackupBtn" class="btn">Importa backup</button>
       <button id="cfgSync" class="btn">Imposta Sync GitHub</button>
+      <input type="file" id="backupFileInput" accept=".json,application/json" style="display:none" />
     </div>
   </header>
 
@@ -410,6 +413,7 @@
           <button type="button" class="tbtn" data-key="sim">Sim</button>
           <button type="button" class="tbtn" data-key="fisso">Fisso</button>
           <button type="button" class="tbtn" data-key="energia">Energia</button>
+          <button type="button" class="tbtn" data-key="gas">Gas</button>
           <button type="button" class="tbtn" data-key="rate">Smartphone a Rate</button>
 
           <div class="fidelity-pill" id="fidelityPill">
@@ -859,6 +863,7 @@ ${cardUrl}`;
     const complementByKey={
       sim:        ['energia','fissomobile','rate'],
       energia:    ['sim','fissomobile','rate'],
+      gas:        ['sim','fissomobile','rate'],
       fisso:      ['sim','energia','rate'],
       rate:       ['energia','sim','fissomobile'],
       pacchi:     ['sim','energia','fissomobile','rate'],
@@ -1062,6 +1067,10 @@ ${cardUrl}`;
             pts   = POINTS_ENERGIA;
             code  = 'energia-signup';
             label = 'Attivazione energia';
+          } else if(k === 'gas'){
+            pts   = POINTS_ENERGIA;
+            code  = 'gas-signup';
+            label = 'Attivazione gas';
           } else if(k === 'rate'){
             pts   = POINTS_RATE;
             code  = 'rate-signup';
@@ -1308,7 +1317,16 @@ Per il saldo aggiornato scrivimi qui su WhatsApp o passa in negozio.`;
       }
 
       if(activeFilter==='sim' || activeFilter==='fisso' || activeFilter==='energia' || activeFilter==='rate'){
-        out = out.filter(it=> (it.activated||[]).includes(activeFilter) || (activeFilter==='fisso' && (it.activated||[]).includes('fissomobile')));
+        out = out.filter(it=>{
+          const act = it.activated || [];
+          if(activeFilter==='fisso'){
+            return act.includes('fisso') || act.includes('fissomobile');
+          }
+          if(activeFilter==='energia'){
+            return act.includes('energia') || act.includes('gas');
+          }
+          return act.includes(activeFilter);
+        });
         return out;
       }
 
@@ -1416,6 +1434,7 @@ Per il saldo aggiornato scrivimi qui su WhatsApp o passa in negozio.`;
           { key:'sim',        label:'SIM',          icon:'📶' },
           { key:'fissomobile',label:'Fisso / FTTH',icon:'🏠📡' },
           { key:'energia',    label:'Energia',      icon:'⚡' },
+          { key:'gas',        label:'Gas',          icon:'🔥' },
           { key:'rate',       label:'Rate',         icon:'📱' }
         ];
 
@@ -1905,7 +1924,7 @@ Per il saldo aggiornato scrivimi qui su WhatsApp o passa in negozio.`;
         const act=new Set(it.activated||[]);
         if(act.has('sim')){ k_sim++; e_sim+=GAIN_SIM; }
         if(act.has('fisso') || act.has('fissomobile')){ k_fisso++; e_fisso+=GAIN_FISSO; }
-        if(act.has('energia')){ k_energia++; e_energia+=GAIN_ENERGIA; }
+        if(act.has('energia') || act.has('gas')){ k_energia++; e_energia+=GAIN_ENERGIA; }
         if(act.has('rate')){ k_rate++; e_rate+=GAIN_RATE; }
         if(it.acceptance){ k_rip++; }
 
@@ -1956,6 +1975,70 @@ Per il saldo aggiornato scrivimi qui su WhatsApp o passa in negozio.`;
 
     document.getElementById('rangeFrom').addEventListener('change',updateDashboard);
     document.getElementById('rangeTo').addEventListener('change',updateDashboard);
+
+    
+    // Backup export & import
+    const backupBtn = document.getElementById('backupBtn');
+    const importBackupBtn = document.getElementById('importBackupBtn');
+    const backupFileInput = document.getElementById('backupFileInput');
+
+    function doBackup(){
+      try{
+        const data = JSON.stringify(items || [], null, 2);
+        const blob = new Blob([data], { type:'application/json' });
+        const url  = URL.createObjectURL(blob);
+        const now = new Date();
+        const pad = n => String(n).padStart(2,'0');
+        const fileName = `relong-scadenzario-backup-${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}.json`;
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        showToast('Backup JSON scaricato ✅');
+      }catch(e){
+        console.error(e);
+        showToast('Errore durante il backup','err');
+      }
+    }
+
+    function handleBackupFileChange(ev){
+      const file = ev.target.files && ev.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e){
+        try{
+          const parsed = JSON.parse(e.target.result);
+          if(!Array.isArray(parsed)){
+            showToast('Backup non valido','err');
+            return;
+          }
+          const confirmed = confirm('Importare questo backup? Tutti i dati attuali verranno sovrascritti.');
+          if(!confirmed) return;
+          items = parsed;
+          saveLocal();
+          render();
+          showToast('Backup importato correttamente ✅');
+        }catch(err){
+          console.error(err);
+          showToast('Errore durante la lettura del backup','err');
+        }finally{
+          backupFileInput.value = '';
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    if(backupBtn){
+      backupBtn.addEventListener('click', doBackup);
+    }
+    if(importBackupBtn && backupFileInput){
+      importBackupBtn.addEventListener('click', ()=> backupFileInput.click());
+      backupFileInput.addEventListener('change', handleBackupFileChange);
+    }
+
 
     document.addEventListener('DOMContentLoaded', async ()=>{
       await loadFromGitHubOrLocal();
