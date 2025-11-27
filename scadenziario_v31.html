@@ -431,6 +431,8 @@
               <option>Computer</option>
               <option>Stampante</option>
               <option>Console</option>
+              <option>Tablet</option>
+              <option>Altro</option>
             </select>
           </div>
 
@@ -781,7 +783,12 @@
       const t=`Ciao ${name}, sono Alessandro di Re Long (${RELONG_PHONE}).\nPosso proporti una simulazione Luce & Gas davvero conveniente? ⚡️\nIn negozio o via WhatsApp, come preferisci.`;
       return walink(phone,t);
     }
-    function waPacchiSIM(name, phone){
+    
+    function waPacchiGas(name, phone){
+      const t=`Ciao ${name}, sono Alessandro di Re Long (${RELONG_PHONE}).\nPer il GAS sto preparando simulazioni dedicate per abbassare la bolletta. Se mi mandi una foto dell'ultima bolletta gas ti faccio un controllo chiaro e senza impegno. 🔥\nPreferisci che ti invii tutto qui su WhatsApp o vuoi passare in negozio?`;
+      return walink(phone,t);
+    }
+function waPacchiSIM(name, phone){
       const t=`Ciao ${name}, sono Alessandro di Re Long (${RELONG_PHONE}).\nSe vuoi, ti preparo una proposta SIM dedicata con Minuti e Giga Top. 📶`;
       return walink(phone,t);
     }
@@ -856,9 +863,9 @@ ${cardUrl}`;
       return walink(it.phone, t);
     }
 
-    const REMINDER_OFFSETS=[6,13,21,30];
-    const REM_TYPES=['sim','energia','fissomobile','rate'];
-    const typeLabel={ sim:'SIM', energia:'Energia', fissomobile:'Fisso + Mobile', rate:'Smartphone a rate', followup:'Richiamo' };
+    const REMINDER_OFFSETS=[15,30,45,60,75];
+    const REM_TYPES=['sim','energia','gas','fissomobile','rate'];
+    const typeLabel={ sim:'SIM', energia:'Energia', gas:'Gas', fissomobile:'Fisso + Mobile', rate:'Smartphone a rate', followup:'Richiamo' };
 
     const complementByKey={
       sim:        ['energia','fissomobile','rate'],
@@ -884,6 +891,8 @@ ${cardUrl}`;
         act.forEach(k=> (complementByKey[k]||[]).forEach(t=>set.add(t)) );
         if(set.size===0){ REM_TYPES.forEach(t=>set.add(t)); }
       }
+      // Forziamo sempre il GAS nel radar servizi
+      set.add('gas');
       return [...set];
     }
 
@@ -897,11 +906,25 @@ ${cardUrl}`;
     }
 
     function ensureReminders(it){
-      if(it.reminders && Array.isArray(it.reminders) && it.reminders.length) return;
       const created = new Date(it.createdAt||Date.now());
-      const types = shuffle(getReminderTypesForItem(it));
-      it.reminders = buildReminders(created, types);
-      it.remindersCycle = 1;
+      const desired = shuffle(getReminderTypesForItem(it));
+
+      if(!it.reminders || !Array.isArray(it.reminders)){
+        it.reminders = buildReminders(created, desired);
+      }else{
+        const existingTypes = new Set(
+          it.reminders
+            .filter(r=>r && r.type)
+            .map(r=>String(r.type))
+        );
+        const missing = desired.filter(t=> !existingTypes.has(t));
+        if(missing.length){
+          const extra = buildReminders(created, missing);
+          it.reminders = it.reminders.concat(extra);
+        }
+      }
+
+      it.remindersCycle = it.remindersCycle || 1;
       it.responded = !!it.responded;
       it.updatedAt=new Date().toISOString();
     }
@@ -911,6 +934,7 @@ ${cardUrl}`;
       switch(rem.type){
         case 'sim':         return waPacchiSIM(it.name,it.phone);
         case 'energia':     return waPacchiEnergia(it.name,it.phone);
+        case 'gas':         return waPacchiGas(it.name,it.phone);
         case 'fissomobile': return waPacchiFisso(it.name,it.phone);
         case 'rate':        return waPacchiRate(it.name,it.phone);
         case 'followup':    return waPacchiMemo(it.name,it.phone);
@@ -935,7 +959,7 @@ ${cardUrl}`;
     const brandOther = document.getElementById('a_brand_other');
 
     function refreshBrandUI(){
-      const isPhone = (typeSel.value === 'Smartphone');
+      const isPhone = (typeSel.value === 'Smartphone' || typeSel.value === 'Tablet');
       brandInput.style.display = isPhone ? 'none' : '';
       brandSmartWrap.style.display = isPhone ? '' : 'none';
       if(isPhone){
@@ -1242,6 +1266,7 @@ Per il saldo aggiornato scrivimi qui su WhatsApp o passa in negozio.`;
         { type:'sim',        label:'SIM',          icon:'📶' },
         { type:'fissomobile',label:'Fisso / FTTH',icon:'🏠📡' },
         { type:'energia',    label:'Energia',      icon:'⚡' },
+        { type:'gas',        label:'Gas',          icon:'🔥' },
         { type:'rate',       label:'Rate',         icon:'📱' }
       ];
 
@@ -1659,7 +1684,8 @@ Per il saldo aggiornato scrivimi qui su WhatsApp o passa in negozio.`;
               let delta = 0;
               if(devType === 'computer'){
                 delta = POINTS_REPAIR_PC;
-              }else if(devType === 'smartphone'){
+              }else if(devType === 'smartphone' || devType === 'tablet'){
+                // Smartphone e Tablet valgono gli stessi punti
                 delta = POINTS_REPAIR_PHONE;
               }
               if(delta > 0){
