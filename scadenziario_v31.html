@@ -396,7 +396,8 @@
       <button id="importBackupBtn" class="btn">Importa backup</button>
       <button id="cfgSync" class="btn">Imposta Sync GitHub</button>
       <input type="file" id="backupFileInput" accept=".json,application/json" style="display:none" />
-    </div>
+    <div id="lastBackupInfo" class="label" style="margin-top:8px">Ultimo backup: nessuno</div>
+</div>
   </header>
 
   <section class="card">
@@ -2018,29 +2019,33 @@ Per il saldo aggiornato scrivimi qui su WhatsApp o passa in negozio.`;
     const importBackupBtn = document.getElementById('importBackupBtn');
     const backupFileInput = document.getElementById('backupFileInput');
 
-    function doBackup(){
-      try{
-        const data = JSON.stringify(items || [], null, 2);
-        const blob = new Blob([data], { type:'application/json' });
-        const url  = URL.createObjectURL(blob);
-        const now = new Date();
-        const pad = n => String(n).padStart(2,'0');
-        const fileName = `relong-scadenzario-backup-${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}.json`;
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-        showToast('Backup JSON scaricato ✅');
-      }catch(e){
-        console.error(e);
-        showToast('Errore durante il backup','err');
-      }
-    }
+    
+function doBackup(source="manual"){
+  try{
+    const data = JSON.stringify(items || [], null, 2);
+    const blob = new Blob([data], { type:'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const now = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    const fileName = `relong-scadenzario-backup-${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}.json`;
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast('Backup JSON scaricato ✅');
 
-    function handleBackupFileChange(ev){
+    const meta={ts:now.toISOString(),source};
+    localStorage.setItem("scad_lastBackup", JSON.stringify(meta));
+    updateBackupInfoUI();
+  }catch(e){
+    console.error(e);
+    showToast('Errore durante il backup','err');
+  }
+}
+function handleBackupFileChange(ev){
       const file = ev.target.files && ev.target.files[0];
       if(!file) return;
       const reader = new FileReader();
@@ -2076,7 +2081,52 @@ Per il saldo aggiornato scrivimi qui su WhatsApp o passa in negozio.`;
     }
 
 
-    document.addEventListener('DOMContentLoaded', async ()=>{
+    
+function updateBackupInfoUI(){
+  const box=document.getElementById("lastBackupInfo");
+  if(!box) return;
+  const raw=localStorage.getItem("scad_lastBackup");
+  if(!raw){ box.textContent="Ultimo backup: nessuno"; return;}
+  try{
+    const meta=JSON.parse(raw);
+    const d=new Date(meta.ts);
+    const pad=n=>String(n).padStart(2,'0');
+    box.textContent="Ultimo backup: "+pad(d.getDate())+"/"+pad(d.getMonth()+1)+"/"+d.getFullYear()+" "+pad(d.getHours())+":"+pad(d.getMinutes())+" ("+meta.source+")";
+  }catch{ box.textContent="Ultimo backup: n/d"; }
+}
+
+function autoBackupScheduler(){
+  setInterval(()=>{
+    const now=new Date();
+    const day=now.getDay();
+    const h=now.getHours();
+    const m=now.getMinutes();
+    const pad=n=>String(n).padStart(2,'0');
+    const todayKey = now.getFullYear()+pad(now.getMonth()+1)+pad(now.getDate());
+
+    // 12:50 every day except Sunday
+    if(day!==0 && h===12 && m===50){
+      const key="auto_1250";
+      if(localStorage.getItem(key)!==todayKey){
+        doBackup("auto_12_50");
+        localStorage.setItem(key,todayKey);
+      }
+    }
+
+    // 20:00 Mon-Fri
+    if(day>=1 && day<=5 && h===20 && m===0){
+      const key="auto_2000";
+      if(localStorage.getItem(key)!==todayKey){
+        doBackup("auto_20_00");
+        localStorage.setItem(key,todayKey);
+      }
+    }
+  },60000);
+}
+updateBackupInfoUI();
+autoBackupScheduler();
+
+document.addEventListener('DOMContentLoaded', async ()=>{
       await loadFromGitHubOrLocal();
       render();
     });
