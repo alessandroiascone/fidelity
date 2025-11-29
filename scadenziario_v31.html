@@ -213,6 +213,51 @@
       color:#eaf4ff;
     }
 
+
+/* Vista "Cosa devo fare oggi" */
+.today-summary{
+  border-radius:14px;
+  border:1px solid var(--stroke);
+  background:linear-gradient(135deg,rgba(15,23,42,.96),rgba(15,23,42,.94));
+  padding:10px 12px;
+  margin-bottom:10px;
+  box-shadow:0 14px 32px rgba(0,0,0,.55);
+}
+.today-summary-title{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.16em;
+  color:var(--muted);
+  margin-bottom:6px;
+}
+.today-summary-grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.today-pill{
+  flex:1 1 150px;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid rgba(148,163,184,.7);
+  background:radial-gradient(circle at 0 0,rgba(15,23,42,.98),rgba(15,23,42,.9));
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px;
+  font-size:11px;
+  color:var(--muted);
+}
+.today-pill span{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+}
+.today-pill strong{
+  font-size:13px;
+  color:#e5f0ff;
+}
+
     /* Radar servizi – pillole stile “Servizi attivi” con colori remind */
     .radar-pills{
       display:flex;
@@ -554,6 +599,9 @@
     </h2>
     <div class="content" id="elencoContent">
 
+      <!-- Vista Cosa devo fare oggi -->
+      <div id="todaySummary" class="today-summary" style="display:none"></div>
+
       <!-- Barra filtri + ricerca -->
       <div class="toolbar">
         <button id="toggleFilters" class="toggle">Filtri</button>
@@ -695,6 +743,10 @@ sono Alessandro di Re Long (08119578844)..."></textarea>
         <button class="toggle" data-filter="rate">Rate</button>
         <button class="toggle" data-filter="riparazioni">Riparazioni</button>
         <button class="toggle" data-filter="preventivi">Preventivi</button>
+        <!-- Target marketing rapido -->
+        <button class="toggle" data-filter="energiaNoRate">Energia senza Rate</button>
+        <button class="toggle" data-filter="simNoFisso">SIM senza Fisso</button>
+        <button class="toggle" data-filter="soloFidelity">Solo Fidelity (senza servizi)</button>
       </div>
 
       <div id="counter" class="label" style="margin-bottom:6px">Clienti: 0</div>
@@ -1651,6 +1703,15 @@ ${cardUrl}`;
         return;
       }
 
+      if(!confirm('Confermi di applicare questa operazione punti a TUTTI i clienti?')){
+        return;
+      }
+      const confirmText = prompt("Scrivi SI per confermare l'operazione massiva sui punti Fidelity:");
+      if(!confirmText || confirmText.trim().toUpperCase() !== 'SI'){
+        alert('Operazione annullata');
+        return;
+      }
+
       const now = new Date().toISOString();
       const ts = Date.now();
       let count = 0;
@@ -1694,6 +1755,10 @@ Ti auguro Buone Feste 🎄 e ti ricordo che per smartphone, energia e servizi de
       const msg = (waTextArea.value || '').trim();
       if(!msg){
         alert('Inserisci un testo per il messaggio');
+        return;
+      }
+
+      if(!confirm('Confermi di voler preparare questo messaggio per l\'invio massivo su WhatsApp?')){
         return;
       }
 
@@ -1839,7 +1904,36 @@ Ti auguro Buone Feste 🎄 e ti ricordo che per smartphone, energia e servizi de
         return out;
       }
 
-      if(activeFilter==='riparazioni'){
+
+if(activeFilter==='energiaNoRate'){
+  out = out.filter(it=>{
+    const act = it.activated || [];
+    const hasEnergy = act.includes('energia') || act.includes('gas');
+    const hasRate = act.includes('rate');
+    return hasEnergy && !hasRate;
+  });
+  return out;
+}
+
+if(activeFilter==='simNoFisso'){
+  out = out.filter(it=>{
+    const act = it.activated || [];
+    const hasSim = act.includes('sim');
+    const hasFisso = act.includes('fisso') || act.includes('fissomobile');
+    return hasSim && !hasFisso;
+  });
+  return out;
+}
+
+if(activeFilter==='soloFidelity'){
+  out = out.filter(it=>{
+    const act = it.activated || [];
+    const hasServices = Array.isArray(act) && act.length>0;
+    const pts = Number(it.points||0);
+    return !hasServices && pts>0;
+  });
+  return out;
+}      if(activeFilter==='riparazioni'){
         out = out.filter(it=> !!it.acceptance);
         return out;
       }
@@ -1850,10 +1944,75 @@ Ti auguro Buone Feste 🎄 e ti ricordo che per smartphone, energia e servizi de
         return out;
       }
 
-      return out;
-    }
 
-    function render(){
+  return out;
+}
+
+function updateTodaySummary(){
+  const box = document.getElementById('todaySummary');
+  if(!box) return;
+
+  const all = Array.isArray(items) ? items : [];
+  if(!all.length){
+    box.style.display='none';
+    box.innerHTML='';
+    return;
+  }
+
+  const today = startOfDay(new Date());
+  let remindCount = 0;
+  let repairsReady = 0;
+  let quotesPending = 0;
+
+  all.forEach(it=>{
+    try{
+      ensureBaseFields(it);
+      // Controllo remind in scadenza oggi e non ancora inviati
+      ensureReminders(it);
+      if(Array.isArray(it.reminders)){
+        const hasToday = it.reminders.some(r=>{
+          if(!r || !r.dueAt || r.sent) return false;
+          const d = startOfDay(new Date(r.dueAt));
+          return d.getTime() === today.getTime();
+        });
+        if(hasToday) remindCount++;
+      }
+
+      // Riparazioni pronte da consegnare
+      if(it.repairStatus === 'pronto'){
+        repairsReady++;
+      }
+
+      // Preventivi in attesa
+      if(it.quoteStatus === 'pending'){
+        quotesPending++;
+      }
+    }catch(e){}
+  });
+
+  if(remindCount===0 && repairsReady===0 && quotesPending===0){
+    box.style.display='none';
+    box.innerHTML='';
+    return;
+  }
+
+  let html = '<div class="today-summary-title">Oggi devi occuparti di...</div><div class="today-summary-grid">';
+  if(remindCount>0){
+    html += '<div class="today-pill"><span>📲 Remind da inviare</span><strong>'+remindCount+'</strong></div>';
+  }
+  if(repairsReady>0){
+    html += '<div class="today-pill"><span>🛠️ Riparazioni pronte da consegnare</span><strong>'+repairsReady+'</strong></div>';
+  }
+  if(quotesPending>0){
+    html += '<div class="today-pill"><span>📑 Preventivi in attesa</span><strong>'+quotesPending+'</strong></div>';
+  }
+  html += '</div>';
+
+  box.innerHTML = html;
+  box.style.display='block';
+}
+
+function render(){
       const listEl=document.getElementById('list');
       const counterEl=document.getElementById('counter');
       const filterSummary=document.getElementById('filterSummary');
@@ -1870,7 +2029,10 @@ Ti auguro Buone Feste 🎄 e ti ricordo che per smartphone, energia e servizi de
           energia:'Solo Energia',
           rate:'Solo Rate',
           riparazioni:'Solo Riparazioni',
-          preventivi:'Solo Preventivi in attesa'
+          preventivi:'Solo Preventivi in attesa',
+          energiaNoRate:'Clienti con Energia/Gas ma senza Rate',
+          simNoFisso:'Clienti con SIM ma senza Fisso',
+          soloFidelity:'Solo Fidelity (nessun servizio attivo)'
         };
         filterSummary.textContent=map[activeFilter]||'Filtro attivo';
       }else{
