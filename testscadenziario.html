@@ -388,26 +388,20 @@
       margin-top:8px;
     }
     .fid-quick-btn{
-  border-radius:9999px;
-  border:1px solid transparent;
-  background:transparent;
-  padding:4px 12px;
-  font-size:11px;
-  display:inline-flex;
-  align-items:center;
-  gap:5px;
-  cursor:pointer;
-  white-space:nowrap;
-  transition:.18s ease;
-  color:#ffffff;
-  box-shadow:none;
-}
-
-/* bordo Vodafone → Fastweb */
-.fid-quick-btn{
-  border-image: linear-gradient(135deg, #ff0000, #ff7b00) 1;
-}
-
+      border-radius:9999px;
+      border:1px solid rgba(255,255,255,.45);
+      background:linear-gradient(135deg,#ff0000,#ff7b00);
+      color:#fff;
+      padding:4px 12px;
+      font-size:11px;
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+      cursor:pointer;
+      box-shadow:0 4px 14px rgba(0,0,0,.6);
+      white-space:nowrap;
+      transition:.18s ease;
+    }
     .fid-quick-btn:hover{
       transform:translateY(-1px);
       box-shadow:0 6px 18px rgba(0,0,0,.8);
@@ -434,7 +428,37 @@
       box-shadow:0 6px 18px rgba(0,0,0,.8);
     }
 
-  </style>
+  
+/* FIX DEFINITIVO PILLE TONDE */
+.fid-quick-btn {
+  border-radius: 9999px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* PILLONI TRASPARENTI CON BORDO GRADIENT VODAFONE → FASTWEB */
+.fid-quick-btn {
+  border-radius: 9999px !important;
+  padding: 4px 12px !important;
+  font-size: 11px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  background: transparent !important;
+  border: 2px solid transparent !important;
+  background-image:
+    linear-gradient(#0a0d14, #0a0d14),
+    linear-gradient(90deg, #ff0000, #ff7b00) !important;
+  background-origin: border-box !important;
+  background-clip: padding-box, border-box !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+</style>
 </head>
 <body>
   <div id="toast"></div>
