@@ -380,7 +380,85 @@
       font-size:11px;
       color:var(--muted);
     }
-  </style>
+
+    .fid-quick{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:8px;
+    }
+    .fid-quick-btn{
+      border-radius:9999px;
+      border:1px solid rgba(255,255,255,.45);
+      background:linear-gradient(135deg,#ff0000,#ff7b00);
+      color:#fff;
+      padding:4px 12px;
+      font-size:11px;
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+      cursor:pointer;
+      box-shadow:0 4px 14px rgba(0,0,0,.6);
+      white-space:nowrap;
+      transition:.18s ease;
+    }
+    .fid-quick-btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 6px 18px rgba(0,0,0,.8);
+    }
+    .pt-float{
+      position:fixed;
+      font-size:13px;
+      font-weight:600;
+      color:#ffffff;
+      text-shadow:0 0 6px rgba(255,140,0,.9);
+      pointer-events:none;
+      transform:translateY(0);
+      opacity:1;
+      transition:transform .8s ease, opacity .8s ease;
+      z-index:999999;
+    }
+
+    .fid-quick-btn .icon{
+      font-size:12px;
+      color:#fff;
+    }
+    .fid-quick-btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 6px 18px rgba(0,0,0,.8);
+    }
+
+  
+/* FIX DEFINITIVO PILLE TONDE */
+.fid-quick-btn {
+  border-radius: 9999px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* PILLONI TRASPARENTI CON BORDO GRADIENT VODAFONE → FASTWEB */
+.fid-quick-btn {
+  border-radius: 9999px !important;
+  padding: 4px 12px !important;
+  font-size: 11px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  background: transparent !important;
+  border: 2px solid transparent !important;
+  background-image:
+    linear-gradient(#0a0d14, #0a0d14),
+    linear-gradient(90deg, #ff0000, #ff7b00) !important;
+  background-origin: border-box !important;
+  background-clip: padding-box, border-box !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+</style>
 </head>
 <body>
   <div id="toast"></div>
@@ -416,6 +494,7 @@
           <button type="button" class="tbtn" data-key="energia">Energia</button>
           <button type="button" class="tbtn" data-key="gas">Gas</button>
           <button type="button" class="tbtn" data-key="rate">Smartphone a Rate</button>
+          <button type="button" class="tbtn" data-key="premium">Acquisti premium</button>
 
           <div class="fidelity-pill" id="fidelityPill">
             💳 Fidelity Card INCLUSA • 20 punti di benvenuto per ogni nuovo cliente registrato
@@ -481,15 +560,130 @@
         <input id="searchInput" placeholder="Cerca nome o telefono" />
       </div>
 
-      <!-- Operazione Fidelity massiva -->
-      <div class="toolbar" style="justify-content:flex-end">
+      <!-- Operazioni Fidelity & WhatsApp -->
+      <div class="toolbar" style="justify-content:flex-end;flex-wrap:wrap;gap:8px">
         <button
           id="bulkFidelity"
           class="toggle"
-          style="width:100%;max-width:380px;justify-content:center;text-align:center"
+          style="flex:1 1 220px;justify-content:center;text-align:center"
         >
           ✨ Operazione Fidelity massiva
         </button>
+
+        <button
+          id="waBroadcast"
+          class="toggle"
+          style="flex:1 1 220px;justify-content:center;text-align:center"
+        >
+          📣 Messaggio WhatsApp massivo
+        </button>
+
+        <button
+          id="fidSettings"
+          class="toggle"
+          style="flex:1 1 220px;justify-content:center;text-align:center"
+        >
+          ⚙️ Impostazioni punti Fidelity
+        </button>
+      </div>
+
+      <!-- Modal Fidelity massiva -->
+      <div id="bulkModal" class="modal" style="display:none">
+        <div class="dash" style="max-width:420px">
+          <header>
+            <h3>Aggiunta punti massiva</h3>
+            <button class="x" id="bulkClose" type="button">Chiudi</button>
+          </header>
+          <div class="wrap">
+            <label>Punti da aggiungere / togliere</label>
+            <input id="bulkPoints" type="number" placeholder="Esempio: 50">
+
+            <label style="margin-top:12px">Motivazione</label>
+            <textarea id="bulkReason" placeholder="Scrivi qui la motivazione (es. Buon Natale da ReLong 🎅🎄, Bonus fedeltà, Promo speciale...)"></textarea>
+
+            <button id="bulkConfirm" class="btn ok" style="margin-top:14px;width:100%">
+              Applica a tutti i clienti
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal WhatsApp massivo -->
+      <div id="waModal" class="modal" style="display:none">
+        <div class="dash" style="max-width:420px">
+          <header>
+            <h3>Messaggio WhatsApp massivo</h3>
+            <button class="x" id="waClose" type="button">Chiudi</button>
+          </header>
+          <div class="wrap">
+            <label>Testo messaggio WhatsApp</label>
+            <textarea id="waBroadcastText" placeholder="Ciao 👋
+sono Alessandro di Re Long (08119578844)..."></textarea>
+
+            <div class="label" style="margin-top:10px;font-size:11px">
+              Suggerimento: scrivi il testo che vuoi usare nella lista broadcast di WhatsApp,
+              poi copialo dal box che ti mostreremo.
+            </div>
+
+            <button id="waConfirm" class="btn ok" style="margin-top:14px;width:100%">
+              Genera testo per broadcast
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Impostazioni punti Fidelity -->
+      <div id="fidSettingsModal" class="modal" style="display:none">
+        <div class="dash" style="max-width:460px">
+          <header>
+            <h3>Impostazioni punti Fidelity</h3>
+            <button class="x" id="fidSettingsClose" type="button">Chiudi</button>
+          </header>
+          <div class="wrap">
+            <div class="grid2">
+              <div>
+                <label>Punti riparazione computer</label>
+                <input id="cfgPointsRepairPc" type="number" min="0" step="1" />
+              </div>
+              <div>
+                <label>Punti riparazione smartphone</label>
+                <input id="cfgPointsRepairPhone" type="number" min="0" step="1" />
+              </div>
+              <div>
+                <label>Punti Kit 4 cartucce compatibili</label>
+                <input id="cfgPointsKitCartucce" type="number" min="0" step="1" />
+              </div>
+              <div>
+                <label>Punti Toner compatibile</label>
+                <input id="cfgPointsToner" type="number" min="0" step="1" />
+              </div>
+              <div>
+                <label>Punti attivazione linea fissa</label>
+                <input id="cfgPointsFisso" type="number" min="0" step="1" />
+              </div>
+              <div>
+                <label>Punti attivazione SIM mobile</label>
+                <input id="cfgPointsSim" type="number" min="0" step="1" />
+              </div>
+              <div>
+                <label>Punti attivazione Luce &amp; Gas</label>
+                <input id="cfgPointsEnergia" type="number" min="0" step="1" />
+              </div>
+              <div>
+                <label>Punti pratica smartphone a rate</label>
+                <input id="cfgPointsRate" type="number" min="0" step="1" />
+              </div>
+              <div>
+                <label>Punti recensione 5⭐ Google</label>
+                <input id="cfgPointsReview" type="number" min="0" step="1" />
+              </div>
+            </div>
+
+            <button id="fidSettingsSave" class="btn ok" style="margin-top:14px;width:100%">
+              Salva impostazioni Fidelity
+            </button>
+          </div>
+        </div>
       </div>
 
       <div id="filtersRow" class="toolbar-filters" style="display:none">
@@ -604,14 +798,61 @@
     const GAIN_ENERGIA = 150;
     const GAIN_RATE    = 45;
 
-    const POINTS_REPAIR_PC     = 50;
-    const POINTS_REPAIR_PHONE  = 25;
-    const POINTS_SIM           = 30;
-    const POINTS_FISSO         = 80;
-    const POINTS_ENERGIA       = 100;
-    const POINTS_RATE          = 40;
+    // Valori base punti Fidelity (configurabili da pannello impostazioni)
+    let POINTS_REPAIR_PC     = 50;
+    let POINTS_REPAIR_PHONE  = 25;
+    let POINTS_SIM           = 30;
+    let POINTS_FISSO         = 80;
+    let POINTS_ENERGIA       = 100;
+    let POINTS_RATE          = 40;
+    let POINTS_KIT_CARTUCCE  = 5;
+    let POINTS_TONER_COMP    = 10;
+    let POINTS_REVIEW_5STAR  = 40;
 
     const RADAR_WARNING_DAYS   = 3; // giorni prima per il giallo
+
+    const FIDELITY_CFG_KEY = 'relong_fid_points_v1';
+
+    function loadFidelityConfig(){
+      try{
+        const raw = localStorage.getItem(FIDELITY_CFG_KEY);
+        if(!raw) return {};
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === 'object' ? parsed : {};
+      }catch(e){
+        console.warn('Errore lettura config Fidelity', e);
+        return {};
+      }
+    }
+
+    function saveFidelityConfig(cfg){
+      try{
+        localStorage.setItem(FIDELITY_CFG_KEY, JSON.stringify(cfg||{}));
+      }catch(e){
+        console.warn('Errore salvataggio config Fidelity', e);
+      }
+    }
+
+    function applyFidelityConfig(){
+      const cfg = loadFidelityConfig();
+      if(!cfg) return;
+      const num = (v, def)=>{
+        const n = Number(v);
+        return Number.isFinite(n) && n>=0 ? n : def;
+      };
+      POINTS_REPAIR_PC    = num(cfg.POINTS_REPAIR_PC,    POINTS_REPAIR_PC);
+      POINTS_REPAIR_PHONE = num(cfg.POINTS_REPAIR_PHONE, POINTS_REPAIR_PHONE);
+      POINTS_SIM          = num(cfg.POINTS_SIM,          POINTS_SIM);
+      POINTS_FISSO        = num(cfg.POINTS_FISSO,        POINTS_FISSO);
+      POINTS_ENERGIA      = num(cfg.POINTS_ENERGIA,      POINTS_ENERGIA);
+      POINTS_RATE         = num(cfg.POINTS_RATE,         POINTS_RATE);
+      POINTS_KIT_CARTUCCE = num(cfg.POINTS_KIT_CARTUCCE, POINTS_KIT_CARTUCCE);
+      POINTS_TONER_COMP   = num(cfg.POINTS_TONER_COMP,   POINTS_TONER_COMP);
+      POINTS_REVIEW_5STAR = num(cfg.POINTS_REVIEW_5STAR, POINTS_REVIEW_5STAR);
+    }
+
+    // Applichiamo subito eventuale configurazione salvata
+    applyFidelityConfig();
 
     function addFidelityMovement(it, code, label, delta){
       delta = Number(delta || 0);
@@ -640,6 +881,26 @@
     function showToast(t, type='ok'){
       const w=$('#toast'); const el=document.createElement('div'); el.className='toast '+(type==='ok'?'ok':type==='err'?'err':''); el.textContent=t; w.appendChild(el); setTimeout(()=>el.remove(), 3600);
     }
+
+    function showPointFloat(btn, pts){
+      try{
+        const rect = btn.getBoundingClientRect();
+        const f = document.createElement('div');
+        f.className = 'pt-float';
+        f.textContent = '+' + pts + ' pt';
+        document.body.appendChild(f);
+        f.style.left = (rect.left + rect.width/2) + 'px';
+        f.style.top  = (rect.top - 4) + 'px';
+        requestAnimationFrame(()=>{
+          f.style.transform = 'translateY(-26px)';
+          f.style.opacity = '0';
+        });
+        setTimeout(()=>{
+          if(document.body.contains(f)) f.remove();
+        }, 900);
+      }catch(e){}
+    }
+
 
     // Overlay temporanea con testo copiabile
     function showTempMessage(text){
@@ -852,7 +1113,72 @@ ${cardUrl}`;
       return walink(it.phone, t);
     }
 
-    function waWelcomeWithCard(it){
+            function waFidelityOperation(it, ctx){
+      const cardUrl = `${FIDELITY_URL}?id=${encodeURIComponent(it.id)}`;
+      const total = Number(it.points || 0) || 0;
+      const isNew = !!ctx.isNew;
+      const premium = ctx.premiumInfo || null;
+      const ops = Array.isArray(ctx.ops) ? ctx.ops : [];
+
+      // Costruzione descrizione operazione
+      let opLine = '';
+      if(premium){
+        opLine = `per il tuo acquisto: ${premium.desc} 🛒`;
+      } else if(ops.length === 1){
+        opLine = `per la tua operazione: ${ops[0].label} ✅`;
+      } else if(ops.length > 1){
+        const labels = ops.map(o => o.label).join(', ');
+        opLine = `per le tue operazioni: ${labels} ✅`;
+      } else {
+        opLine = 'per la tua operazione presso Re Long ✅';
+      }
+
+      // Dettaglio punti
+      let pointsLines = [];
+      if(isNew){
+        pointsLines.push('• 20 punti di benvenuto 🎁');
+      }
+      ops.forEach(o => {
+        if(o.pts > 0){
+          pointsLines.push(`• ${o.pts} punti per ${o.label}`);
+        }
+      });
+      if(premium && premium.pts > 0 && !ops.some(o => o.key === 'premium')){
+        pointsLines.push(`• ${premium.pts} punti per il tuo acquisto`);
+      }
+
+      let body = '';
+      if(isNew){
+        body =
+`Ti ringraziamo ${opLine}
+
+Ti abbiamo attivato la Fidelity Card Re Long con:
+${pointsLines.join('\n')}
+
+In totale ora hai ${total} punti Fidelity disponibili.`;
+      } else {
+        if(pointsLines.length === 0){
+          pointsLines.push('• Il tuo saldo Fidelity è stato aggiornato.');
+        }
+        body =
+`Grazie ${opLine}
+
+${pointsLines.join('\n')}
+Il tuo saldo totale aggiornato è di ${total} punti.`;
+      }
+
+      const t =
+`Ciao ${it.name}, sono Alessandro di Re Long (${RELONG_PHONE}).
+
+${body}
+
+Puoi controllare i tuoi punti e le promo dedicate qui:
+${cardUrl}`;
+
+      return walink(it.phone, t);
+    }
+
+function waWelcomeWithCard(it){
       const cardUrl = `${FIDELITY_URL}?id=${encodeURIComponent(it.id)}`;
       const t =
 `Ciao ${it.name}, sono Alessandro di Re Long (${RELONG_PHONE}).
@@ -865,8 +1191,8 @@ ${cardUrl}`;
     }
 
     const REMINDER_OFFSETS=[15,30,45,60,75];
-    const REM_TYPES=['sim','energia','gas','fissomobile','rate'];
-    const typeLabel={ sim:'SIM', energia:'Energia', gas:'Gas', fissomobile:'Fisso + Mobile', rate:'Smartphone a rate', followup:'Richiamo' };
+    const REM_TYPES=['sim','energia','gas','fissomobile','rate','review'];
+    const typeLabel={ sim:'SIM', energia:'Energia', gas:'Gas', fissomobile:'Fisso + Mobile', rate:'Smartphone a rate', followup:'Richiamo', review:'Recensioni' };
 
     const complementByKey={
       sim:        ['energia','fissomobile','rate'],
@@ -875,6 +1201,7 @@ ${cardUrl}`;
       fisso:      ['sim','energia','rate'],
       rate:       ['energia','sim','fissomobile'],
       pacchi:     ['sim','energia','fissomobile','rate'],
+      premium:    ['sim','energia','fissomobile','rate'],
       riparazione:['sim','energia','fissomobile','rate'],
       preventivi: []
     };
@@ -894,6 +1221,8 @@ ${cardUrl}`;
       }
       // Forziamo sempre il GAS nel radar servizi
       set.add('gas');
+      // E forziamo sempre anche la richiesta recensione
+      set.add('review');
       return [...set];
     }
 
@@ -938,6 +1267,7 @@ ${cardUrl}`;
         case 'gas':         return waPacchiGas(it.name,it.phone);
         case 'fissomobile': return waPacchiFisso(it.name,it.phone);
         case 'rate':        return waPacchiRate(it.name,it.phone);
+        case 'review':      return waReview(it.name,it.phone);
         case 'followup':    return waPacchiMemo(it.name,it.phone);
         default:            return waPacchiMemo(it.name,it.phone);
       }
@@ -1032,6 +1362,9 @@ ${cardUrl}`;
       if(!name || !phone || activeSet.size===0) return;
 
       let found=findByPhone(phone) || findByName(name);
+      let isNew = false;
+      let premiumInfo = null;
+      const sessionOps = [];
       if(found){
         if(!found.phone) found.phone = phone;
         if(!found.name)  found.name  = name;
@@ -1052,11 +1385,10 @@ ${cardUrl}`;
           pointsMovements:[]
         };
 
+        isNew = true;
+
         // 20 pt benvenuto solo al primo inserimento
         addFidelityMovement(found, 'welcome-20', 'Bonus benvenuto Fidelity', 20);
-        try{
-          window.open(waWelcomeWithCard(found),'_blank','noopener');
-        }catch{}
         items.push(found);
       }
 
@@ -1104,8 +1436,36 @@ ${cardUrl}`;
 
           if(pts > 0){
             addFidelityMovement(found, code, label, pts);
+            sessionOps.push({ key:k, label, pts });
           }
         });
+      }
+
+      // Gestione acquisti premium (punti personalizzati)
+      if(activeSet.has('premium')){
+        const desc = prompt('Che acquisto ha effettuato il cliente? (es. Tastiera, Stampante, Notebook...)');
+        if(desc !== null){
+          const trimmedDesc = String(desc).trim();
+          if(!trimmedDesc){
+            showToast('Descrizione acquisto non valida. Punti non assegnati','err');
+          } else {
+            const ptsStr = prompt('Quanti punti assegnare per questo acquisto?', '50');
+            if(ptsStr !== null){
+              const normalizedPtsStr = String(ptsStr).replace(',', '.');
+              const pts = Number(normalizedPtsStr);
+              if(!Number.isFinite(pts) || pts <= 0){
+                showToast('Quantità punti non valida. Punti non assegnati','err');
+              } else {
+                const code = 'premium-' + Date.now();
+                const label = 'Acquisto premium: ' + trimmedDesc;
+                addFidelityMovement(found, code, label, pts);
+                premiumInfo = { desc: trimmedDesc, pts };
+                sessionOps.push({ key:'premium', label, pts });
+                showToast('Aggiunti ' + pts + ' punti per acquisto premium','ok');
+              }
+            }
+          }
+        }
       }
 
       // Gestione riparazione
@@ -1134,9 +1494,7 @@ ${cardUrl}`;
         found.quoteStatus = quote ? 'pending' : null;
         found.deliveredAt = null;
 
-        try{
-          window.open(waRepairIntakeWithCard(found),'_blank','noopener');
-        }catch{}
+        // Messaggio WhatsApp gestito dal flusso Fidelity universale
       }
 
       // Gestione pacchi
@@ -1146,6 +1504,20 @@ ${cardUrl}`;
           window.open(waPacchiReceivedWithCard(found),'_blank','noopener');
         }catch{}
       }
+
+      // Messaggi WhatsApp automatici per Fidelity / tutte le operazioni
+      try{
+        if(premiumInfo || sessionOps.length){
+          window.open(
+            waFidelityOperation(found, {
+              isNew,
+              premiumInfo,
+              ops: sessionOps
+            }),
+            '_blank','noopener'
+          );
+        }
+      }catch{}
 
       ensureReminders(found);
       found.updatedAt=new Date().toISOString();
@@ -1197,43 +1569,153 @@ ${cardUrl}`;
     const searchInput = document.getElementById('searchInput');
     searchInput.addEventListener('input', render);
 
-    // Operazione Fidelity massiva -> overlay temporanea
+    // Operazioni Fidelity massiva, WhatsApp massivo e impostazioni punti
     const bulkBtn = document.getElementById('bulkFidelity');
+    const bulkModal = document.getElementById('bulkModal');
+    const bulkClose = document.getElementById('bulkClose');
+    const bulkConfirm = document.getElementById('bulkConfirm');
 
+    const waBtn = document.getElementById('waBroadcast');
+    const waModal = document.getElementById('waModal');
+    const waClose = document.getElementById('waClose');
+    const waConfirm = document.getElementById('waConfirm');
+    const waTextArea = document.getElementById('waBroadcastText');
+
+    const fidSettingsBtn = document.getElementById('fidSettings');
+    const fidSettingsModal = document.getElementById('fidSettingsModal');
+    const fidSettingsClose = document.getElementById('fidSettingsClose');
+    const fidSettingsSave = document.getElementById('fidSettingsSave');
+
+    // Helpers per configurazione Fidelity
+    function getFidelityConfigCurrent(){
+      const cfg = loadFidelityConfig();
+      return cfg && typeof cfg === 'object' ? cfg : {};
+    }
+
+    function fillFidelitySettingsModal(){
+      const cfg = getFidelityConfigCurrent();
+      const val = (key, def)=>{
+        const n = Number(key in cfg ? cfg[key] : def);
+        return Number.isFinite(n) && n>=0 ? n : def;
+      };
+      document.getElementById('cfgPointsRepairPc').value     = val('POINTS_REPAIR_PC',    POINTS_REPAIR_PC);
+      document.getElementById('cfgPointsRepairPhone').value  = val('POINTS_REPAIR_PHONE', POINTS_REPAIR_PHONE);
+      document.getElementById('cfgPointsKitCartucce').value  = val('POINTS_KIT_CARTUCCE', POINTS_KIT_CARTUCCE);
+      document.getElementById('cfgPointsToner').value        = val('POINTS_TONER_COMP',   POINTS_TONER_COMP);
+      document.getElementById('cfgPointsFisso').value        = val('POINTS_FISSO',        POINTS_FISSO);
+      document.getElementById('cfgPointsSim').value          = val('POINTS_SIM',          POINTS_SIM);
+      document.getElementById('cfgPointsEnergia').value      = val('POINTS_ENERGIA',      POINTS_ENERGIA);
+      document.getElementById('cfgPointsRate').value         = val('POINTS_RATE',         POINTS_RATE);
+      document.getElementById('cfgPointsReview').value       = val('POINTS_REVIEW_5STAR', POINTS_REVIEW_5STAR);
+    }
+
+    function saveFidelitySettingsFromModal(){
+      const cfg = getFidelityConfigCurrent();
+      const read = (id, def)=>{
+        const el = document.getElementById(id);
+        if(!el) return def;
+        const n = Number(el.value);
+        return Number.isFinite(n) && n>=0 ? n : def;
+      };
+      cfg.POINTS_REPAIR_PC    = read('cfgPointsRepairPc',    POINTS_REPAIR_PC);
+      cfg.POINTS_REPAIR_PHONE = read('cfgPointsRepairPhone', POINTS_REPAIR_PHONE);
+      cfg.POINTS_KIT_CARTUCCE = read('cfgPointsKitCartucce', POINTS_KIT_CARTUCCE);
+      cfg.POINTS_TONER_COMP   = read('cfgPointsToner',       POINTS_TONER_COMP);
+      cfg.POINTS_FISSO        = read('cfgPointsFisso',       POINTS_FISSO);
+      cfg.POINTS_SIM          = read('cfgPointsSim',         POINTS_SIM);
+      cfg.POINTS_ENERGIA      = read('cfgPointsEnergia',     POINTS_ENERGIA);
+      cfg.POINTS_RATE         = read('cfgPointsRate',        POINTS_RATE);
+      cfg.POINTS_REVIEW_5STAR = read('cfgPointsReview',      POINTS_REVIEW_5STAR);
+      saveFidelityConfig(cfg);
+      applyFidelityConfig();
+    }
+
+    // 👉 Apertura / chiusura modal Fidelity massiva
     bulkBtn.addEventListener('click', ()=>{
-      const val = prompt('Quanti punti vuoi aggiungere/sottrarre a TUTTI i clienti? (es. 10 o -20)');
-      if(val===null) return;
-      const delta = parseInt(String(val).trim(),10);
-      if(!Number.isFinite(delta) || delta===0){
-        alert('Valore non valido.');
+      bulkModal.style.display = 'grid';
+    });
+
+    bulkClose.addEventListener('click', ()=>{
+      bulkModal.style.display = 'none';
+    });
+
+    bulkConfirm.addEventListener('click', ()=>{
+      const delta = parseInt(document.getElementById('bulkPoints').value, 10);
+      const label = (document.getElementById('bulkReason').value || '').trim();
+      if(!Number.isFinite(delta) || delta === 0){
+        alert('Valore punti non valido');
         return;
       }
-      const label = prompt('Descrizione del movimento (es. Promo Black Friday, correzione errore, ecc.)','Promo speciale Re Long') || 'Operazione di massa Fidelity';
+      if(!label){
+        alert('Inserisci una motivazione');
+        return;
+      }
+
       const now = new Date().toISOString();
-      const updated = [];
       const ts = Date.now();
+      let count = 0;
 
       items.forEach((it, idx)=>{
         ensureBaseFields(it);
         addFidelityMovement(it, `bulk-${ts}-${idx}`, label, delta);
         it.updatedAt = now;
-        updated.push(it);
+        count++;
       });
 
-      if(updated.length){
-        saveLocal(); saveToGitHub();
-        const signWord = delta>0 ? 'accreditato' : 'stornato';
-        const msg =
-`Ciao 👋
+      saveLocal(); saveToGitHub();
+      bulkModal.style.display = 'none';
+
+      const signWord = delta>0 ? 'accreditato' : 'stornato';
+      const msg = `Ciao 👋
 sono Alessandro di Re Long (${RELONG_PHONE}).
 Ti abbiamo ${signWord} ${Math.abs(delta)} punti sulla Fidelity Card Re Long per: ${label}.
 
 Per il saldo aggiornato scrivimi qui su WhatsApp o passa in negozio.`;
-        showTempMessage(msg);
-        showToast(`Operazione Fidelity applicata a ${updated.length} clienti ✅`);
-      } else {
-        showToast('Nessun cliente trovato','err');
+
+      showTempMessage(msg);
+      showToast(`Operazione Fidelity applicata a ${count} clienti ✅`);
+    });
+
+    // 👉 Apertura / chiusura modal Messaggio WhatsApp massivo
+    waBtn.addEventListener('click', ()=>{
+      if(!waTextArea.value.trim()){
+        waTextArea.value = `Ciao 👋
+sono Alessandro di Re Long (${RELONG_PHONE}).
+Ti auguro Buone Feste 🎄 e ti ricordo che per smartphone, energia e servizi dedicati puoi scrivermi qui su WhatsApp o passare in negozio.`;
       }
+      waModal.style.display = 'grid';
+    });
+
+    waClose.addEventListener('click', ()=>{
+      waModal.style.display = 'none';
+    });
+
+    waConfirm.addEventListener('click', ()=>{
+      const msg = (waTextArea.value || '').trim();
+      if(!msg){
+        alert('Inserisci un testo per il messaggio');
+        return;
+      }
+
+      waModal.style.display = 'none';
+      showTempMessage(msg);
+      showToast('Testo WhatsApp pronto per broadcast ✅');
+    });
+
+    // 👉 Apertura / chiusura impostazioni punti Fidelity
+    fidSettingsBtn.addEventListener('click', ()=>{
+      fillFidelitySettingsModal();
+      fidSettingsModal.style.display = 'grid';
+    });
+
+    fidSettingsClose.addEventListener('click', ()=>{
+      fidSettingsModal.style.display = 'none';
+    });
+
+    fidSettingsSave.addEventListener('click', ()=>{
+      saveFidelitySettingsFromModal();
+      fidSettingsModal.style.display = 'none';
+      showToast('Impostazioni Fidelity salvate ✅');
     });
 
     function btn(label,fn){
@@ -1268,7 +1750,8 @@ Per il saldo aggiornato scrivimi qui su WhatsApp o passa in negozio.`;
         { type:'fissomobile',label:'Fisso / FTTH',icon:'🏠📡' },
         { type:'energia',    label:'Energia',      icon:'⚡' },
         { type:'gas',        label:'Gas',          icon:'🔥' },
-        { type:'rate',       label:'Rate',         icon:'📱' }
+        { type:'rate',       label:'Rate',         icon:'📱' },
+        { type:'review',     label:'Recensioni',   icon:'⭐' }
       ];
 
       const actSet = new Set(it.activated || []);
@@ -1467,11 +1950,12 @@ Per il saldo aggiornato scrivimi qui su WhatsApp o passa in negozio.`;
         svcRow.appendChild(lblSA);
 
         const servicesList=[
-          { key:'sim',        label:'SIM',          icon:'📶' },
-          { key:'fissomobile',label:'Fisso / FTTH',icon:'🏠📡' },
-          { key:'energia',    label:'Energia',      icon:'⚡' },
-          { key:'gas',        label:'Gas',          icon:'🔥' },
-          { key:'rate',       label:'Rate',         icon:'📱' }
+          { key:'sim',        label:'SIM',              icon:'📶' },
+          { key:'fissomobile',label:'Fisso / FTTH',     icon:'🏠📡' },
+          { key:'energia',    label:'Energia',          icon:'⚡' },
+          { key:'gas',        label:'Gas',              icon:'🔥' },
+          { key:'rate',       label:'Rate',             icon:'📱' },
+          { key:'premium',    label:'Acquisti premium', icon:'💎' }
         ];
 
         const actSet=new Set(it.activated || []);
@@ -1703,13 +2187,22 @@ Per il saldo aggiornato scrivimi qui su WhatsApp o passa in negozio.`;
                 const code  = 'repair-' + (devType || 'altro') + '-delivered';
                 const label = 'Riparazione ' + (devType || 'dispositivo') + ' completata';
                 addFidelityMovement(it, code, label, delta);
+                try{
+                  window.open(
+                    waFidelityOperation(it, {
+                      isNew:false,
+                      premiumInfo:null,
+                      ops:[{ key:'riparazione', label, pts: delta }]
+                    }),
+                    '_blank','noopener'
+                  );
+                }catch{}
               }
 
               it.updatedAt = new Date().toISOString();
               saveLocal();
               saveToGitHub();
               render();
-              try{ window.open(waDeliveredConfirm(it.name, it.phone),'_blank','noopener'); }catch{}
 
               if(dashModal && dashModal.classList.contains('on')) updateDashboard();
             }));
@@ -1784,7 +2277,60 @@ Per il saldo aggiornato scrivimi qui su WhatsApp o passa in negozio.`;
         fidRow.appendChild(bOpenCard);
         actions.appendChild(fidRow);
 
-        // Storico punti a scomparsa
+        // Righe rapide per servizi che generano punti (cliccabili più volte)
+        const quickRow = document.createElement('div');
+        quickRow.className = 'r-line fid-quick';
+
+        const quickDefs = [
+          { key:'repair-pc',         icon:'🖥️', label:'Rip. PC',          cfg:'POINTS_REPAIR_PC',    reason:'Riparazione computer completata' },
+          { key:'repair-phone',      icon:'📱', label:'Rip. Smartphone',   cfg:'POINTS_REPAIR_PHONE', reason:'Riparazione smartphone completata' },
+          { key:'kit-cartucche',     icon:'🖨️', label:'Kit 4 cartucce',    cfg:'POINTS_KIT_CARTUCCE',  reason:'Acquisto Kit 4 cartucce compatibili' },
+          { key:'toner',             icon:'🖨️', label:'Toner compat.',     cfg:'POINTS_TONER_COMP',    reason:'Acquisto Toner compatibile' },
+          { key:'sim',               icon:'📶', label:'SIM mobile',        cfg:'POINTS_SIM',          reason:'Attivazione SIM mobile' },
+          { key:'fisso',             icon:'🏠', label:'Linea fissa',       cfg:'POINTS_FISSO',        reason:'Attivazione linea fissa' },
+          { key:'energia',           icon:'⚡', label:'Luce & Gas',        cfg:'POINTS_ENERGIA',      reason:'Attivazione Luce & Gas' },
+          { key:'rate',              icon:'📱', label:'Smartphone a rate', cfg:'POINTS_RATE',         reason:'Pratica smartphone a rate' },
+          { key:'review-5star-extra',icon:'⭐', label:'Recensione 5⭐',     cfg:'POINTS_REVIEW_5STAR', reason:'Recensione 5 stelle Google' }
+        ];
+
+        quickDefs.forEach(def=>{
+          const btn = document.createElement('button');
+          btn.type='button';
+          btn.className='fid-quick-btn';
+          btn.innerHTML = `<span class="icon">${def.icon}</span><span>${def.label}</span>`;
+          btn.addEventListener('click', ()=>{
+            let pts = 0;
+            switch(def.cfg){
+              case 'POINTS_REPAIR_PC':    pts = POINTS_REPAIR_PC; break;
+              case 'POINTS_REPAIR_PHONE': pts = POINTS_REPAIR_PHONE; break;
+              case 'POINTS_KIT_CARTUCCE': pts = POINTS_KIT_CARTUCCE; break;
+              case 'POINTS_TONER_COMP':   pts = POINTS_TONER_COMP; break;
+              case 'POINTS_FISSO':        pts = POINTS_FISSO; break;
+              case 'POINTS_SIM':          pts = POINTS_SIM; break;
+              case 'POINTS_ENERGIA':      pts = POINTS_ENERGIA; break;
+              case 'POINTS_RATE':         pts = POINTS_RATE; break;
+              case 'POINTS_REVIEW_5STAR': pts = POINTS_REVIEW_5STAR; break;
+            }
+            pts = Number(pts || 0);
+            if(!Number.isFinite(pts) || pts<=0){
+              alert('Configura prima i punti corretti nelle impostazioni Fidelity.');
+              return;
+            }
+            if(!confirm(`Confermi l\'accredito di ${pts} punti per: ${def.label}?`)){
+              return;
+            }
+            const code = `${def.key}-auto-` + Date.now();
+            addFidelityMovement(it, code, def.reason, pts);
+            it.updatedAt = new Date().toISOString();
+            showPointFloat(btn, pts);
+            saveLocal(); saveToGitHub(); render();
+          });
+          quickRow.appendChild(btn);
+        });
+
+        actions.appendChild(quickRow);
+
+// Storico punti a scomparsa
         if(Array.isArray(it.pointsMovements) && it.pointsMovements.length){
           const headerPts=document.createElement('button');
           headerPts.type='button';
