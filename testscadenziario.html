@@ -388,20 +388,26 @@
       margin-top:8px;
     }
     .fid-quick-btn{
-      border-radius:9999px;
-      border:1px solid rgba(255,255,255,.45);
-      background:linear-gradient(135deg,#ff0000,#ff7b00);
-      color:#fff;
-      padding:4px 12px;
-      font-size:11px;
-      display:inline-flex;
-      align-items:center;
-      gap:5px;
-      cursor:pointer;
-      box-shadow:0 4px 14px rgba(0,0,0,.6);
-      white-space:nowrap;
-      transition:.18s ease;
-    }
+  border-radius:9999px;
+  border:1px solid transparent;
+  background:transparent;
+  padding:4px 12px;
+  font-size:11px;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:.18s ease;
+  color:#ffffff;
+  box-shadow:none;
+}
+
+/* bordo Vodafone → Fastweb */
+.fid-quick-btn{
+  border-image: linear-gradient(135deg, #ff0000, #ff7b00) 1;
+}
+
     .fid-quick-btn:hover{
       transform:translateY(-1px);
       box-shadow:0 6px 18px rgba(0,0,0,.8);
