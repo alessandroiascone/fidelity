@@ -113,6 +113,7 @@
     .item{border:1px solid var(--stroke);border-radius:16px;background:#0a0d14;margin-bottom:10px;overflow:hidden}
     .item .head{width:100%; display:flex; gap:10px; alignitems:center;padding:12px 14px;background:transparent;color:#eaf2ff;border:0;cursor:pointer;font-weight:800;letter-spacing:.2px;text-align:left;justify-content:space-between}
     .details{padding:12px 14px; border-top:1px solid var(--stroke)}
+    .fid-history{display:none!important}
     .r-line{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px}
     .wa-btn{font-size:12px;padding:6px 8px;border-radius:999px;border:1px solid rgba(0,140,255,.22);background:linear-gradient(180deg,rgba(0,140,255,.08),rgba(0,140,255,.02));color:#dbeaff;text-decoration:none;display:inline-flex;gap:6px;align-items:center}
     .wa-btn.ok{background:linear-gradient(135deg,#1fae60,var(--ok));color:#071b10;border-color:transparent}
@@ -765,6 +766,7 @@ sono Alessandro di Re Long (08119578844)..."></textarea>
         <div class="r-line services"></div>
         <div class="r-line actions"></div>
         <div class="r-line points"></div>
+        <div class="r-line fid-history"></div>
         <div class="r-line reminders"></div>
         <div class="r-line review"></div>
       </div>
@@ -2075,6 +2077,7 @@ function render(){
         const services=clone.querySelector('.services');
         const actions=clone.querySelector('.actions');
         const points=clone.querySelector('.points');
+        const fidHistory=clone.querySelector('.fid-history');
         const reminders=clone.querySelector('.reminders');
         const review=clone.querySelector('.review');
 
@@ -2394,6 +2397,34 @@ function render(){
         // Tasto elimina SEMPRE disponibile
         actions.append(btnDelete(it));
 
+        // Storico punti Fidelity (ultimi movimenti)
+        if(fidHistory){
+          const movs = Array.isArray(it.pointsMovements) ? it.pointsMovements.slice() : [];
+          if(!movs.length){
+            fidHistory.style.display = 'none';
+          } else {
+            fidHistory.style.display = '';
+            movs.sort((a,b)=> new Date(b.at||0) - new Date(a.at||0));
+            const latest = movs.slice(0,5);
+            fidHistory.innerHTML = '<strong>Storico Fidelity (ultimi movimenti):</strong>';
+            const ul = document.createElement('ul');
+            ul.style.margin = '4px 0 0';
+            ul.style.paddingLeft = '18px';
+            ul.style.fontSize = '11px';
+            ul.style.color = 'var(--muted)';
+            latest.forEach(m=>{
+              const li = document.createElement('li');
+              const dt = m.at ? fmt(m.at) : '';
+              const sign = m.delta>0 ? '+' : '';
+              li.textContent = dt
+                ? dt + ' – ' + m.label + ' (' + sign + m.delta + ' pt)'
+                : m.label + ' (' + sign + m.delta + ' pt)';
+              ul.appendChild(li);
+            });
+            fidHistory.appendChild(ul);
+          }
+        }
+
         // Strumenti Fidelity singolo cliente
         const fidRow = document.createElement('div');
         fidRow.className = 'r-line fid-actions';
@@ -2505,14 +2536,26 @@ function render(){
           boxPts.style.display='none';
           boxPts.style.flexDirection='column';
 
-          const last=it.pointsMovements.slice(-10).reverse();
-          last.forEach(m=>{
-            const t=document.createElement('div');
-            t.className='badge-mini';
+          const movs = it.pointsMovements.slice().sort((a,b)=> new Date(b.at||0) - new Date(a.at||0));
+          const latest = movs.slice(0,10);
+
+          const ul = document.createElement('ul');
+          ul.style.margin = '4px 0 0';
+          ul.style.paddingLeft = '18px';
+          ul.style.fontSize = '11px';
+          ul.style.color = 'var(--muted)';
+
+          latest.forEach(m=>{
+            const li = document.createElement('li');
+            const dt = m.at ? fmt(m.at) : '';
             const sign = m.delta>0?'+':'';
-            t.textContent=`${sign}${m.delta} pt • ${m.label}`;
-            boxPts.appendChild(t);
+            li.textContent = dt
+              ? dt + ' – ' + m.label + ' (' + sign + m.delta + ' pt)'
+              : m.label + ' (' + sign + m.delta + ' pt)';
+            ul.appendChild(li);
           });
+
+          boxPts.appendChild(ul);
 
           headerPts.addEventListener('click',()=>{
             const open = boxPts.style.display==='none';
@@ -2523,6 +2566,7 @@ function render(){
           points.appendChild(headerPts);
           points.appendChild(boxPts);
         }
+
 
         // Sezione recensioni
         if(it.postReviewAt){
