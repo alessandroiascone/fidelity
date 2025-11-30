@@ -2340,6 +2340,19 @@ function render(){
               it.postReviewAt = addDays(new Date(), 3).toISOString();
               it.postReviewSent = false;
 
+              // Chiedi l'UTILE netto della riparazione per la dashboard
+              let prev = '';
+              if(typeof it.repairProfit === 'number' && !Number.isNaN(it.repairProfit) && it.repairProfit>0){
+                prev = String(it.repairProfit);
+              }
+              const input = prompt('Inserisci il valore UTILE (solo guadagno netto) incassato per questa riparazione:', prev);
+              if(input !== null){
+                const val = Number(input.replace(',','.'));
+                if(Number.isFinite(val) && val>=0){
+                  it.repairProfit = val;
+                }
+              }
+
               const devType = (it.acceptance && it.acceptance.type ? String(it.acceptance.type).toLowerCase() : '');
               let delta = 0;
               if(devType === 'computer'){
@@ -2704,7 +2717,7 @@ function render(){
       });
 
       let k_pacchi=0,k_sim=0,k_fisso=0,k_energia=0,k_rate=0,k_rip=0,k_prev=0;
-      let e_pacchi=0,e_sim=0,e_fisso=0,e_energia=0,e_rate=0;
+      let e_pacchi=0,e_sim=0,e_fisso=0,e_energia=0,e_rate=0,e_rip=0;
 
       data.forEach(it=>{
         if(it.fromPacchi){
@@ -2715,7 +2728,13 @@ function render(){
         if(act.has('fisso') || act.has('fissomobile')){ k_fisso++; e_fisso+=GAIN_FISSO; }
         if(act.has('energia') || act.has('gas')){ k_energia++; e_energia+=GAIN_ENERGIA; }
         if(act.has('rate')){ k_rate++; e_rate+=GAIN_RATE; }
-        if(it.acceptance){ k_rip++; }
+        if(it.repairStatus==='consegnato'){
+          const profit = Number(it.repairProfit || 0);
+          if(Number.isFinite(profit) && profit>0){
+            k_rip++;
+            e_rip += profit;
+          }
+        }
 
         // Tutti i preventivi aperti (pending o sent)
         if(it.quoteStatus && it.quoteStatus!=='accepted'){ k_prev++; }
@@ -2724,7 +2743,7 @@ function render(){
       return {
         count:data.length,
         k_pacchi,k_sim,k_fisso,k_energia,k_rate,k_rip,k_prev,
-        e_pacchi,e_sim,e_fisso,e_energia,e_rate
+        e_pacchi,e_sim,e_fisso,e_energia,e_rate,e_rip
       };
     }
 
@@ -2746,9 +2765,10 @@ function render(){
       document.getElementById('e_fisso').textContent=`€ ${s.e_fisso.toFixed(0)}`;
       document.getElementById('e_energia').textContent=`€ ${s.e_energia.toFixed(0)}`;
       document.getElementById('e_rate').textContent=`€ ${s.e_rate.toFixed(0)}`;
+      document.getElementById('e_rip').textContent=`€ ${s.e_rip.toFixed(0)}`;
 
       document.getElementById('k_total').textContent=`Totale clienti: ${s.count}`;
-      const gainTotal = s.e_pacchi+s.e_sim+s.e_fisso+s.e_energia+s.e_rate;
+      const gainTotal = s.e_pacchi+s.e_sim+s.e_fisso+s.e_energia+s.e_rate+s.e_rip;
       document.getElementById('k_total_gain').textContent=`Guadagno totale: € ${gainTotal.toFixed(0)}`;
     }
 
