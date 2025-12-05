@@ -782,9 +782,9 @@ sono Alessandro di Re Long (08119578844)..."></textarea>
       <div class="wrap">
         <div class="dash-period-bar">
           <span class="label">Periodo</span>
-          <button type="button" class="toggle dash-period active" data-period="all">Tutto</button>
+          <button type="button" class="toggle dash-period" data-period="all">Tutto</button>
           <button type="button" class="toggle dash-period" data-period="today">Oggi</button>
-          <button type="button" class="toggle dash-period" data-period="month">Mese</button>
+          <button type="button" class="toggle dash-period active" data-period="month">Mese</button>
           <button type="button" class="toggle dash-period" data-period="range">Intervallo</button>
           <div class="range-wrap" id="rangeWrap" style="display:none">
             <label for="rangeFrom">Dal</label>
@@ -792,6 +792,16 @@ sono Alessandro di Re Long (08119578844)..."></textarea>
             <label for="rangeTo">Al</label>
             <input type="date" id="rangeTo">
           </div>
+        </div>
+        <div class="dash-cat-bar" style="margin-top:10px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <span class="label">Prodotti</span>
+          <button type="button" class="toggle dash-cat active" data-cat="all">Tutti</button>
+          <button type="button" class="toggle dash-cat" data-cat="pacchi">Pacchi</button>
+          <button type="button" class="toggle dash-cat" data-cat="sim">SIM</button>
+          <button type="button" class="toggle dash-cat" data-cat="fisso">Fisso</button>
+          <button type="button" class="toggle dash-cat" data-cat="energia">Energia</button>
+          <button type="button" class="toggle dash-cat" data-cat="rate">Rate</button>
+          <button type="button" class="toggle dash-cat" data-cat="rip">Riparazioni</button>
         </div>
         <div class="kpis">
           <div class="kpi pacchi">
@@ -2160,7 +2170,7 @@ function render(){
         services.appendChild(svcRow);
 
         
-// Storico riparazioni a scomparsa
+        // Storico riparazioni a scomparsa
         const repairs = [];
         let historyCount = 0;
         if(Array.isArray(it.acceptanceHistory)){
@@ -2836,30 +2846,63 @@ function render(){
       };
     }
 
+    
     function updateDashboard(){
-      const active = document.querySelector('.dash-period.active');
-      const period = active ? active.dataset.period : 'all';
-      const s=summarize(period);
+      const periodBtn = document.querySelector('.dash-period.active');
+      const period = periodBtn ? periodBtn.dataset.period : 'month';
+      const s = summarize(period);
 
-      document.getElementById('k_pacchi').textContent=s.k_pacchi;
-      document.getElementById('k_sim').textContent=s.k_sim;
-      document.getElementById('k_fisso').textContent=s.k_fisso;
-      document.getElementById('k_energia').textContent=s.k_energia;
-      document.getElementById('k_rate').textContent=s.k_rate;
-      document.getElementById('k_rip').textContent=s.k_rip;
-      document.getElementById('k_prev').textContent=s.k_prev;
+      const catBtn = document.querySelector('.dash-cat.active');
+      const cat = catBtn ? catBtn.dataset.cat : 'all';
 
-      document.getElementById('e_pacchi').textContent=`€ ${s.e_pacchi.toFixed(0)}`;
-      document.getElementById('e_sim').textContent=`€ ${s.e_sim.toFixed(0)}`;
-      document.getElementById('e_fisso').textContent=`€ ${s.e_fisso.toFixed(0)}`;
-      document.getElementById('e_energia').textContent=`€ ${s.e_energia.toFixed(0)}`;
-      document.getElementById('e_rate').textContent=`€ ${s.e_rate.toFixed(0)}`;
-      document.getElementById('e_rip').textContent=`€ ${s.e_rip.toFixed(0)}`;
+      let {
+        count,
+        k_pacchi,k_sim,k_fisso,k_energia,k_rate,k_rip,k_prev,
+        e_pacchi,e_sim,e_fisso,e_energia,e_rate,e_rip
+      } = s;
 
-      document.getElementById('k_total').textContent=`Totale clienti: ${s.count}`;
-      const gainTotal = s.e_pacchi+s.e_sim+s.e_fisso+s.e_energia+s.e_rate+s.e_rip;
-      document.getElementById('k_total_gain').textContent=`Guadagno totale: € ${gainTotal.toFixed(0)}`;
+      if(cat !== 'all'){
+        if(cat === 'pacchi'){
+          k_sim=0;k_fisso=0;k_energia=0;k_rate=0;k_rip=0;k_prev=0;
+          e_sim=0;e_fisso=0;e_energia=0;e_rate=0;e_rip=0;
+        } else if(cat === 'sim'){
+          k_pacchi=0;k_fisso=0;k_energia=0;k_rate=0;k_rip=0;k_prev=0;
+          e_pacchi=0;e_fisso=0;e_energia=0;e_rate=0;e_rip=0;
+        } else if(cat === 'fisso'){
+          k_pacchi=0;k_sim=0;k_energia=0;k_rate=0;k_rip=0;k_prev=0;
+          e_pacchi=0;e_sim=0;e_energia=0;e_rate=0;e_rip=0;
+        } else if(cat === 'energia'){
+          k_pacchi=0;k_sim=0;k_fisso=0;k_rate=0;k_rip=0;k_prev=0;
+          e_pacchi=0;e_sim=0;e_fisso=0;e_rate=0;e_rip=0;
+        } else if(cat === 'rate'){
+          k_pacchi=0;k_sim=0;k_fisso=0;k_energia=0;k_rip=0;k_prev=0;
+          e_pacchi=0;e_sim=0;e_fisso=0;e_energia=0;e_rip=0;
+        } else if(cat === 'rip'){
+          k_pacchi=0;k_sim=0;k_fisso=0;k_energia=0;k_rate=0;k_prev=0;
+          e_pacchi=0;e_sim=0;e_fisso=0;e_energia=0;e_rate=0;
+        }
+      }
+
+      document.getElementById('k_pacchi').textContent = k_pacchi;
+      document.getElementById('k_sim').textContent    = k_sim;
+      document.getElementById('k_fisso').textContent  = k_fisso;
+      document.getElementById('k_energia').textContent= k_energia;
+      document.getElementById('k_rate').textContent   = k_rate;
+      document.getElementById('k_rip').textContent    = k_rip;
+      document.getElementById('k_prev').textContent   = k_prev;
+
+      document.getElementById('e_pacchi').textContent = `€ ${e_pacchi.toFixed(0)}`;
+      document.getElementById('e_sim').textContent    = `€ ${e_sim.toFixed(0)}`;
+      document.getElementById('e_fisso').textContent  = `€ ${e_fisso.toFixed(0)}`;
+      document.getElementById('e_energia').textContent= `€ ${e_energia.toFixed(0)}`;
+      document.getElementById('e_rate').textContent   = `€ ${e_rate.toFixed(0)}`;
+      document.getElementById('e_rip').textContent    = `€ ${e_rip.toFixed(0)}`;
+
+      document.getElementById('k_total').textContent = `Totale clienti: ${count}`;
+      const gainTotal = e_pacchi+e_sim+e_fisso+e_energia+e_rate+e_rip;
+      document.getElementById('k_total_gain').textContent = `Guadagno totale: € ${gainTotal.toFixed(0)}`;
     }
+
 
     $$('.dash-period').forEach(b=>{
       b.addEventListener('click',()=>{
@@ -2873,6 +2916,13 @@ function render(){
 
     document.getElementById('rangeFrom').addEventListener('change',updateDashboard);
     document.getElementById('rangeTo').addEventListener('change',updateDashboard);
+
+    $$('.dash-cat').forEach(b=>{
+      b.addEventListener('click',()=>{
+        $$('.dash-cat').forEach(x=>x.classList.toggle('active', x===b));
+        updateDashboard();
+      });
+    });
 
     
     // Backup export & import
