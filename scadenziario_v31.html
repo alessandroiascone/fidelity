@@ -1158,13 +1158,17 @@ ${hubUrl}`;
 
     function waPacchiReceivedWithCard(it){
       const cardUrl = `${FIDELITY_URL}?id=${encodeURIComponent(it.id)}`;
+      const hubUrl = 'https://alessandroiascone.github.io/relong-nfc/install-app-relong.html';
       const t =
 `Ciao ${it.name}, sono Alessandro di Re Long (${RELONG_PHONE}).
 Grazie per aver scelto Re Long per la gestione del tuo pacco 📦
 
 Per ringraziarti della fiducia ti omaggiamo della Fidelity Card Re Long con un bonus di benvenuto di 20 punti 🎁
 Clicca per scoprire tutti i dettagli:
-${cardUrl}`;
+${cardUrl}
+
+Se vuoi, puoi anche installare la nostra App Re Long Hub per tenere sotto controllo pacchi, promozioni e contatti:
+${hubUrl}`;
       return walink(it.phone, t);
     }
 
@@ -1549,13 +1553,12 @@ ${cardUrl}`;
         found.quoteStatus = quote ? 'pending' : null;
         found.deliveredAt = null;
 
-        // WhatsApp automatico di presa in carico riparazione + link App Hub
         try{
           window.open(waRepairIntakeWithCard(found),'_blank','noopener');
         }catch(e){}
       }
 
-// Gestione pacchi
+      // Gestione pacchi
       if(activeSet.has('pacchi')){
         found.fromPacchi = true;
         try{
@@ -2156,7 +2159,8 @@ function render(){
 
         services.appendChild(svcRow);
 
-        // Storico riparazioni a scomparsa
+        
+// Storico riparazioni a scomparsa
         const repairs = [];
         let historyCount = 0;
         if(Array.isArray(it.acceptanceHistory)){
@@ -2178,11 +2182,11 @@ function render(){
           boxRep.style.flexDirection='column';
 
           repairs.forEach((r,idx)=>{
-            const line=document.createElement('div');
-            line.style.display='flex';
-            line.style.alignItems='center';
-            line.style.justifyContent='space-between';
-            line.style.gap='6px';
+            const row=document.createElement('div');
+            row.style.display='flex';
+            row.style.alignItems='center';
+            row.style.justifyContent='space-between';
+            row.style.gap='6px';
 
             const d = r.createdAt ? fmt(r.createdAt) : (it.createdAt ? fmt(it.createdAt) : '');
             const prefix = d ? d+' • ' : '';
@@ -2194,7 +2198,11 @@ function render(){
 
             const textSpan = document.createElement('span');
             textSpan.textContent = `${prefix}${r.type||''} ${r.brand||''} ${r.model||''} – ${r.issue||''}${quoteTxt}${descTxt}`;
-            line.appendChild(textSpan);
+            row.appendChild(textSpan);
+
+            const btnWrap = document.createElement('div');
+            btnWrap.style.display='flex';
+            btnWrap.style.gap='4px';
 
             const editBtn = document.createElement('button');
             editBtn.type='button';
@@ -2231,8 +2239,37 @@ function render(){
               render();
             });
 
-            line.appendChild(editBtn);
-            boxRep.appendChild(line);
+            const delBtn = document.createElement('button');
+            delBtn.type='button';
+            delBtn.className='btn';
+            delBtn.textContent='Elimina';
+            delBtn.style.padding='2px 8px';
+            delBtn.style.fontSize='10px';
+            delBtn.style.borderRadius='999px';
+            delBtn.style.backgroundColor='#5b1b1b';
+
+            delBtn.addEventListener('click', ()=>{
+              if(!confirm('Vuoi eliminare questa riparazione dallo storico?')) return;
+
+              if(idx < historyCount && Array.isArray(it.acceptanceHistory)){
+                it.acceptanceHistory.splice(idx,1);
+              } else if(it.acceptance){
+                it.acceptance = null;
+                it.repairStatus = null;
+                it.quoteStatus = null;
+                it.deliveredAt = null;
+              }
+
+              it.updatedAt = new Date().toISOString();
+              saveLocal();
+              saveToGitHub();
+              render();
+            });
+
+            btnWrap.appendChild(editBtn);
+            btnWrap.appendChild(delBtn);
+            row.appendChild(btnWrap);
+            boxRep.appendChild(row);
 
             if(idx === repairs.length-1){
               const chips=document.createElement('div');
@@ -2279,6 +2316,7 @@ function render(){
           services.appendChild(headerRep);
           services.appendChild(boxRep);
         }
+
         if(it.fromPacchi){
           const pacchiBadge=document.createElement('span');
           pacchiBadge.className='badge-mini';
