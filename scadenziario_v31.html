@@ -1103,7 +1103,18 @@ sono Alessandro di Re Long (08119578844)..."></textarea>
         return res.json();
       }
     };
-    function syncBadge(ok){ syncState.textContent= ok?'Sync: Connesso':'Sync: Disconnesso'; syncState.classList.toggle('good',ok); syncState.classList.toggle('bad',!ok); }
+    
+    function syncBadge(ok){
+      const on = !!ok;
+      syncState.textContent = on ? 'Sync: Connesso ✅' : 'Sync: Disconnesso';
+      syncState.classList.toggle('good', on);
+      syncState.classList.toggle('bad', !on);
+      if(syncBubble){
+        syncBubble.classList.toggle('online', on);
+        syncBubble.classList.toggle('offline', !on);
+      }
+    }
+
     cfgBtn.addEventListener('click', async ()=>{
       const owner=prompt('Owner GitHub','alessandroiascone')||'';
       const repo=prompt('Repository','fidelity')||'';
