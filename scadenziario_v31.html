@@ -1144,14 +1144,15 @@ function waPacchiSIM(name, phone){
     }
 
     function waRepairIntakeWithCard(it){
-      const cardUrl = `${FIDELITY_URL}?id=${encodeURIComponent(it.id)}`;
+      const hubUrl = 'https://alessandroiascone.github.io/relong-nfc/install-app-relong.html';
       const t =
 `Ciao ${it.name}, sono Alessandro di Re Long (${RELONG_PHONE}).
 Il tuo prodotto è stato preso in carico dal nostro laboratorio 🔧
 
-In qualità di cliente ti abbiamo attivato la Fidelity Card Re Long con un bonus di benvenuto di 20 punti 🎁
-Clicca sul link per scoprire tutti i vantaggi a te dedicati:
-${cardUrl}`;
+A breve ti invierò qui su WhatsApp il preventivo per la riparazione e procederemo solo dopo la tua conferma ✅
+
+Se vuoi, puoi anche installare la nostra App Re Long Hub per avere sempre a portata di mano promozioni, stato delle pratiche e contatti:
+${hubUrl}`;
       return walink(it.phone, t);
     }
 
@@ -1548,10 +1549,13 @@ ${cardUrl}`;
         found.quoteStatus = quote ? 'pending' : null;
         found.deliveredAt = null;
 
-        // Messaggio WhatsApp gestito dal flusso Fidelity universale
+        // WhatsApp automatico di presa in carico riparazione + link App Hub
+        try{
+          window.open(waRepairIntakeWithCard(found),'_blank','noopener');
+        }catch(e){}
       }
 
-      // Gestione pacchi
+// Gestione pacchi
       if(activeSet.has('pacchi')){
         found.fromPacchi = true;
         try{
@@ -2275,7 +2279,6 @@ function render(){
           services.appendChild(headerRep);
           services.appendChild(boxRep);
         }
-
         if(it.fromPacchi){
           const pacchiBadge=document.createElement('span');
           pacchiBadge.className='badge-mini';
