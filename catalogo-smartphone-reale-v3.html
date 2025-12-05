@@ -1,0 +1,3900 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F8WPNHMH6N"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-F8WPNHMH6N');
+</script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: light)">
+  <title>Re Long | Catalogo Smartphone a Rate</title>
+
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+    :root{
+      --bg1:#050505;
+      --bg2:#000000;
+      --card:rgba(10,10,10,.96);
+      --stroke:rgba(255,255,255,.10);
+      --wa1:#25D366;
+      --wa2:#128C7E;
+      --muted:rgba(255,255,255,.7);
+      --brand1:#ffd500;   /* Fastweb giallo */
+      --brand2:#ff7b00;   /* Arancio intermedio */
+      --brand3:#ff0000;   /* Vodafone rosso */
+    }
+
+    body{
+      font-family:system-ui,-apple-system,Inter,Roboto,sans-serif;
+      background:radial-gradient(circle at 15% 10%,#111,#000);
+      color:#fff;
+      min-height:100dvh;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding:16px 16px 24px;
+      position:relative;
+      overflow-x:hidden;
+    }
+
+    /* Canvas particelle */
+    #tsparticles{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:1;
+      pointer-events:none;
+    }
+
+    /* Glow generale */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:-20vh -20vw;
+      background:
+        radial-gradient(circle at 10% 0, rgba(255,255,255,.06), transparent 55%),
+        radial-gradient(circle at 90% 100%, rgba(255,123,0,.18), transparent 60%);
+      mix-blend-mode:screen;
+      opacity:.9;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    /* Mega-pillola Fastweb+Vodafone sfocata in background */
+    body::after{
+      content:"";
+      position:fixed;
+      top:18vh;
+      left:8vw;
+      width:84vw;
+      max-width:1100px;
+      height:140px;
+      background:linear-gradient(90deg,var(--brand1),var(--brand3));
+      border-radius:999px;
+      filter:blur(26px);
+      opacity:.28;
+      box-shadow:
+        0 0 60px rgba(255,123,0,.45),
+        0 0 110px rgba(255,0,0,.35);
+      mix-blend-mode:screen;
+      pointer-events:none;
+      z-index:0;
+      animation:pillFloat 14s ease-in-out infinite alternate;
+    }
+
+    @keyframes pillFloat{
+      0%{transform:translate3d(0,0,0);opacity:.24;}
+      50%{transform:translate3d(0,-10px,0);opacity:.32;}
+      100%{transform:translate3d(0,6px,0);opacity:.26;}
+    }
+
+    .wrap{
+      width:100%;
+      max-width:1240px;
+      display:grid;
+      gap:18px;
+      position:relative;
+      z-index:5; /* sopra glow + particelle */
+    }
+
+    .head{
+      position:relative;
+      top:auto;
+      z-index:30;
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap:10px;
+      padding:10px 10px 12px;
+      background:linear-gradient(180deg, rgba(0,0,0,.96), rgba(0,0,0,.80) 60%, transparent);
+      backdrop-filter:blur(12px);
+      border-bottom:1px solid rgba(255,255,255,.14);
+      border-top-left-radius:16px;
+      border-top-right-radius:16px;
+      box-shadow:0 18px 40px rgba(0,0,0,.9);
+    }
+
+    .title{
+      font-weight:900;
+      letter-spacing:-.02em;
+      font-size:22px;
+      flex:1 1 auto;
+      text-shadow:0 0 18px rgba(0,0,0,.9);
+    }
+
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      flex:1 1 100%;
+    }
+
+    .btn-filter{
+      padding:8px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.28);
+      background:#000000;
+      color:#ffffff;
+      font-weight:700;
+      cursor:pointer;
+      transition:transform .15s, box-shadow .2s, background .2s, border-color .2s;
+      letter-spacing:.2px;
+      font-size:12px;
+      backdrop-filter:blur(6px);
+      box-shadow:0 0 10px rgba(255,255,255,.18);
+    }
+
+    .btn-filter.active{
+      background:#000000;
+      color:#ffffff;
+      border:2px solid transparent;
+      background-image:
+        linear-gradient(#000000,#000000),
+        linear-gradient(90deg,var(--brand1),var(--brand3));
+      background-origin:border-box;
+      background-clip:padding-box,border-box;
+      box-shadow:0 0 22px rgba(255,140,0,.9);
+      transform:translateY(-1px) scale(1.03);
+    }
+
+    .grid{
+      display:flex;
+      flex-direction:row;
+      gap:18px;
+      padding:40px 10vw 26px;
+      overflow-x:auto;
+      overflow-y:visible;
+      scroll-snap-type:x mandatory;
+      -webkit-overflow-scrolling:touch;
+    }
+    .grid::-webkit-scrollbar{
+      height:6px;
+    }
+    .grid::-webkit-scrollbar-track{
+      background:rgba(15,23,42,.9);
+      border-radius:999px;
+    }
+    .grid::-webkit-scrollbar-thumb{
+      background:linear-gradient(90deg,var(--brand1),var(--brand3));
+      border-radius:999px;
+    }
+
+
+    /* CARD stile pillola Fastweb+Vodafone */
+    .card{transform-style:preserve-3d;will-change:transform;
+      position:relative;
+      background:var(--card);
+      padding:16px;
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:
+        0 18px 40px rgba(0,0,0,.9),
+        0 0 20px rgba(0,0,0,.7);
+      overflow:hidden;
+      transition:transform .16s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      border-radius:inherit;
+      padding:1.5px;
+      background:linear-gradient(120deg,var(--brand1),var(--brand3));
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite:xor;
+      mask-composite:exclude;
+      opacity:.55;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .card::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:inherit;
+      background:
+        radial-gradient(circle at 10% 0, rgba(255,255,255,.08), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(255,0,0,.18), transparent 60%);
+      mix-blend-mode:screen;
+      opacity:.38;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .card:hover{transform:translateY(-6px) scale(1.02) rotate3d(1,1,0,4deg);
+      transform:translateY(-3px);
+      box-shadow:
+        0 22px 46px rgba(0,0,0,1),
+        0 0 32px rgba(255,0,0,.45);
+      border-color:rgba(255,255,255,.14);
+    }
+    .card:hover::before{opacity:.9;}
+
+    .photo-wrap{
+      border-radius:24px;
+      overflow:hidden;
+      position:relative;
+      z-index:1;
+      background:#111111;
+      padding:18px 18px 22px;
+      box-shadow:0 18px 40px rgba(0,0,0,.72);
+    }
+
+    .skel{
+      background:linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,255,255,.16), rgba(255,255,255,.08));
+      background-size:200% 100%;
+      animation:skel 1.1s ease-in-out infinite;
+    }
+    @keyframes skel{
+      0%{background-position:200% 0}
+      100%{background-position:-200% 0}
+    }
+
+    .photo{
+      width:100%;
+      border-radius:18px;
+      aspect-ratio:3/4;
+      max-height:340px;
+      object-fit:contain;
+      background:#000;
+      display:block;
+    }
+
+    .model{
+      font-size:17px;
+      font-weight:900;
+      margin-top:8px;
+      position:relative;
+      z-index:1;
+      text-align:center;
+    }
+
+    .price{
+      font-size:14px;
+      margin-top:3px;
+      margin-bottom:6px;
+      color:var(--muted);
+      font-variant-numeric:tabular-nums;
+      position:relative;
+      z-index:1;
+    }
+
+    .badges{
+      position:absolute;
+      top:10px;
+      left:10px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      z-index:2;
+    }
+
+    .tag{
+      font-size:11px;
+      font-weight:800;
+      padding:5px 9px;
+      border-radius:999px;
+      backdrop-filter:blur(6px);
+      border:1px solid rgba(0,0,0,.3);
+    }
+
+    /* ✅ Pillolette brand tutte uguali: arancione → rosso, testo bianco */
+    .tag.brand{
+      background:linear-gradient(90deg,#ff7b00,#ff0000);
+      color:#ffffff;
+      border-color:rgba(0,0,0,.4);
+      box-shadow:0 0 10px rgba(255,80,0,.45);
+    }
+
+    .tag.new{background:linear-gradient(90deg,#00e1ff,#0078ff);color:#000}
+    .tag.stock{background:linear-gradient(90deg,#aaff00,#27ae60);color:#000}
+    .tag.hot{background:linear-gradient(90deg,var(--brand1),var(--brand3));color:#000}
+    .tag.bestseller{background:linear-gradient(90deg,#ff7b00,#ff4500);color:#000}
+
+    .simulatore{
+      margin-top:10px;
+      padding:11px 10px 10px;
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:20px;
+      background:rgba(0,0,0,.75);
+      position:relative;
+      z-index:1;
+    }
+
+    /* SWITCH CLIENTE – stile barra Fastweb+Vodafone */
+    .cliente-switch{
+      display:flex;
+      align-items:stretch;
+      gap:0;
+      padding:2px;
+      margin-bottom:8px;
+      border-radius:999px;
+      background:linear-gradient(90deg,var(--brand1),var(--brand3));
+      position:relative;
+    }
+
+    .cliente-switch::before{
+      content:"";
+      position:absolute;
+      inset:2px;
+      border-radius:inherit;
+      background:#000000;
+      z-index:0;
+    }
+
+    .cliente-btn{
+      flex:1;
+      border:none;
+      background:transparent;
+      color:#ffffff;
+      font-size:10px;
+      font-weight:800;
+      text-transform:uppercase;
+      padding:7px 8px;
+      border-radius:999px;
+      cursor:pointer;
+      letter-spacing:.35px;
+      position:relative;
+      z-index:1;
+      white-space:nowrap;
+      transition:
+        background .18s ease,
+        color .18s ease,
+        box-shadow .18s ease,
+        transform .12s ease;
+    }
+
+    .cliente-btn.active{
+      background:rgba(255,255,255,0.12);
+      box-shadow:0 0 18px rgba(255,123,0,.75);
+      transform:translateY(-1px) scale(1.02);
+    }
+
+    .cliente-switch.shake{
+      animation:shake .35s linear;
+    }
+
+/* Shake anche per memoria e colore */
+    .storage-switch.shake,
+    .color-switch.shake{
+      animation:shake .35s linear;
+    }
+
+    @keyframes shake{
+      0%{transform:translateX(0);}
+      25%{transform:translateX(-3px);}
+      50%{transform:translateX(3px);}
+      75%{transform:translateX(-2px);}
+      100%{transform:translateX(0);}
+    }
+
+    .sim-label{
+      font-size:13px;
+      color:#ffd166cc;
+      margin-bottom:3px;
+      display:block;
+      text-align:center;
+    }
+
+    .sim-select{
+      width:100%;
+      margin-top:3px;
+      padding:8px 10px;
+      border-radius:12px;
+      background:#050505;
+      color:#fff;
+      border:1px solid rgba(255,255,255,.20);
+      font-size:13px;
+    }
+
+
+    .rate-pills{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:6px;
+      justify-content:center;
+      margin-bottom:4px;
+    }
+    .rate-pill{
+      flex:0 0 auto;
+      padding:5px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.25);
+      background:rgba(5,5,5,.95);
+      color:#f9fafb;
+      font-size:11px;
+      font-weight:600;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+      cursor:pointer;
+      transition:background .18s, border-color .18s, box-shadow .18s, transform .12s;
+    }
+    .rate-pill.active{
+      border:2px solid transparent;
+      background-image:
+        linear-gradient(#000000,#000000),
+        linear-gradient(90deg,var(--brand1),var(--brand3));
+      background-origin:border-box;
+      background-clip:padding-box,border-box;
+      box-shadow:0 0 18px rgba(255,140,0,.85);
+      transform:translateY(-1px) scale(1.03);
+      color:#ffffff;
+    }
+
+    .sim-output{
+      margin-top:7px;
+      font-size:14px;
+      font-weight:700;
+      color:#ffd166;
+      display:none;
+    }
+
+    .note-colori{
+      color:#ffd166;
+      font-size:11px;
+      margin-top:3px;
+      opacity:.9;
+      position:relative;
+      z-index:1;
+      text-align:center;
+    }
+
+    
+    
+    .storage-switch{
+      margin-top:8px;
+      margin-bottom:6px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .storage-label{
+      font-size:11px;
+      color:var(--muted2);
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      text-align:center;
+    }
+    .storage-pills{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:2px;
+      justify-content:center;
+    }
+    .storage-pill{
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.28);
+      background:#000000;
+      color:#f9fafb;
+      font-size:11px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+      cursor:pointer;
+      transition:
+        background .18s,
+        border-color .18s,
+        box-shadow .18s,
+        transform .12s;
+      white-space:nowrap;
+      box-shadow:0 0 10px rgba(255,255,255,.25);
+    }
+    .storage-pill.active{
+      background:#000000;
+      color:#ffffff;
+      border:2px solid transparent;
+      background-image:
+        linear-gradient(#000000,#000000),
+        linear-gradient(90deg,var(--brand1),var(--brand3));
+      background-origin:border-box;
+      background-clip:padding-box,border-box;
+      box-shadow:0 0 20px rgba(255,140,0,.9);
+      transform:translateY(-1px) scale(1.03);
+    }
+
+    .sim-summary{
+      margin-top:4px;
+      font-size:11px;
+      color:var(--muted2);
+      font-style:italic;
+      min-height:14px;
+      text-align:center;
+    }
+    .sim-summary span{
+      color:#fef08a;
+      font-weight:600;
+    }
+
+    .color-switch{
+      margin-top:4px;
+      margin-bottom:4px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    
+    .color-rate-row{
+      margin-top:4px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      align-items:stretch;
+    }
+    .color-rate-row .color-switch{
+      width:100%;
+    }
+
+    @media (min-width: 480px){
+      .color-rate-row{
+        flex-direction:row;
+        align-items:stretch;
+      }
+      .color-rate-row .color-switch{
+        flex:1.1 1 0;
+      }
+      .color-rate-row .rate-main{
+        flex:0.9 1 0;
+      }
+    }
+
+    /* Rata gigante, super in evidenza */
+    .rate-main{
+      flex:1 1 auto;
+      width:100%;
+      max-width:100%;
+      margin:0;
+      border-radius:20px;
+      padding:12px 14px;
+      border:2px solid transparent;
+      background:
+        linear-gradient(#050505,#050505) padding-box,
+        linear-gradient(135deg,#ffd500,#ff9800,#ff0000) border-box;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      box-shadow:0 0 22px rgba(0,0,0,.9), 0 0 26px rgba(255,140,0,.55);
+    }
+    .rate-main-label{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.10em;
+      color:#ffd166;
+    }
+    .rate-main-value{
+      margin-top:4px;
+      font-size:40px;
+      color:#fef08a;
+      text-shadow:0 0 20px rgba(255,196,0,.98);
+      transform-origin:center center;
+      display:inline-flex;
+      align-items:baseline;
+      justify-content:center;
+      gap:6px;
+    }
+    .rate-main-int{
+      font-size:46px;
+      font-weight:900;
+      line-height:1;
+    }
+    .rate-main-dec{
+      font-size:28px;
+      font-weight:600;
+      opacity:.95;
+      line-height:1.1;
+    }
+    .rate-main-value.has-value{
+      animation: ratePulse 1.6s ease-in-out infinite;
+    }
+
+    @media (max-width: 480px){
+      .rate-main{
+        align-items:center;
+      }
+      .rate-main-value{
+        font-size:24px;
+      }
+      .rate-main-dec{
+        font-size:16px;
+      }
+    }
+
+@keyframes ratePulse{
+      0%{
+        transform:scale(1);
+        text-shadow:0 0 10px rgba(255,196,0,.75);
+      }
+      50%{
+        transform:scale(1.06);
+        text-shadow:0 0 20px rgba(255,210,70,1);
+      }
+      100%{
+        transform:scale(1);
+        text-shadow:0 0 10px rgba(255,196,0,.75);
+      }
+    }
+    @media (max-width: 480px){
+      .rate-main{
+        align-items:center;
+      }
+      .rate-main-value{
+        font-size:22px;
+      }
+    }
+
+    
+.color-selected-label{
+      font-size:12px;
+      color:#f9fafb;
+      opacity:.9;
+      text-align:center;
+      width:100%;
+      margin-top:4px;
+      transition:all .15s ease;
+    }
+    .color-selected-label[data-empty="1"]{
+      opacity:.5;
+    }
+    .color-selected-label[data-empty="0"]{
+      opacity:1;
+      font-weight:600;
+      background:rgba(15,23,42,.78);
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.75);
+      display:inline-block;
+    }
+
+    .color-label{
+      font-size:11px;
+      color:var(--muted2);
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      text-align:center;
+    }
+    .color-pills{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:2px;
+      justify-content:center;
+    }
+
+    .color-pill{
+      position:relative;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.35);
+      background:#050505;
+      color:#f9fafb;
+      font-size:11px;
+      font-weight:600;
+      text-transform:capitalize;
+      letter-spacing:.03em;
+      cursor:pointer;
+      transition:background .18s, border-color .18s, box-shadow .18s, transform .12s, opacity .15s;
+      white-space:nowrap;
+      box-shadow:0 2px 6px rgba(0,0,0,.7), 0 0 6px rgba(255,255,255,.18);
+      overflow:hidden;
+    }
+    .color-pill::before{
+      content:"";
+      position:absolute;
+      inset:1px 4px;
+      border-radius:999px;
+      background:linear-gradient(135deg, rgba(255,255,255,.16), rgba(255,255,255,0));
+      opacity:.7;
+      pointer-events:none;
+    }
+    .color-pill.active::before{
+      opacity:1;
+    }
+    .color-pill.active{
+      /* gli stili specifici (bg, bordo, glow) vengono gestiti da applyColorStyle */
+    }
+
+    .color-switch.is-disabled{
+      opacity:.45;
+      pointer-events:none;
+    }
+.btn.secondary{
+      width:75%;
+      margin:10px auto 0;
+      padding:11px 15px;
+      border-radius:22px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      color:#000;
+      font-weight:900;
+      letter-spacing:.2px;
+      border:1px solid rgba(0,255,140,.35);
+      background:linear-gradient(90deg,#00ff88,#00d977,#00c56a,#00ff88);
+      background-size:200% 200%;
+      transition:transform .2s ease, filter .2s ease, box-shadow .2s ease;
+      box-shadow:0 0 16px rgba(0,255,120,.35);
+      text-align:center;
+      position:relative;
+      z-index:1;
+      font-size:14px;
+    }
+    .btn.secondary:hover{
+      transform:translateY(-2px);
+      filter:brightness(1.08);
+      box-shadow:0 0 28px rgba(0,255,140,.5);
+    }
+
+    .btn.secondary .wa-ico{
+      width:18px;
+      height:18px;
+      display:inline-block;
+    }
+
+    /* Pulsante AR 3D */
+    
+    .btn-ar-3d{
+      width:100%;
+      margin-top:8px;
+      padding:7px 12px;
+      border-radius:999px;
+      border:2px solid transparent;
+      background:
+        linear-gradient(#050505,#050505) padding-box,
+        linear-gradient(90deg,var(--brand1),var(--brand3)) border-box;
+      color:#ffffff;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      cursor:pointer;
+      box-shadow:0 0 14px rgba(0,0,0,.7);
+      transition:all .18s ease;
+    }
+    .btn-ar-3d:hover{
+      transform:translateY(-1px);
+      filter:brightness(1.15);
+      box-shadow:0 0 26px rgba(255,120,0,.5);
+    }
+    .btn-ar-3d-icon{
+      width:16px;
+      height:16px;
+      flex-shrink:0;
+      display:inline-block;
+    }
+
+
+    /* Overlay AR */
+    .ar-backdrop{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background:rgba(0,0,0,.8);
+      backdrop-filter:blur(12px);
+      z-index:9998;
+    }
+    .ar-backdrop.show{
+      display:flex;
+    }
+    .ar-modal{
+      width:92%;
+      max-width:460px;
+      aspect-ratio:9/16;
+      border-radius:22px;
+      background:radial-gradient(circle at top,#191922,#050505);
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow:0 22px 60px rgba(0,0,0,.95);
+      padding:10px;
+      position:relative;
+      overflow:hidden;
+      color:#f9fafb;
+    }
+    .ar-modal::before{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background:
+        radial-gradient(circle at 0 0,rgba(255,0,0,.22),transparent 55%),
+        radial-gradient(circle at 100% 0,rgba(255,123,0,.24),transparent 60%);
+      mix-blend-mode:screen;
+      opacity:.7;
+      pointer-events:none;
+    }
+    .ar-inner{
+      position:relative;
+      z-index:1;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      height:100%;
+    }
+    .ar-header-ar{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:6px;
+      font-size:12px;
+    }
+    .ar-header-title{
+      font-weight:800;
+      font-size:14px;
+    }
+    .ar-header-sub{
+      font-size:11px;
+      opacity:.8;
+    }
+    .ar-tag-ar{
+      font-size:11px;
+      padding:4px 9px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.25);
+      background:rgba(0,0,0,.7);
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+    }
+    .ar-tag-dot-ar{
+      width:7px;
+      height:7px;
+      border-radius:999px;
+      background:radial-gradient(circle,#ffd500,#ff7b00);
+      box-shadow:0 0 10px rgba(255,181,71,.9);
+    }
+    .ar-body-ar{
+      flex:1;
+      border-radius:16px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.14);
+      background:#000;
+    }
+    .ar-footer-ar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      font-size:11px;
+      opacity:.85;
+      margin-top:2px;
+    }
+    .btn-close-ar{
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.35);
+      background:rgba(10,10,10,.9);
+      color:#f9fafb;
+      padding:5px 12px;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      cursor:pointer;
+    }
+    .btn-close-ar:hover{
+      background:rgba(255,255,255,.14);
+    }
+
+    .err{
+      white-space:pre-wrap;
+      background:#300;
+      color:#fff;
+      border:1px solid #933;
+      padding:12px;
+      border-radius:12px;
+      margin-bottom:12px;
+    }
+  
+    .btn-filter-compare{
+      border:2px solid transparent;
+      background:
+        linear-gradient(#050505,#050505) padding-box,
+        linear-gradient(90deg,var(--brand1),var(--brand3)) border-box;
+      color:#ffffff;
+      font-weight:800;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+    }
+    .btn-filter-compare:hover{
+      transform:translateY(-1px);
+      filter:brightness(1.1);
+      box-shadow:0 0 18px rgba(255,150,0,.7);
+    }
+
+    .head-subtitle{
+      width:100%;
+      font-size:12px;
+      color:var(--muted);
+      opacity:.85;
+      margin-top:-4px;
+      margin-bottom:4px;
+    }
+    .tag-3d{
+      background:linear-gradient(90deg,#00f0ff,#2563eb);
+      color:#000;
+      box-shadow:0 0 14px rgba(56,189,248,.8);
+      border-color:rgba(15,23,42,.9);
+    }
+    .tag-foldable{
+      background:linear-gradient(90deg,#ec4899,#8b5cf6);
+      color:#fff;
+      box-shadow:0 0 14px rgba(236,72,153,.9);
+      border-color:rgba(76,29,149,.9);
+    }
+    .wa-floating-bar{
+      position:fixed;
+      left:50%;
+      bottom:10px;
+      transform:translateX(-50%);
+      z-index:40;
+      padding:8px 14px;
+      border-radius:999px;
+      background:radial-gradient(circle at 0 0,#22c55e,#15803d);
+      color:#fff;
+      font-size:12px;
+      font-weight:700;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      box-shadow:0 18px 40px rgba(0,0,0,.9);
+      text-decoration:none;
+    }
+    .wa-floating-bar span.wa-dot{
+      width:9px;
+      height:9px;
+      border-radius:999px;
+      background:radial-gradient(circle,#bbf7d0,#22c55e);
+      box-shadow:0 0 10px rgba(34,197,94,.9);
+      flex-shrink:0;
+    }
+
+
+    .grid .card{
+      scroll-snap-align:center;
+      margin-inline:auto;
+      transform-origin:center center;
+      min-width:78vw;
+      max-width:78vw;
+    }
+
+    @media(min-width:768px){
+      .grid{
+        justify-content:center;
+      }
+      .grid .card{
+        min-width:380px;
+        max-width:380px;
+      }
+    }
+
+    .grid .card{
+      transform:translateY(0) scale(.92);
+      transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+    .grid .card.is-center{
+      transform:translateY(-6px) scale(1.03);
+      box-shadow:
+        0 26px 60px rgba(0,0,0,1),
+        0 0 40px rgba(255,0,0,.55);
+      border-color:rgba(255,255,255,.20);
+    }
+
+
+    @media(max-width:768px){
+      .wa-floating-bar{
+        bottom:70px;
+        padding:6px 12px;
+        font-size:11px;
+      }
+    }
+
+
+    .wa-floating-bar{
+      display:none !important;
+      visibility:hidden !important;
+      pointer-events:none !important;
+    }
+
+
+/* === WHATSAPP FINAL SLIM ON .btn.secondary === */
+.btn.secondary{
+    width: auto !important;
+    min-width: 140px !important;
+    max-width: fit-content !important;
+    margin: 10px auto 0 auto !important;
+    padding: 6px 14px !important;
+    font-size: 13px !important;
+    border-radius: 14px !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 6px !important;
+    height: auto !important;
+    line-height: 1.1 !important;
+}
+.btn.secondary .wa-ico{
+    width: 14px !important;
+    height: 14px !important;
+}
+
+
+/* === CONFRONTA IN 3D FULL-WIDTH UNDER BRAND FILTERS === */
+.controls .btn-filter-compare{
+  flex: 1 0 100%;
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+  padding-block: 10px;
+  font-size: 13px;
+}
+
+
+/* === REFRESH SAMSUNG STYLE OVERRIDE === */
+
+/* Foto più grande stile vetrina Samsung */
+.photo{
+  aspect-ratio: 3/4 !important;
+  max-height: 340px !important;
+  object-fit: contain !important;
+  margin-bottom: 6px !important;
+}
+
+/* Card più pulite e ariose */
+.card{
+  padding: 20px 18px 18px !important;
+  border-radius: 26px !important;
+  box-shadow:
+    0 16px 36px rgba(0,0,0,.85),
+    0 0 24px rgba(0,0,0,.75) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+/* Titolo modello + prezzo più gerarchici */
+.model{
+  font-size: 19px !important;
+  margin-top: 10px !important;
+  margin-bottom: 2px !important;
+}
+.price{
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  margin-top: 2px !important;
+  margin-bottom: 10px !important;
+}
+
+/* Pilloline colore stile Samsung: tonde, piene, senza testo visibile */
+.color-pills{
+  gap: 8px !important;
+  margin-top: 6px !important;
+}
+.color-pill{
+  width: 26px !important;
+  height: 26px !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  border-width: 2px !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  font-size: 0 !important;            /* nasconde il nome del colore ma resta nel DOM */
+  line-height: 1 !important;
+  box-shadow: none !important;
+}
+.color-pill.active{
+  box-shadow: 0 0 10px rgba(255,255,255,.9) !important;
+  transform: translateY(-1px) scale(1.04) !important;
+}
+
+/* Storage più “rettangolo pulito” */
+.storage-pills{
+  gap: 8px !important;
+  margin-top: 4px !important;
+}
+.storage-pill{
+  padding: 8px 16px !important;
+  border-radius: 14px !important;
+  font-size: 12px !important;
+  box-shadow: none !important;
+}
+
+/* Pulsanti più compatti, stile UI moderna */
+.btn.secondary{
+  border-radius: 20px !important;
+  padding: 8px 16px !important;
+  font-size: 13px !important;
+}
+.btn-ar-3d{
+  margin-top: 10px !important;
+  padding: 8px 14px !important;
+  font-size: 11px !important;
+  border-radius: 20px !important;
+}
+
+
+/* === SAMSUNG STYLE v2 – RE LONG === */
+
+/* Foto: leggero zoom & fade quando cambia */
+.photo{
+  transition: opacity .18s ease, transform .18s ease;
+}
+.photo.img-changing{
+  opacity: 0;
+  transform: scale(.96);
+}
+
+/* Pedana / riflesso sotto lo smartphone */
+.photo-wrap{
+  position: relative;
+}
+.photo-wrap::after{
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  transform: translateX(-50%);
+  width: 62%;
+  height: 18px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 50% 50%, rgba(0,0,0,.55), transparent 70%);
+  opacity: .9;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Card ancora più pulite, meno gaming, più premium */
+.card{
+  border-radius: 26px !important;
+  border: 1px solid rgba(255,255,255,.09) !important;
+  box-shadow:
+    0 14px 34px rgba(0,0,0,.9),
+    0 0 20px rgba(0,0,0,.75) !important;
+}
+.card.is-center{
+  box-shadow:
+    0 22px 50px rgba(0,0,0,1),
+    0 0 30px rgba(0,0,0,.85) !important;
+}
+
+/* Titolo + prezzo ancora più gerarchici */
+.model{
+  font-size: 19px !important;
+  font-weight: 800 !important;
+}
+.price{
+  font-size: 17px !important;
+  font-weight: 800 !important;
+}
+
+/* Colori – pilloline stile Samsung, con transizione morbida */
+.color-pills{
+  gap: 8px !important;
+}
+.color-pill{
+  width: 26px !important;
+  height: 26px !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  border-width: 2px !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  font-size: 0 !important;
+  line-height: 1 !important;
+  transition:
+    box-shadow .18s ease,
+    transform .18s ease,
+    border-color .18s ease,
+    background-color .18s ease !important;
+}
+.color-pill.active{
+  box-shadow: 0 0 10px rgba(255,255,255,.9) !important;
+  transform: translateY(-1px) scale(1.05) !important;
+}
+
+/* Storage – rettangoli puliti */
+.storage-pills{
+  gap: 8px !important;
+}
+.storage-pill{
+  padding: 7px 16px !important;
+  border-radius: 14px !important;
+  font-size: 12px !important;
+  box-shadow: none !important;
+}
+
+/* Pulsanti – più compatti, stile OneUI */
+.btn.secondary{
+  border-radius: 20px !important;
+  padding: 7px 15px !important;
+  font-size: 13px !important;
+}
+.btn-ar-3d{
+  border-radius: 20px !important;
+  padding: 7px 13px !important;
+  font-size: 11px !important;
+}
+
+/* Shake card (per prodotti terminati – pronto per uso JS) */
+@keyframes cardShakeSoft{
+  0%{ transform: translateX(0); }
+  25%{ transform: translateX(-3px); }
+  50%{ transform: translateX(3px); }
+  75%{ transform: translateX(-1.5px); }
+  100%{ transform: translateX(0); }
+}
+.card.shake-terminato{
+  animation: cardShakeSoft .32s ease-out;
+}
+
+
+/* === SAMSUNG STYLE v3 – RE LONG === */
+
+/* Zoom interattivo sulla foto stile OneUI */
+.card:hover .photo{
+  transform: translateY(-4px) scale(1.03);
+}
+.card:hover .photo.img-changing{
+  transform: scale(.96); /* priorità alla transizione cambio colore */
+}
+
+/* Leggero tilt sulla card centrale */
+.grid .card.is-center{
+  transform: translateY(-6px) scale(1.03) rotateX(0.5deg);
+}
+
+/* Highlight 3D nelle pillole colore */
+.color-pill::before{
+  content: "";
+  width: 70%;
+  height: 70%;
+  border-radius: inherit;
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.55), transparent 60%);
+  mix-blend-mode: screen;
+  opacity: .85;
+}
+.color-pill.active::before{
+  opacity: 1;
+}
+
+/* Sfondo dinamico per brand – overlay più coerente col brand */
+.card[data-brand="Apple"]::after{
+  background:
+    radial-gradient(circle at 0 0, rgba(148,163,184,.35), transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(59,130,246,.35), transparent 60%);
+}
+.card[data-brand="Samsung"]::after{
+  background:
+    radial-gradient(circle at 0 0, rgba(15,23,42,.6), transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(37,99,235,.55), transparent 60%);
+}
+.card[data-brand="OPPO"]::after{
+  background:
+    radial-gradient(circle at 0 0, rgba(16,185,129,.55), transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(5,46,22,.8), transparent 60%);
+}
+.card[data-brand="HONOR"]::after{
+  background:
+    radial-gradient(circle at 0 0, rgba(129,140,248,.6), transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(56,189,248,.55), transparent 60%);
+}
+.card[data-brand="Motorola"]::after{
+  background:
+    radial-gradient(circle at 0 0, rgba(59,130,246,.55), transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(15,23,42,.9), transparent 60%);
+}
+
+/* Animazione prezzo quando cambia storage */
+@keyframes priceBump{
+  0%{ transform: translateY(0) scale(1); }
+  30%{ transform: translateY(-2px) scale(1.03); }
+  60%{ transform: translateY(1px) scale(0.99); }
+  100%{ transform: translateY(0) scale(1); }
+}
+.price.price-bump{
+  animation: priceBump .22s ease-out;
+}
+
+/* Badge AI sui modelli top (solo CSS, in base al nome) */
+.card[data-nome*="S25 Ultra"] .model::after,
+.card[data-nome*="iPhone 17 Pro"] .model::after{
+  content: "  •  AI Camera";
+  font-size: 11px;
+  font-weight: 600;
+  color: #facc15;
+}
+
+/* Swipe hint bubble */
+.rl-swipe-hint{
+  position: fixed;
+  left: 50%;
+  bottom: 86px;
+  transform: translateX(-50%);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(15,23,42,.96);
+  border: 1px solid rgba(148,163,184,.7);
+  color: #e5e7eb;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .03em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 50;
+  box-shadow: 0 10px 26px rgba(0,0,0,.85);
+}
+.rl-swipe-hint-arrow{
+  width: 22px;
+  height: 14px;
+  position: relative;
+}
+.rl-swipe-hint-arrow::before,
+.rl-swipe-hint-arrow::after{
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 9px;
+  height: 1.5px;
+  background: #e5e7eb;
+  transform-origin: center;
+}
+.rl-swipe-hint-arrow::before{
+  left: 1px;
+  transform: translateY(-50%) skewX(-25deg);
+}
+.rl-swipe-hint-arrow::after{
+  right: 1px;
+  transform: translateY(-50%) skewX(25deg);
+}
+@keyframes swipeHintFloat{
+  0%{ transform: translate(-50%,0); opacity: 0; }
+  15%{ transform: translate(-50%,-3px); opacity: 1; }
+  85%{ transform: translate(-50%,-3px); opacity: 1; }
+  100%{ transform: translate(-50%,4px); opacity: 0; }
+}
+.rl-swipe-hint{
+  animation: swipeHintFloat 3s ease-out forwards;
+}
+@media(max-width:768px){
+  .rl-swipe-hint{
+    bottom: 82px;
+    font-size: 10px;
+  }
+}
+
+
+    .ghost-arrow{
+      position:fixed;
+      top:50%;
+      width:26px;
+      height:26px;
+      margin-top:-13px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.45);
+      background:rgba(15,23,42,.85);
+      color:#f9fafb;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:14px;
+      z-index:40;
+      backdrop-filter:blur(8px);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .2s ease;
+    }
+    .ghost-arrow.show{
+      opacity:.8;
+      pointer-events:auto;
+    }
+    .ghost-arrow-left{ left:8px; }
+    .ghost-arrow-right{ right:8px; }
+    @media (min-width: 900px){
+      .ghost-arrow{ display:none; }
+    }
+
+
+    .btn.secondary .txt-wrap{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      text-align:center;
+      line-height:1.1;
+    }
+    .btn.secondary .txt-main{
+      font-size:14px;
+      font-weight:900;
+    }
+    .btn.secondary .txt-sub{
+      font-size:11px;
+      font-weight:600;
+      opacity:.9;
+    }
+
+
+/* Effetto 3D elegante per il tasto WhatsApp */
+.btn.secondary{
+  border-radius:999px;
+  background:linear-gradient(135deg,#00ff9a,#00e37e,#00c96a);
+  box-shadow:
+    0 10px 26px rgba(0,0,0,.85),
+    0 0 26px rgba(0,255,150,.7);
+  border:1px solid rgba(4,120,87,.9);
+  position:relative;
+  overflow:hidden;
+}
+.btn.secondary::before{
+  content:"";
+  position:absolute;
+  inset:1px 1px 55% 1px;
+  border-radius:999px;
+  background:linear-gradient(180deg,rgba(255,255,255,.9),transparent);
+  opacity:.95;
+  pointer-events:none;
+}
+.btn.secondary:hover{
+  transform:translateY(-2px) scale(1.01);
+  box-shadow:
+    0 18px 32px rgba(0,0,0,.95),
+    0 0 32px rgba(0,255,170,.85);
+}
+
+
+    /* Logica visibilità simulatore: rata e mesi compaiono solo dopo selezione memoria + colore + tipo cliente */
+    .card:not(.rl-show-rates) .rate-main{
+      display:none;
+    }
+    .card:not(.rl-show-rates) .rate-pills{
+      display:none;
+    }
+    .card.rl-show-rates .rate-main{
+      display:flex;
+    }
+    .card.rl-show-rates .rate-pills{
+      display:flex;
+    }
+
+  </style>
+</head>
+
+<body>
+  <!-- Particelle sfondo -->
+  <div id="tsparticles"></div>
+
+  <main class="wrap" id="app">
+    <div class="head">
+      <div class="title">Catalogo Smartphone a Rate</div>
+      <div class="head-subtitle">Assicurazione Kasko & Accessori Inclusi</div>
+      <div class="controls" id="brandFilters"></div>
+    </div>
+    <section class="grid" id="grid"></section>
+    <button class="ghost-arrow ghost-arrow-left" aria-hidden="true">‹</button>
+    <button class="ghost-arrow ghost-arrow-right" aria-hidden="true">›</button>
+  </main>
+
+  <noscript>
+    <div class="err">Attiva JavaScript per visualizzare il catalogo.</div>
+  </noscript>
+
+  <!-- OVERLAY AR RE LONG -->
+  <div id="arOverlay" class="ar-backdrop" onclick="backdropCloseAR(event)">
+    <div class="ar-modal">
+      <div class="ar-inner">
+        <div class="ar-header-ar">
+          <div>
+            <div class="ar-header-title">Re Long 3D / AR Viewer</div>
+            <div class="ar-header-sub">Posiziona lo smartphone su una superficie piana e segui le istruzioni.</div>
+          </div>
+          <div class="ar-tag-ar">
+            <span class="ar-tag-dot-ar"></span>
+            AR • Beta
+          </div>
+        </div>
+        <div class="ar-body-ar">
+          <model-viewer id="arViewer"
+            ar
+            ar-modes="webxr scene-viewer quick-look"
+            camera-controls
+            autoplay
+            environment-image="neutral"
+            style="width:100%;height:100%;background:#000;">
+          </model-viewer>
+        </div>
+        <div class="ar-footer-ar">
+          <span>Per info scrivici su WhatsApp 08119578844</span>
+          <button type="button" class="btn-close-ar" onclick="forceCloseAR()">Chiudi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Libreria particelle -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script>
+    // Particelle rosso / arancio / oro che salgono
+    particlesJS("tsparticles", {
+      "particles": {
+        "number": { "value": 90, "density": { "enable": true, "value_area": 900 } },
+        "color": { "value": ["#ff0000", "#ff6600", "#ffaa00"] },
+        "shape": { "type": "circle" },
+        "opacity": { "value": 0.7, "random": true },
+        "size": { "value": 3, "random": true },
+        "line_linked": { "enable": false },
+        "move": {
+          "enable": true,
+          "speed": 2,
+          "direction": "top",
+          "random": true,
+          "straight": false,
+          "out_mode": "out"
+        }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": { "enable": false },
+          "onclick": { "enable": false },
+          "resize": true
+        }
+      },
+      "retina_detect": true
+    });
+  </script>
+
+
+  <script>
+  (function(){
+    try{
+      // WhatsApp: numero ufficiale Re Long (Italia)
+      var WA = "3908119578844";
+      // Extra mensile Vodafone per NUOVO cliente
+      var EXTRA_VODAFONE = 11.95;
+
+// =======================
+// LISTA PRODOTTI A CATALOGO
+// =======================
+var prodotti = [
+  {brand:"Apple",   nome:"Apple iPhone 17 256GB",          prezzo:1109.80,  img:"imgcatalogo/apple-iphone-17-black.webp",              tags:["Novità"]},
+  {brand:"Apple",   nome:"Apple iPhone Air 512GB",         prezzo:1657.0,  img:"imgcatalogo/apple-iphone-air-white.webp",            tags:["Novità"]},
+  {brand:"Apple",   nome:"Apple iPhone 17 Pro 256GB",      prezzo:1489.0,  img:"imgcatalogo/apple-iphone-17-pro-blue.webp",          tags:["Novità"]},
+  {brand:"Apple",   nome:"Apple iPhone 17 Pro 1TB",        prezzo:1993.8,  img:"imgcatalogo/apple-iphone-17-pro-1tb.webp",           tags:["Novità"]},
+  {brand:"Apple",   nome:"Apple iPhone 17 Pro Max 256GB",  prezzo:1657.8,  img:"imgcatalogo/apple-iphone-17-pro-max-blue.webp",      tags:["Novità"]},
+  {brand:"Apple",   nome:"Apple iPhone 17 Pro Max 512GB",  prezzo:1897.8,  img:"imgcatalogo/apple-iphone-17-pro-max-blue.webp",      tags:["Top"]},
+  {brand:"Apple",   nome:"Apple iPhone 17 512GB",          prezzo:1393.80, img:"imgcatalogo/apple-iphone-17-blue.webp",              tags:["Novità"]},
+  {brand:"Apple",   nome:"Apple iPhone 17 Pro 512GB",      prezzo:1753.80, img:"imgcatalogo/apple-iphone-17-pro-orange.webp",        tags:["Novità"]},
+
+  {brand:"Samsung", nome:"Samsung Galaxy Z Flip7 256GB",   prezzo:1057.8,  img:"imgcatalogo/samsung-galaxy-z-flip7-black.webp",      tags:["Novità","Foldable"]},
+  {brand:"Samsung", nome:"Samsung Galaxy Z Fold 7 256GB",  prezzo:1977.0,  img:"imgcatalogo/samsung-galaxy-z-fold7-black.webp",      tags:["Novità","Foldable"]},
+  {brand:"Samsung", nome:"Samsung Galaxy S25 128GB",       prezzo:845.8,   img:"imgcatalogo/samsung-galaxy-s25-blue.webp",           tags:["Novità"]},
+  {brand:"Samsung", nome:"Samsung Galaxy S25 FE 256GB",    prezzo:773.9,   img:"imgcatalogo/samsung-galaxy-s25-fe-silver.webp",      tags:["Novità"]},
+  {brand:"Samsung", nome:"Samsung Galaxy S25 FE 128GB",       prezzo:585.80,   img:"imgcatalogo/samsung-galaxy-s25-fe-black.webp",      tags:["Novità"]},
+  {brand:"Samsung", nome:"Samsung Galaxy S25 Ultra 256GB", prezzo:985.0,   img:"imgcatalogo/samsung-galaxy-s25-ultra-black.webp",    tags:["Novità"]},
+  {brand:"Samsung", nome:"Samsung Galaxy A17 256GB",       prezzo:315.0,   img:"imgcatalogo/samsung-galaxy-a17-blue.webp",           tags:["Promo"]},
+  {brand:"Samsung", nome:"Samsung Galaxy A17 128GB",       prezzo:183.90,   img:"imgcatalogo/samsung-galaxy-a17-black.webp",           tags:["Promo"]},
+  {brand:"Samsung", nome:"Samsung Galaxy A36 5G 128GB",    prezzo:411.80,   img:"imgcatalogo/samsung-galaxy-a36-black.webp",           tags:["Novità"]},
+  {brand:"Samsung", nome:"Samsung Galaxy A56 5G 128GB",    prezzo:483.8,   img:"imgcatalogo/samsung-galaxy-a56-black.webp",          tags:["Novità"]},
+  {brand:"Samsung", nome:"Samsung Galaxy S25 Ultra 512GB", prezzo:1681.80, img:"imgcatalogo/samsung-galaxy-s25-ultra-silver.webp",   tags:["Novità"]},
+  {brand:"Samsung", nome:"Samsung Galaxy S25 256GB",       prezzo:917.80,  img:"imgcatalogo/samsung-galaxy-s25-silver.webp",         tags:["Novità"]},
+
+  {brand:"HONOR",   nome:"Honor Magic V5 Foldable 512GB",  prezzo:1321.8,  img:"imgcatalogo/honor-magic-v5-black.webp",              tags:["Novità","Foldable"]},
+  {brand:"HONOR",   nome:"Honor 400 Lite 256GB",           prezzo:159.9,   img:"imgcatalogo/honor-400-lite-black.webp",              tags:["Convenienza"]},
+  {brand:"HONOR",   nome:"Honor 200 Lite 256GB",           prezzo:159.9,   img:"imgcatalogo/honor-200-lite-black.webp",              tags:["Convenienza"]},
+
+  {brand:"OPPO",    nome:"Oppo 14F 256GB",                 prezzo:183.9,   img:"imgcatalogo/oppo-14f-green.webp",                    tags:["Promo"]},
+  {brand:"OPPO",    nome:"Oppo A5 Pro 256GB",              prezzo:255.9,   img:"imgcatalogo/oppo-a5-pro-black.webp",                 tags:["Promo"]},
+  {brand:"OPPO",    nome:"Oppo A40 128GB",                 prezzo:120.0,   img:"imgcatalogo/oppoa-40.webp",                          tags:["Best Buy"]},
+  {brand:"OPPO",    nome:"Oppo A40m 256GB",                prezzo:183.9,   img:"imgcatalogo/oppoa40m-black.webp",                    tags:["Top"]},
+
+  {brand:"OPPO",    nome:"Oppo Find X9 Pro 512GB",       prezzo:841.80,  img:"imgcatalogo/oppo-find-x9-pro-black.webp", tags:["Novità"]},
+  {brand:"Motorola", nome:"Motorola Edge 60 Pro 512GB",    prezzo:633.80,  img:"imgcatalogo/motorola-edge-60pro-black.webp",         tags:["Novità"]},
+  {brand:"Motorola", nome:"Motorola Razr 60 Ultra 512GB",  prezzo:1009.80, img:"imgcatalogo/motorola-razr-60ultra-black.webp",       tags:["Novità","Foldable"]}
+
+];
+      // =======================
+      // RAGGRUPPO VARIANTI PER MODELLO (stesso modello, taglio diverso)
+      // =======================
+      var MODELLI_GROUPED = [];
+
+      (function buildGroupedModels(){
+        var map = {};
+        for (var i=0;i<prodotti.length;i++){
+          var p = prodotti[i];
+          var nome = p.nome || "";
+          var base = nome;
+          var storage = "";
+          var m = nome.match(/^(.*)\s+((64|128|256|512)GB|1TB|2TB)$/i);
+          if (m){
+            base = m[1];
+            storage = m[2].toUpperCase();
+          }
+          if (!map[base]){
+            map[base] = {
+              baseName: base,
+              brand: p.brand,
+              img: p.img,
+              tags: (p.tags || []).slice(),
+              varianti: []
+            };
+          }else{
+            var existingTags = map[base].tags;
+            (p.tags || []).forEach(function(t){
+              if (existingTags.indexOf(t) === -1) existingTags.push(t);
+            });
+          }
+          map[base].varianti.push({
+            nomeCompleto: nome,
+            storage: storage || "",
+            prezzo: p.prezzo
+          });
+        }
+        for (var k in map){
+          if (!Object.prototype.hasOwnProperty.call(map,k)) continue;
+          MODELLI_GROUPED.push(map[k]);
+        }
+      })();
+
+
+      // =======================
+      // MODELLI 3D / AR PER ALCUNI SMARTPHONE
+      // =======================
+            
+      // =======================
+      // MODELLI 3D / AR PER ALCUNI SMARTPHONE
+      // =======================
+      var AR_MODELS = {
+        "Apple iPhone 17 256GB": { glb:"3d/iphone-17-256.glb", usdz:"" },
+        "Apple iPhone 17 512GB": { glb:"3d/iphone-17-256.glb", usdz:"" },
+
+        "Apple iPhone 17 Pro 256GB": { glb:"3d/iphone-17-pro.glb", usdz:"" },
+        "Apple iPhone 17 Pro 512GB": { glb:"3d/iphone-17-pro.glb", usdz:"" },
+        "Apple iPhone 17 Pro 1TB":   { glb:"3d/iphone-17-pro.glb", usdz:"" },
+
+        "Apple iPhone 17 Pro Max 256GB": { glb:"3d/iphone-17-pro-max-512.glb", usdz:"" },
+        "Apple iPhone 17 Pro Max 512GB": { glb:"3d/iphone-17-pro-max-512.glb", usdz:"" },
+
+        "Apple iPhone Air 512GB": { glb:"3d/iphone-air-512gb.glb", usdz:"" },
+
+        "Samsung Galaxy S25 128GB": { glb:"3d/samsung_s25.glb", usdz:"" },
+        "Samsung Galaxy S25 256GB": { glb:"3d/samsung_s25.glb", usdz:"" },
+
+        "Samsung Galaxy S25 Ultra 256GB": { glb:"3d/s25-ultra.glb", usdz:"" },
+        "Samsung Galaxy S25 Ultra 512GB": { glb:"3d/s25-ultra.glb", usdz:"" },
+
+        "Samsung Galaxy A56 5G 128GB": { glb:"3d/galaxy_a56.glb", usdz:"" }
+      };
+
+      // =======================
+      // FILTRO SOLO MODELLI 3D (arrivo da Vision 3D)
+      // =======================
+      var ONLY_3D = false;
+      try {
+        var __params = new URLSearchParams(window.location.search || "");
+        ONLY_3D = (__params.get("3d") === "1");
+      } catch(e) {
+        ONLY_3D = false;
+      }
+
+
+
+      // =======================
+      // CONFIGURAZIONE CENTRALE (COLORI + STATO)
+      // Questo blocco viene rigenerato dall'admin e sostituito nel file.
+      // =======================
+      // === INIZIO BLOCCO CONFIG_PRODOTTI (AUTO-GENERATO) ===
+var CONFIG_PRODOTTI = {
+  "Apple iPhone 17 256GB": { stato:"DISPONIBILE", colori:["Blue", "Black"] },
+  "Apple iPhone 17 512GB": { stato:"TERMINATO", colori:[] },
+  "Apple iPhone 17 Pro 1TB": { stato:"DISPONIBILE", colori:["Blue"] },
+  "Apple iPhone 17 Pro 256GB": { stato:"TERMINATO", colori:["Orange", "Blue", "Silver"] },
+  "Apple iPhone 17 Pro 512GB": { stato:"DISPONIBILE", colori:["Orange"] },
+  "Apple iPhone 17 Pro Max 256GB": { stato:"DISPONIBILE", colori:["Blue", "Orange"] },
+  "Apple iPhone 17 Pro Max 512GB": { stato:"DISPONIBILE", colori:["Blue"] },
+  "Apple iPhone Air 512GB": { stato:"DISPONIBILE", colori:["White"] },
+  "Honor 200 Lite 256GB": { stato:"DISPONIBILE", colori:["Black"] },
+  "Honor 400 Lite 256GB": { stato:"DISPONIBILE", colori:["Black"] },
+  "Honor Magic V5 Foldable 512GB": { stato:"DISPONIBILE", colori:["Black"] },
+  "Motorola Edge 60 Pro 512GB": { stato:"DISPONIBILE", colori:["Black"] },
+  "Motorola Razr 60 Ultra 512GB": { stato:"DISPONIBILE", colori:["Black"] },
+  "Oppo 14F 256GB": { stato:"DISPONIBILE", colori:["Green"] },
+  "Oppo A40 128GB": { stato:"DISPONIBILE", colori:["Black"] },
+  "Oppo A40m 256GB": { stato:"DISPONIBILE", colori:["Black"] },
+  "Oppo A5 Pro 256GB": { stato:"DISPONIBILE", colori:["Black"] },
+  "Oppo Find X9 Pro 512GB": { stato:"DISPONIBILE", colori:["Black"] },
+  "Samsung Galaxy A17 128GB": { stato:"DISPONIBILE", colori:["Black"] },
+  "Samsung Galaxy A17 256GB": { stato:"DISPONIBILE", colori:["Black", "Blue"] },
+  "Samsung Galaxy A36 5G 128GB": { stato:"DISPONIBILE", colori:["Black", "Silver"] },
+  "Samsung Galaxy A56 5G 128GB": { stato:"DISPONIBILE", colori:["Black", "Silver"] },
+  "Samsung Galaxy S25 128GB": { stato:"DISPONIBILE", colori:["Black", "Blue", "Silver", "Green"] },
+  "Samsung Galaxy S25 256GB": { stato:"DISPONIBILE", colori:["Black", "Blue", "Silver"] },
+  "Samsung Galaxy S25 FE 128GB": { stato:"DISPONIBILE", colori:["Black"] },
+  "Samsung Galaxy S25 FE 256GB": { stato:"DISPONIBILE", colori:["Black"] },
+  "Samsung Galaxy S25 Ultra 256GB": { stato:"DISPONIBILE", colori:["Black", "Silver"] },
+  "Samsung Galaxy S25 Ultra 512GB": { stato:"DISPONIBILE", colori:["Black", "Silver"] },
+  "Samsung Galaxy Z Flip7 256GB": { stato:"DISPONIBILE", colori:["Blue", "Black"] },
+  "Samsung Galaxy Z Fold 7 256GB": { stato:"DISPONIBILE", colori:["Blue", "Black"] }
+};
+// Config opzionale: immagini specifiche per colore (TEST BASE NAME)
+// Chiave = nome modello BASE (senza taglio memoria), valori = mappa colore -> percorso immagine
+var IMG_COLORI_PRODOTTI = {
+  // ===== APPLE =====
+  "Apple iPhone 17": {
+    "black":    "imgcatalogo/apple-iphone-17-black.webp",
+    "blue":     "imgcatalogo/apple-iphone-17-blue.webp",
+    "white":    "imgcatalogo/apple-iphone-17-white.webp",
+    "lavender": "imgcatalogo/apple-iphone-17-lavender.webp"
+  },
+  "Apple iPhone 17 Pro": {
+    "blue":   "imgcatalogo/apple-iphone-17-pro-blue.webp",
+    "orange": "imgcatalogo/apple-iphone-17-pro-orange.webp",
+    "silver": "imgcatalogo/apple-iphone-17-pro-silver.webp"
+  },
+  "Apple iPhone 17 Pro Max": {
+    "blue":   "imgcatalogo/apple-iphone-17-pro-max-blue.webp",
+    "orange": "imgcatalogo/apple-iphone-17-pro-max-orange.webp",
+    "silver": "imgcatalogo/apple-iphone-17-pro-max-silver.webp"
+  },
+  "Apple iPhone Air": {
+    "white": "imgcatalogo/apple-iphone-air-white.webp"
+  },
+
+  // ===== HONOR =====
+  "Honor 200 Lite": {
+    "black": "imgcatalogo/honor-200-lite-black.webp"
+  },
+  "Honor 400 Lite": {
+    "black": "imgcatalogo/honor-400-lite-black.webp"
+  },
+  "Honor Magic V5 Foldable": {
+    "black": "imgcatalogo/honor-magic-v5-black.webp"
+  },
+
+  // ===== OPPO =====
+  "Oppo 14F": {
+    "green": "imgcatalogo/oppo-14f-green.webp"
+  },
+  "Oppo A5 Pro": {
+    "black": "imgcatalogo/oppo-a5-pro-black.webp"
+  },
+  "Oppo A40": {
+    "black": "imgcatalogo/oppoa-40.webp"
+  },
+  "Oppo A40m": {
+    "black": "imgcatalogo/oppoa40m-black.webp"
+  },
+  "Oppo Find X9 Pro": {
+    "black": "imgcatalogo/oppo-find-x9-pro-black.webp"
+  },
+
+
+  // ===== MOTOROLA =====
+  "Motorola Edge 60 Pro": {
+    "black": "imgcatalogo/motorola-edge-60pro-black.webp"
+  },
+  "Motorola Razr 60 Ultra": {
+    "black": "imgcatalogo/motorola-razr-60ultra-black.webp"
+  },
+
+  // ===== SAMSUNG S25 FAMILY =====
+  "Samsung Galaxy S25": {
+    "black":  "imgcatalogo/samsung-galaxy-s25-black.webp",
+    "blue":   "imgcatalogo/samsung-galaxy-s25-blue.webp",
+    "silver": "imgcatalogo/samsung-galaxy-s25-silver.webp",
+    "green":  "imgcatalogo/samsung-galaxy-s25-green.webp"
+  },
+  "Samsung Galaxy S25 FE": {
+    "black":  "imgcatalogo/samsung-galaxy-s25-fe-black.webp",
+    "silver": "imgcatalogo/samsung-galaxy-s25-fe-silver.webp"
+  },
+  "Samsung Galaxy S25 Ultra": {
+    "black":  "imgcatalogo/samsung-galaxy-s25-ultra-black.webp",
+    "silver": "imgcatalogo/samsung-galaxy-s25-ultra-silver.webp"
+  },
+
+  // ===== PIEGHEVOLI =====
+  "Samsung Galaxy Z Flip7": {
+    "black": "imgcatalogo/samsung-galaxy-z-flip7-black.webp",
+    "blue":  "imgcatalogo/samsung-galaxy-z-flip7-blue.webp"
+  },
+  "Samsung Galaxy Z Fold 7": {
+    "black": "imgcatalogo/samsung-galaxy-z-fold7-black.webp",
+    "blue":  "imgcatalogo/samsung-galaxy-z-fold7-blue.webp"
+  },
+
+  // ===== ALTRI SAMSUNG =====
+  "Samsung Galaxy A17": {
+    "black": "imgcatalogo/samsung-galaxy-a17-black.webp",
+    "blue":  "imgcatalogo/samsung-galaxy-a17-blue.webp"
+  },
+  "Samsung Galaxy A36 5G": {
+    "black": "imgcatalogo/samsung-galaxy-a36-black.webp",
+    "silver": "imgcatalogo/samsung-galaxy-a36-silver.webp"
+  },
+  "Samsung Galaxy A56 5G": {
+    "black":  "imgcatalogo/samsung-galaxy-a56-black.webp",
+    "silver": "imgcatalogo/samsung-galaxy-a56-silver.webp"
+  }
+};
+
+
+// === FINE BLOCCO CONFIG_PRODOTTI (AUTO-GENERATO) ===
+
+      var CONFIG_LS_KEY = "rl_config_catalogo_v3";
+
+      function cloneConfig(obj){
+        var out = {};
+        for (var k in obj){
+          if(!Object.prototype.hasOwnProperty.call(obj,k)) continue;
+          var entry = obj[k] || {};
+          out[k] = {
+            stato: entry.stato || "DISPONIBILE",
+            colori: Array.isArray(entry.colori) ? entry.colori.slice() : []
+          };
+        }
+        return out;
+      }
+
+      // Carica eventuale override locale (solo sul tuo PC admin)
+      (function syncFromLocal(){
+        try{
+          var raw = localStorage.getItem(CONFIG_LS_KEY);
+          if(!raw) return;
+          var saved = JSON.parse(raw);
+          if(saved && typeof saved === "object"){
+            CONFIG_PRODOTTI = cloneConfig(saved);
+          }
+        }catch(e){}
+      })();
+
+      function salvaConfigLocale(){
+        try{
+          localStorage.setItem(CONFIG_LS_KEY, JSON.stringify(CONFIG_PRODOTTI));
+        }catch(e){}
+      }
+
+      function getConfigProdotto(nome){
+        var cfg = CONFIG_PRODOTTI[nome];
+        if(!cfg){
+          return {stato:"DISPONIBILE", colori:[]};
+        }
+        return {
+          stato: cfg.stato || "DISPONIBILE",
+          colori: Array.isArray(cfg.colori) ? cfg.colori.slice() : []
+        };
+      }
+
+      var ULTIMA_SIMULAZIONE = null;
+      var ULTIMA_OPZIONI_POPUP = null;
+      var filtroCorrente = "Tutti";
+      var filtroPrezzo = "all";
+
+      function inviaSimulazioneWhatsApp(dati, colore){
+  var price     = dati.price;
+  var mesi      = dati.mesi;
+  var rataFinal = dati.rataFinal;
+  var model     = dati.model;
+  var tipoLabel = dati.tipoLabel;
+
+  var format = new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR'}).format;
+
+  var msg =
+    "Ciao Re Long 👋%0A" +
+    "sto completando la scelta dal catalogo e vorrei procedere bloccando l’offerta che ho selezionato:%0A%0A" +
+    "• Modello: " + encodeURIComponent(model) + "%0A" +
+    "• Tipo cliente: " + encodeURIComponent(tipoLabel) + "%0A";
+  if (colore){
+    msg += "• Colore scelto: " + encodeURIComponent(colore) + "%0A%0A";
+  } else {
+    msg += "%0A";
+  }
+  msg +=
+    "• Prezzo Smartphone: " + encodeURIComponent(format(price)) + "%0A" +
+    "• Rateizzazione scelta: " + mesi + " mesi%0A" +
+    "• Rata Totale inclusa Promozione: " + encodeURIComponent(format(rataFinal)) + "%0A" +
+    "• Inclusi: Assicurazione Kasko & Accessori.%0A" +
+    "Mi confermi disponibilità? Grazie";
+
+  if (typeof gtag === 'function') {
+    try {
+      var storageSel = (dati.cardEl && dati.cardEl.getAttribute('data-storage-selezionato')) || '';
+      gtag('event', 'catalog_whatsapp_click', {
+        event_category: 'catalog',
+        event_label: model,
+        price: price,
+        mesi: mesi,
+        rataFinal: rataFinal,
+        color: colore || '',
+        storage: storageSel,
+        tipoCliente: tipoLabel
+      });
+    } catch (e) {}
+  }
+
+  var url = "https://wa.me/" + WA + "?text=" + msg;
+  window.open(url, "_blank", "noopener");
+}
+
+      // =======================
+      // POPUP COLORE
+      // =======================
+      (function initPopupColore(){
+        if (document.getElementById('popup-colore-overlay')) return;
+        var overlay = document.createElement('div');
+        overlay.id = 'popup-colore-overlay';
+        overlay.style.position = 'fixed';
+        overlay.style.inset = '0';
+        overlay.style.background = 'rgba(0,0,0,.65)';
+        overlay.style.display = 'none';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+        overlay.style.zIndex = '9999';
+
+        var panel = document.createElement('div');
+        panel.id = 'popup-colore-panel';
+        panel.style.width = '90%';
+        panel.style.maxWidth = '420px';
+        panel.style.borderRadius = '18px';
+        panel.style.background = 'linear-gradient(145deg,#050505,#111111)';
+        panel.style.border = '1px solid rgba(255,215,0,.35)';
+        panel.style.boxShadow = '0 18px 45px rgba(0,0,0,.8)';
+        panel.style.padding = '16px 14px 14px';
+        panel.style.color = '#f9fafb';
+        panel.style.fontSize = '13px';
+        panel.style.position = 'relative';
+
+        var titolo = document.createElement('div');
+        titolo.id = 'popup-colore-titolo';
+        titolo.style.fontSize = '15px';
+        titolo.style.fontWeight = '700';
+        titolo.style.marginBottom = '4px';
+        titolo.textContent = 'Seleziona il colore disponibile';
+
+        var sottotitolo = document.createElement('div');
+        sottotitolo.id = 'popup-colore-modello';
+        sottotitolo.style.fontSize = '12px';
+        sottotitolo.style.opacity = '0.8';
+        sottotitolo.style.marginBottom = '10px';
+
+        var pillsWrap = document.createElement('div');
+        pillsWrap.id = 'popup-colore-pills';
+        pillsWrap.style.display = 'flex';
+        pillsWrap.style.flexWrap = 'wrap';
+        pillsWrap.style.gap = '6px';
+        pillsWrap.style.marginBottom = '12px';
+
+        var footer = document.createElement('div');
+        footer.style.display = 'flex';
+        footer.style.justifyContent = 'flex-end';
+        footer.style.gap = '8px';
+
+        function makeBtn(label, primary){
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.textContent = label;
+          b.style.borderRadius = '999px';
+          b.style.padding = '6px 14px';
+          b.style.fontSize = '12px';
+          b.style.cursor = 'pointer';
+          b.style.border = '1px solid';
+          b.style.transition = 'background .15s, color .15s, transform .12s, box-shadow .15s';
+          if(primary){
+            b.style.borderColor = 'transparent';
+            b.style.background = 'linear-gradient(90deg,#ffdd55,#ff8800)';
+            b.style.color = '#000';
+            b.style.fontWeight = '600';
+          }else{
+            b.style.borderColor = 'rgba(255,255,255,.35)';
+            b.style.background = 'rgba(10,10,10,.9)';
+            b.style.color = '#e5e7eb';
+          }
+          b.onmouseenter = function(){ b.style.transform='translateY(-1px)'; b.style.boxShadow='0 8px 20px rgba(0,0,0,.7)'; };
+          b.onmouseleave = function(){ b.style.transform=''; b.style.boxShadow='none'; };
+          return b;
+        }
+
+        var btnAnnulla = makeBtn('Annulla', false);
+        var btnConferma = makeBtn('Continua', true);
+
+        var closeX = document.createElement('div');
+        closeX.textContent = '×';
+        closeX.style.position = 'absolute';
+        closeX.style.top = '8px';
+        closeX.style.right = '10px';
+        closeX.style.cursor = 'pointer';
+        closeX.style.fontSize = '16px';
+        closeX.style.opacity = '.7';
+
+        footer.appendChild(btnAnnulla);
+        footer.appendChild(btnConferma);
+
+        panel.appendChild(closeX);
+        panel.appendChild(titolo);
+        panel.appendChild(sottotitolo);
+        panel.appendChild(pillsWrap);
+        panel.appendChild(footer);
+
+        overlay.appendChild(panel);
+        document.body.appendChild(overlay);
+
+        var coloreSelezionato = null;
+
+        overlay.addEventListener('click', function(e){
+          if(e.target === overlay){
+            overlay.style.display = 'none';
+          }
+        });
+        closeX.addEventListener('click', function(){
+          overlay.style.display = 'none';
+        });
+        btnAnnulla.addEventListener('click', function(){
+          overlay.style.display = 'none';
+        });
+        btnConferma.addEventListener('click', function(){
+          if(!ULTIMA_SIMULAZIONE){
+            overlay.style.display = 'none';
+            return;
+          }
+          var dati = ULTIMA_SIMULAZIONE;
+          var opts = (typeof ULTIMA_OPZIONI_POPUP !== 'undefined' && ULTIMA_OPZIONI_POPUP) ? ULTIMA_OPZIONI_POPUP : {};
+          var cardEl = dati && dati.cardEl ? dati.cardEl : null;
+          if(cardEl && coloreSelezionato){
+            try{
+              cardEl.setAttribute('data-colore-selezionato', coloreSelezionato);
+              if (typeof updateCardImageForColor === 'function'){ updateCardImageForColor(cardEl, coloreSelezionato); }
+            }catch(e){}
+          }
+          if(!opts || opts.sendWhatsApp !== false){
+            inviaSimulazioneWhatsApp(dati, coloreSelezionato);
+          }
+          overlay.style.display = 'none';
+        });
+
+        window._popupColore = {
+          open: function(dati, colori, opts){
+            opts = opts || {};
+            ULTIMA_SIMULAZIONE = dati;
+            ULTIMA_OPZIONI_POPUP = opts;
+            coloreSelezionato = (colori && colori.length) ? colori[0] : null;
+            titolo.textContent = 'Seleziona il colore disponibile';
+            sottotitolo.textContent = dati.model;
+            pillsWrap.innerHTML = '';
+            if(colori && colori.length){
+              colori.forEach(function(c){
+                var pill = document.createElement('button');
+                pill.type = 'button';
+                pill.textContent = c;
+                pill.style.borderRadius = '999px';
+                pill.style.padding = '4px 10px';
+                pill.style.fontSize = '12px';
+                pill.style.cursor = 'pointer';
+                pill.style.border = '1px solid rgba(255,255,255,.35)';
+                pill.style.background = 'rgba(15,15,15,.95)';
+                pill.style.color = '#f9fafb';
+                pill.style.marginBottom = '4px';
+                pill.style.transition = 'background .15s, color .15s, border-color .15s';
+                pill.onclick = function(){
+                  var all = pillsWrap.querySelectorAll('button');
+                  for(var i=0;i<all.length;i++){
+                    all[i].style.background = 'rgba(15,15,15,.95)';
+                    all[i].style.color = '#f9fafb';
+                    all[i].style.borderColor = 'rgba(255,255,255,.35)';
+                  }
+                  pill.style.background = 'linear-gradient(90deg,#ffdd55,#ff8800)';
+                  pill.style.color = '#000';
+                  pill.style.borderColor = 'transparent';
+                  coloreSelezionato = c;
+                };
+                pillsWrap.appendChild(pill);
+              });
+            }else{
+              var info = document.createElement('div');
+              info.textContent = 'Nessun colore configurato per questo modello.';
+              info.style.fontSize = '12px';
+              info.style.opacity = '.8';
+              pillsWrap.appendChild(info);
+            }
+            overlay.style.display = 'flex';
+          }
+        };
+      })();
+
+      // =======================
+      // POPUP PRODOTTO TERMINATO
+      // =======================
+      function mostraPopupTerminato(brand, callback){
+        var existing = document.getElementById('popup-terminato-overlay');
+        if(existing){
+          existing.parentNode.removeChild(existing);
+        }
+        var overlay = document.createElement('div');
+        overlay.id = 'popup-terminato-overlay';
+        overlay.style.position='fixed';
+        overlay.style.inset='0';
+        overlay.style.background='rgba(0,0,0,.65)';
+        overlay.style.display='flex';
+        overlay.style.alignItems='center';
+        overlay.style.justifyContent='center';
+        overlay.style.zIndex='9999';
+
+        var panel = document.createElement('div');
+        panel.style.width='90%';
+        panel.style.maxWidth='420px';
+        panel.style.borderRadius='18px';
+        panel.style.background='linear-gradient(145deg,#050505,#101010)';
+        panel.style.border='1px solid rgba(255,80,80,.6)';
+        panel.style.boxShadow='0 18px 45px rgba(0,0,0,.9)';
+        panel.style.padding='16px 14px 14px';
+        panel.style.color='#f9fafb';
+        panel.style.fontSize='13px';
+        panel.style.position='relative';
+
+        var title = document.createElement('div');
+        title.textContent = 'Prodotto in arrivo';
+        title.style.fontSize='15px';
+        title.style.fontWeight='700';
+        title.style.marginBottom='4px';
+
+        var msg = document.createElement('div');
+        msg.style.fontSize='12px';
+        msg.style.opacity='.85';
+        msg.style.marginBottom='12px';
+        if (brand) {
+          var label = brand;
+          if (brand === "Apple") label = "iPhone";
+          if (brand === "Samsung") label = "Samsung";
+          if (brand === "HONOR") label = "HONOR";
+          if (brand === "OPPO") label = "OPPO";
+          msg.textContent = 'Vuoi vedere altri ' + label + ' disponibili?';
+        } else {
+          msg.textContent = 'Vuoi vedere altri modelli disponibili?';
+        }
+
+        var footer = document.createElement('div');
+        footer.style.display='flex';
+        footer.style.justifyContent='flex-end';
+        footer.style.gap='8px';
+
+        function makeBtn(label, primary){
+          var b = document.createElement('button');
+          b.type='button';
+          b.textContent = label;
+          b.style.borderRadius='999px';
+          b.style.padding='6px 14px';
+          b.style.fontSize='12px';
+          b.style.cursor='pointer';
+          b.style.border='1px solid';
+          if(primary){
+            b.style.borderColor='transparent';
+            b.style.background='linear-gradient(90deg,#ffdd55,#ff8800)';
+            b.style.color='#000';
+            b.style.fontWeight='600';
+          }else{
+            b.style.borderColor='rgba(255,255,255,.35)';
+            b.style.background='rgba(10,10,10,.9)';
+            b.style.color='#f9fafb';
+          }
+          return b;
+        }
+
+        var btnNo = makeBtn('Chiudi', false);
+        var btnSi = makeBtn('Vedi altri modelli', true);
+
+        footer.appendChild(btnNo);
+        footer.appendChild(btnSi);
+
+        var closeX = document.createElement('div');
+        closeX.textContent = '×';
+        closeX.style.position = 'absolute';
+        closeX.style.top = '8px';
+        closeX.style.right = '10px';
+        closeX.style.cursor = 'pointer';
+        closeX.style.fontSize = '16px';
+        closeX.style.opacity = '.7';
+
+        panel.appendChild(closeX);
+        panel.appendChild(title);
+        panel.appendChild(msg);
+        panel.appendChild(footer);
+        overlay.appendChild(panel);
+        document.body.appendChild(overlay);
+
+        function chiudi(res){
+          if(overlay.parentNode){ overlay.parentNode.removeChild(overlay); }
+          if(typeof callback === 'function'){ callback(res); }
+        }
+
+        overlay.addEventListener('click', function(e){
+          if(e.target===overlay){ chiudi(false); }
+        });
+        closeX.onclick = function(){ chiudi(false); };
+        btnNo.onclick = function(){ chiudi(false); };
+        btnSi.onclick = function(){ chiudi(true); };
+      }
+
+      function gestisciSeTerminato(brand){
+        mostraPopupTerminato(brand, function(ok){
+          if(ok){
+            // mostra solo modelli stesso brand disponibili
+            filtroCorrente = brand || "Tutti";
+            var wrap = document.getElementById('brandFilters');
+            if(wrap && brand){
+              var sel = wrap.querySelector('.btn-filter[data-b="'+brand+'"]');
+              if(sel) sel.click();
+            }else{
+              render(filtroCorrente);
+            }
+            // nascondi quelli terminati di quel brand
+            var cards = document.querySelectorAll('.card[data-brand="'+brand+'"]');
+            cards.forEach(function(c){
+              var nome = c.getAttribute('data-nome') || (c.querySelector('.model') ? c.querySelector('.model').textContent.trim() : '');
+              var cfgCard = getConfigProdotto(nome);
+              if(cfgCard.stato === "TERMINATO"){
+                c.style.display = 'none';
+              }
+            });
+          }
+        });
+      }
+
+      // =======================
+      // SUPPORTO GRAFICO
+      // =======================
+      function fmt(n){ return new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR'}).format(n); }
+
+      function badgeClass(tag){
+        if(tag==="Novità") return "tag new";
+        if(tag==="Promo") return "tag hot";
+        if(tag==="Ultimi pezzi") return "tag stock";
+        if(tag==="Bestseller") return "tag hot";
+        if(tag==="Convenienza") return "tag stock";
+        if(tag==="Foldable") return "tag tag-foldable";
+        return "tag";
+      }
+
+      // Fallback immagini
+      var IMG_FOLDERS = ["imgcatalogo/","./imgcatalogo/","../imgcatalogo/","docs/imgcatalogo/"];
+      var IMG_EXTS = ["webp","jpg","jpeg","png","JPG","JPEG","PNG"];
+      function tryNextSrc(img){
+        var tried = parseInt(img.getAttribute('data-idx')||"0",10);
+        if(tried >= IMG_FOLDERS.length * IMG_EXTS.length){ img.onerror=null; return; }
+        var base = img.getAttribute('data-base');
+        var f = Math.floor(tried / IMG_EXTS.length);
+        var e = tried % IMG_EXTS.length;
+        img.setAttribute('data-idx', tried+1);
+        img.src = IMG_FOLDERS[f] + base + "." + IMG_EXTS[e];
+      }
+      function onImgError(){ tryNextSrc(this); }
+      function onImgLoad(){ var w=this.parentNode; if(w && w.classList) w.classList.remove('skel'); }
+
+      function badgeSpans(tags){
+        var out = "";
+        for (var i=0;i<(tags||[]).length;i++){
+          var t=tags[i];
+          out += '<span class="'+badgeClass(t)+'">'+t+'</span>';
+        }
+        return out;
+      }
+
+      
+      
+      
+
+      // Mappa nomi colore → stile pillola
+      var COLOR_STYLES = {
+        "white":     { bg:"#f9fafb", text:"#020617", border:"#e5e7eb" },
+        "black":     { bg:"#020617", text:"#f9fafb", border:"#0f172a" },
+        "blue":      { bg:"#1d4ed8", text:"#eff6ff", border:"#1d4ed8" },
+        "orange":    { bg:"#f97316", text:"#111827", border:"#ea580c" },
+        "silver":    { bg:"#e5e7eb", text:"#020617", border:"#d4d4d8" },
+        "mint":      { bg:"#22c55e", text:"#022c22", border:"#16a34a" },
+        "ivy":       { bg:"#15803d", text:"#ecfdf3", border:"#166534" },
+        "titanium":  { bg:"#4b5563", text:"#f9fafb", border:"#374151" },
+        "graphite":  { bg:"#111827", text:"#f9fafb", border:"#020617" },
+        "green":     { bg:"#16a34a", text:"#ecfdf3", border:"#166534" },
+        "grey":      { bg:"#6b7280", text:"#f9fafb", border:"#4b5563" }
+      };
+      function updateCardImageForColor(card, colore){
+        try{
+          if(card){
+            var imgTmp = card.querySelector('img.photo');
+            if(imgTmp){
+              imgTmp.classList.add('img-changing');
+              setTimeout(function(){
+                imgTmp.classList.remove('img-changing');
+              }, 190);
+            }
+          }
+        }catch(e){}
+
+        try{
+          if(!card || !colore) return;
+          var img = card.querySelector('img.photo');
+          if(!img) return;
+
+          var modelFull = card.getAttribute('data-nome') || (card.querySelector('.model') ? card.querySelector('.model').textContent.trim() : '');
+          if(!modelFull) return;
+
+          if(typeof IMG_COLORI_PRODOTTI === "undefined" || !IMG_COLORI_PRODOTTI) return;
+
+          var map = IMG_COLORI_PRODOTTI[modelFull];
+
+          if(!map){
+            var baseNameAttr = card.getAttribute('data-base-name');
+            if(baseNameAttr && IMG_COLORI_PRODOTTI[baseNameAttr]){
+              map = IMG_COLORI_PRODOTTI[baseNameAttr];
+            }
+          }
+
+          if(!map && modelFull){
+            var baseFromFull = modelFull.replace(/\s+\d+GB$/i, "").trim();
+            if(baseFromFull && IMG_COLORI_PRODOTTI[baseFromFull]){
+              map = IMG_COLORI_PRODOTTI[baseFromFull];
+            }
+          }
+
+          if(!map) return;
+
+          var keyCol = (colore || "").trim().toLowerCase();
+          if(!keyCol) return;
+
+          var newSrc = map[keyCol];
+          if(!newSrc) return;
+
+          img.src = newSrc;
+          var m = newSrc.match(/([^\/]+)\.([A-Za-z0-9]+)$/);
+          if(m){
+            img.setAttribute('data-base', m[1]);
+            img.removeAttribute('data-idx');
+          }
+        }catch(e){
+          console.error("updateCardImageForColor error", e);
+        }
+      }
+
+
+      // Applica stile colore reale + stato attivo
+      function applyColorStyle(pill, colorName, isActive){
+        var key = (colorName || "").trim().toLowerCase();
+        var style = COLOR_STYLES[key];
+
+        if(style){
+          pill.style.backgroundColor = style.bg;
+          pill.style.color           = style.text;
+          pill.style.borderColor     = style.border;
+        }else{
+          pill.style.backgroundColor = "#050505";
+          pill.style.color           = "#f9fafb";
+          pill.style.borderColor     = "rgba(255,255,255,.35)";
+        }
+
+        if(isActive){
+          pill.style.boxShadow = "0 3px 10px rgba(0,0,0,.8), 0 0 14px rgba(255,255,255,.55)";
+          pill.style.transform = "translateY(-1px) scale(1.08)";
+          pill.style.fontWeight = "700";
+        }else{
+          pill.style.boxShadow = "0 2px 6px rgba(0,0,0,.7), 0 0 6px rgba(255,255,255,.30)";
+          pill.style.transform = "translateY(0)";
+          pill.style.fontWeight = "600";
+        }
+      }
+
+      function cardHTML(m){
+        var varianti = m.varianti || [];
+        if (!varianti.length){
+          varianti = [{
+            nomeCompleto: m.baseName,
+            storage: "",
+            prezzo: 0
+          }];
+        }
+
+        // Selezioniamo come default la variante DISPONIBILE più economica
+        var defaultVar = null;
+        for (var i=0;i<varianti.length;i++){
+          var v = varianti[i];
+          var cfgv = getConfigProdotto(v.nomeCompleto);
+          if (cfgv.stato === "TERMINATO") continue;
+          if (!defaultVar || v.prezzo < defaultVar.prezzo){
+            defaultVar = v;
+          }
+        }
+        // Se tutte le varianti sono TERMINATE non mostriamo proprio la card
+        if (!defaultVar){
+          return "";
+        }
+
+        var nomeCompleto = defaultVar.nomeCompleto;
+        var cfg = getConfigProdotto(nomeCompleto);
+        var arCfg = (typeof AR_MODELS !== "undefined") ? AR_MODELS[nomeCompleto] || null : null;
+        var hasAR = !!(arCfg && arCfg.glb);
+
+        var src = m.img;
+        var baseMatch = src.match(/([^\/]+)\.([A-Za-z0-9]+)$/);
+        var base = baseMatch ? baseMatch[1] : src;
+
+        var h = '';
+        h += '<article class="card" data-brand="'+m.brand+'" data-prezzo="'+defaultVar.prezzo+'" data-nome="'+nomeCompleto.replace(/"/g,"&quot;")+'" data-base-name="'+m.baseName.replace(/"/g,"&quot;")+'">';
+        h += '  <div class="badges"><span class="tag brand">'+m.brand+'</span>'+badgeSpans(m.tags)+'</div>';
+        h += '  <div class="photo-wrap skel">';
+        h += '    <img class="photo" alt="'+m.baseName.replace(/"/g,'&quot;')+'" data-base="'+base+'" src="'+src+'">';
+        h += '  </div>';
+        h += '  <div class="model">'+m.baseName+'</div>';
+        h += '  <p class="price"></p>';
+        h += '  <p class="note-colori">Seleziona taglio memoria e colore disponibile</p>';
+
+        // riepilogo simulazione (memoria / colore)
+        h += '  <div class="sim-summary" data-empty="1">Stai simulando: <span>—</span></div>';
+
+        // Pillole taglio memoria, solo varianti non TERMINATE
+        var storageMap = {};
+        var storageOrder = [];
+        for (var j=0;j<varianti.length;j++){
+          var vv = varianti[j];
+          if (!vv.storage) continue;
+          var cfgs = getConfigProdotto(vv.nomeCompleto);
+          if (cfgs.stato === "TERMINATO") continue;
+          var lab = vv.storage.toUpperCase();
+          if (!storageMap[lab]){
+            storageMap[lab] = vv;
+            storageOrder.push(lab);
+          }else{
+            if (vv.prezzo < storageMap[lab].prezzo){
+              storageMap[lab] = vv;
+            }
+          }
+        }
+
+        if (storageOrder.length){
+          h += '  <div class="storage-switch">';
+          h += '    <span class="storage-label">Taglio memoria</span>';
+          h += '    <div class="storage-pills">';
+          for (var k=0;k<storageOrder.length;k++){
+            var lab2 = storageOrder[k];
+            var v2 = storageMap[lab2];
+            var isActive = (defaultVar.storage && defaultVar.storage.toUpperCase() === lab2) || (!defaultVar.storage && k===0);
+            h += '      <button class="storage-pill'+(isActive?' active':'')+'" data-storage="'+lab2.replace(/"/g,'&quot;')+'" data-name="'+v2.nomeCompleto.replace(/"/g,'&quot;')+'" data-prezzo="'+v2.prezzo+'">'+lab2+'</button>';
+          }
+          h += '    </div>';
+          h += '  </div>';
+        }
+
+        // blocco colori – si popola in base al taglio selezionato + evidenza rata
+        h += '  <div class="color-rate-row">';
+        h += '    <div class="color-switch is-disabled">';
+        h += '      <span class="color-label">Colore disponibile</span>';
+        h += '      <div class="color-pills"></div>';
+        h += '      <div class="color-selected-label" data-empty="1">Colore selezionato: —</div>';
+        h += '    </div>';
+        h += '    <div class="rate-main">';
+        h += '      <span class="rate-main-label">Rata</span>';
+        h += '      <div class="rate-main-value sim-output-main">—</div>';
+        h += '    </div>';
+        h += '  </div>';
+
+        h += '  <div class="simulatore">';
+        h += '    <div class="cliente-switch" data-extra="'+EXTRA_VODAFONE+'">';
+        h += '      <button class="cliente-btn" data-type="gia">Già cliente Vodafone</button>';
+        h += '      <button class="cliente-btn" data-type="nuovo">Nuovo cliente</button>';
+        h += '    </div>';
+        h += '    <label class="sim-label">Scegli durata rateizzazione:</label>';
+        h += '    <div class="rate-pills" aria-label="Seleziona durata rata per '+m.baseName.replace(/"/g,'&quot;')+'">';
+        h += '      <button type="button" class="rate-pill" data-mesi="12">12 mesi</button>';
+        h += '      <button type="button" class="rate-pill" data-mesi="24">24 mesi</button>';
+        h += '      <button type="button" class="rate-pill" data-mesi="30">30 mesi</button>';
+        h += '      <button type="button" class="rate-pill" data-mesi="36">36 mesi</button>';
+        h += '      <button type="button" class="rate-pill" data-mesi="48">48 mesi</button>';
+        h += '    </div>';
+        h += '    <select class="sim-select" aria-label="Seleziona durata rata per '+m.baseName.replace(/"/g,'&quot;')+'" style="display:none;">';
+        h += '      <option value="">Seleziona durata</option>';
+        h += '      <option value="12">12 mesi</option>';
+        h += '      <option value="24">24 mesi</option>';
+        h += '      <option value="30">30 mesi</option>';
+        h += '      <option value="36">36 mesi</option>';
+        h += '      <option value="48">48 mesi</option>';
+        h += '    </select>';
+        h += '    <div class="sim-output">Rata mensile: —</div>';
+        h += '  </div>';
+
+        if(hasAR){
+          h += '  <button class="btn-ar-3d" onclick="openAR(' + '\'' + (arCfg.glb || '') + '\'' + ', ' + '\'' + (arCfg.usdz || '') + '\'' + ')">';
+          h += '    <span class="btn-ar-3d-icon" aria-hidden="true">';
+          h += '      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">';
+          h += '        <defs>';
+          h += '          <linearGradient id="rl3d-grad" x1="0" y1="0" x2="1" y2="1">';
+          h += '            <stop offset="0%" stop-color="#ffd500"/>';
+          h += '            <stop offset="50%" stop-color="#ff7b00"/>';
+          h += '            <stop offset="100%" stop-color="#ff0000"/>';
+          h += '          </linearGradient>';
+          h += '        </defs>';
+          h += '        <path fill="url(#rl3d-grad)" d="M12 2L4 6v8l8 4 8-4V6l-8-4zm0 2.18L17.2 7 12 9.82 6.8 7 12 4.18zM6 8.62l5 2.5v5.26l-5-2.5V8.62zm7 7.76v-5.26l5-2.5v5.26l-5 2.5z"/>';
+          h += '      </svg>';
+          h += '    </span>';
+          h += '    <span>Vedi in 3D / AR</span>';
+          h += '  </button>';
+        }
+
+        h += '  <button class="btn secondary">';
+h += '    <span class="wa-ico">💬</span>';
+h += '    <span class="txt-wrap">';
+h += '      <span class="txt-main">Acquista ora</span>';
+h += '      <span class="txt-sub">via WhatsApp con ReLong</span>';
+h += '    </span>';
+h += '  </button>';
+        h += '</article>';
+        return h;
+      }
+
+function buildFilters(){
+        var wrap = document.getElementById("brandFilters");
+        var seen = {}; var brands = ["Tutti"];
+        for (var i=0;i<prodotti.length;i++){
+          var b = prodotti[i].brand;
+          if(!seen[b]){ seen[b]=1; brands.push(b); }
+        }
+        if (brands.indexOf('Foldable') === -1) { brands.push('Foldable'); }
+        if (brands.indexOf('3D VISION') === -1) { brands.push('3D VISION'); }
+        var html = "";
+        for (var j=0;j<brands.length;j++){
+          var b = brands[j];
+          html += '<button class="btn-filter'+(b==='Tutti'?' active':'')+'" data-b="'+b+'">'+b+'</button>';
+        }
+        // Pulsante confronto modelli (bordo Vodafone/Fastweb) + filtri prezzo
+        html += '<button class="btn-filter btn-filter-price active" data-range="all">Tutti i prezzi</button>';
+        html += '<button class="btn-filter btn-filter-price" data-range="0-300">Fino a 300€</button>';
+        html += '<button class="btn-filter btn-filter-price" data-range="300-1000">300€ - 1000€</button>';
+        html += '<button class="btn-filter btn-filter-price" data-range="1000-2000">1000€ - 2000€</button>';
+        // Pulsante confronto modelli (bordo Vodafone/Fastweb)
+        html += '<button type="button" class="btn-filter btn-filter-compare" onclick="window.location.href=\'3d-hub/compare-3d.html\'">Confronta in 3D</button>';
+        wrap.innerHTML = html;
+        // Click sui filtri brand
+        wrap.addEventListener("click", function(e){
+          var b = e.target && e.target.getAttribute('data-b');
+          if(!b) return;
+          var btns = wrap.querySelectorAll(".btn-filter[data-b]");
+          for (var k=0;k<btns.length;k++){
+            btns[k].classList.toggle("active", btns[k].getAttribute('data-b')===b);
+          }
+          filtroCorrente = b;
+          render(b);
+        });
+
+        // Click sui filtri prezzo
+        wrap.addEventListener("click", function(e){
+          var range = e.target && e.target.getAttribute('data-range');
+          if(!range) return;
+          var btnsR = wrap.querySelectorAll(".btn-filter-price");
+          for (var r=0;r<btnsR.length;r++){
+            btnsR[r].classList.toggle("active", btnsR[r].getAttribute('data-range')===range);
+          }
+          filtroPrezzo = range;
+          render(filtroCorrente || "Tutti");
+        });}
+
+
+      
+      function attachBehaviors(scope){
+        var imgs = scope.querySelectorAll('img.photo');
+        for (var i=0;i<imgs.length;i++){
+          imgs[i].addEventListener('error', onImgError);
+          imgs[i].addEventListener('load', onImgLoad);
+        }
+
+        var cards = scope.querySelectorAll('.card');
+        for (var c=0;c<cards.length;c++){
+          (function(card){
+            var prezzo = parseFloat(card.getAttribute('data-prezzo') || "0");
+            if (isNaN(prezzo)) prezzo = 0;
+            var select = card.querySelector('.sim-select');
+            var out = card.querySelector('.sim-output');
+            var outMain = card.querySelector('.sim-output-main');
+            var switchWrap = card.querySelector('.cliente-switch');
+            var ratePills = card.querySelectorAll('.rate-pill');
+            var extra = EXTRA_VODAFONE;
+            if (switchWrap && switchWrap.getAttribute('data-extra')){
+              var tmp = parseFloat(switchWrap.getAttribute('data-extra'));
+              if (!isNaN(tmp)) extra = tmp;
+            }
+
+            var priceEl = card.querySelector('.price');
+            var storagePills = card.querySelectorAll('.storage-pill');
+            var simSummary = card.querySelector('.sim-summary');
+            var colorSwitch = card.querySelector('.color-switch');
+            var colorPillsWrap = card.querySelector('.color-pills');
+            var colorSelectedLabel = card.querySelector('.color-selected-label');
+            var DEFAULT_RATE_MESI = "48";
+
+            function resetRataVisual(){
+              if (select){ select.value = ""; }
+              if (out){ out.textContent = 'Rata mensile: —'; }
+              if (outMain){
+                outMain.textContent = '—';
+                outMain.classList.remove('has-value');
+              }
+              if (ratePills && ratePills.length){
+                for (var i=0;i<ratePills.length;i++){
+                  ratePills[i].classList.remove('active');
+                }
+              }
+            }
+
+            function maybeShowRatesAndAuto48(){
+              var hasStoragePills = storagePills && storagePills.length;
+              var storageSel = card.getAttribute('data-storage-selezionato') || '';
+              var coloreSel  = card.getAttribute('data-colore-selezionato') || '';
+              var tipo       = card.getAttribute('data-tipo-cliente') || '';
+
+              if ((hasStoragePills && !storageSel) || !coloreSel || (tipo !== 'gia' && tipo !== 'nuovo')){
+                card.classList.remove('rl-show-rates');
+                resetRataVisual();
+                return;
+              }
+
+              card.classList.add('rl-show-rates');
+
+              if (!select) return;
+
+              var mesiVal = select.value;
+              if (!mesiVal){
+                mesiVal = DEFAULT_RATE_MESI;
+                select.value = mesiVal;
+              }
+
+              if (ratePills && ratePills.length){
+                for (var i=0;i<ratePills.length;i++){
+                  var pill = ratePills[i];
+                  var val = pill.getAttribute('data-mesi') || '';
+                  pill.classList.toggle('active', val === mesiVal);
+                }
+              }
+
+              calcolaRata();
+            }
+
+
+            function updateSimSummary(){
+              if (!simSummary) return;
+              var storage = card.getAttribute('data-storage-selezionato') || '';
+              var colore  = card.getAttribute('data-colore-selezionato') || '';
+              var parts = [];
+              if (storage) parts.push(storage);
+              if (colore) parts.push(colore);
+              if (!parts.length){
+                simSummary.setAttribute('data-empty','1');
+                simSummary.innerHTML = 'Stai simulando: <span>—</span>';
+              } else {
+                simSummary.removeAttribute('data-empty');
+                simSummary.innerHTML = 'Stai simulando: <span>'+parts.join(' · ')+'</span>';
+              }
+              if (colorSelectedLabel){
+                if (colore){
+                  var nice = colore.charAt(0).toUpperCase() + colore.slice(1);
+                  colorSelectedLabel.setAttribute('data-empty','0');
+                  colorSelectedLabel.textContent = 'Colore selezionato: ' + nice;
+                } else {
+                  colorSelectedLabel.setAttribute('data-empty','1');
+                  colorSelectedLabel.textContent = 'Colore selezionato: —';
+                }
+              }
+            }
+
+            
+            function buildColorPillsForCurrentModel(){
+              if (!colorSwitch || !colorPillsWrap) return;
+
+              colorPillsWrap.innerHTML = "";
+              card.removeAttribute('data-colore-selezionato');
+
+              var hasStoragePills = storagePills && storagePills.length;
+              var storageSel = card.getAttribute('data-storage-selezionato') || '';
+
+              // Se ci sono pillole memoria ma non è stato scelto il taglio, niente colori
+              if (hasStoragePills && !storageSel){
+                colorSwitch.classList.add('is-disabled');
+                updateSimSummary();
+                return;
+              }
+
+              var modelFull = card.getAttribute('data-nome') || (card.querySelector('.model') ? card.querySelector('.model').textContent.trim() : '');
+              var cfg = getConfigProdotto(modelFull);
+              var colori = cfg.colori || [];
+
+              if (!colori.length){
+                colorSwitch.classList.add('is-disabled');
+                updateSimSummary();
+                return;
+              }
+
+              colorSwitch.classList.remove('is-disabled');
+
+              colori.forEach(function(col){
+                var pill = document.createElement('button');
+                pill.type = 'button';
+                pill.className = 'color-pill';
+                pill.textContent = col;
+                pill.setAttribute('data-color', col);
+
+                // Stile base colore (non attivo)
+                applyColorStyle(pill, col, false);
+
+                pill.addEventListener('click', function(){
+                  var all = colorPillsWrap.querySelectorAll('.color-pill');
+                  for (var z=0; z<all.length; z++){
+                    var cName = all[z].getAttribute('data-color') || "";
+                    all[z].classList.remove('active');
+                    applyColorStyle(all[z], cName, false);
+                  }
+                  pill.classList.add('active');
+                  applyColorStyle(pill, col, true);
+
+                  card.setAttribute('data-colore-selezionato', col);
+                  updateSimSummary();
+                  if (typeof updateCardImageForColor === 'function'){ updateCardImageForColor(card, col); }
+                  if (typeof gtag === 'function') {
+                    try {
+                      var modelFullClick = card.getAttribute('data-nome') || (card.querySelector('.model') ? card.querySelector('.model').textContent.trim() : '');
+                      gtag('event', 'catalog_color_select', {
+                        event_category: 'catalog',
+                        event_label: modelFullClick,
+                        color: col
+                      });
+                    } catch (e) {}
+                  }
+
+                  maybeShowRatesAndAuto48();
+                });
+
+                colorPillsWrap.appendChild(pill);
+              });
+
+              // Se c'è un solo colore disponibile → selezione automatica
+              if (colori.length === 1){
+                var unico = colorPillsWrap.querySelector('.color-pill');
+                if (unico){
+                  unico.click();
+                }
+              } else {
+                updateSimSummary();
+              }
+            }
+
+if (storagePills && storagePills.length){
+              for (var s=0; s<storagePills.length; s++){
+                storagePills[s].addEventListener('click', function(){
+                  for (var k=0;k<storagePills.length;k++){
+                    storagePills[k].classList.remove('active');
+                  }
+                  this.classList.add('active');
+
+                  var nuovoPrezzo = parseFloat(this.getAttribute('data-prezzo') || "0");
+                  if (!isNaN(nuovoPrezzo)){
+                    prezzo = nuovoPrezzo;
+                    card.setAttribute('data-prezzo', String(nuovoPrezzo));
+                    if (priceEl){
+                      priceEl.textContent = '';
+                    }
+                  }
+
+                  var nuovoNome = this.getAttribute('data-name') || "";
+                  if (nuovoNome){
+                    card.setAttribute('data-nome', nuovoNome);
+                  }
+
+                  var storage = this.getAttribute('data-storage') || '';
+                  card.setAttribute('data-storage-selezionato', storage);
+
+                  if (select){
+                    select.value = "";
+                  }
+                  if (out){
+                    out.textContent = 'Rata mensile: —';
+                  }
+                  if (outMain){
+                    outMain.textContent = '—';
+                    outMain.classList.remove('has-value');
+                  }
+
+                  buildColorPillsForCurrentModel();
+
+                  if (typeof gtag === 'function') {
+                    try {
+                      var modelFull = card.getAttribute('data-nome') || (card.querySelector('.model') ? card.querySelector('.model').textContent.trim() : '');
+                      gtag('event', 'catalog_storage_select', {
+                        event_category: 'catalog',
+                        event_label: modelFull,
+                        storage: storage
+                      });
+                    } catch (e) {}
+                  }
+
+                  maybeShowRatesAndAuto48();
+                });
+              }
+
+              // Se esiste un solo taglio di memoria → selezione automatica
+              if (storagePills.length === 1){
+                storagePills[0].click();
+              } else {
+                buildColorPillsForCurrentModel();
+                updateSimSummary();
+              }
+            }else{
+              buildColorPillsForCurrentModel();
+              updateSimSummary();
+            }
+
+function calcolaRata(){
+              if (!select) return;
+              function resetOutputs(){
+                if (out){ out.textContent = 'Rata mensile: —'; }
+                if (outMain){
+                  outMain.textContent = '—';
+                  outMain.classList.remove('has-value');
+                }
+              }
+              var mesi = parseInt(select.value,10);
+              if (!mesi){
+                resetOutputs();
+                return;
+              }
+              var tipo = card.getAttribute('data-tipo-cliente');
+              if (tipo!=='gia' && tipo!=='nuovo'){
+                resetOutputs();
+                return;
+              }
+              var rataBase = prezzo / mesi;
+              var rataFinal = rataBase + (tipo === 'nuovo' ? extra : 0);
+              if (out){ out.textContent = 'Rata mensile: ' + fmt(rataFinal); }
+              if (outMain){
+                var num = rataFinal;
+                if (isNaN(num)){
+                  outMain.textContent = '—';
+                  outMain.classList.remove('has-value');
+                } else {
+                  var fixed = num.toFixed(2);
+                  var parts = fixed.split('.');
+                  var intPart = parts[0];
+                  var decPart = parts[1] || '00';
+                  var intFormatted = new Intl.NumberFormat('it-IT').format(parseInt(intPart,10));
+                  outMain.innerHTML =
+                    '<span class="rate-main-int">'+ intFormatted +'</span>' +
+                    '<span class="rate-main-dec">,'+ decPart +' € al mese</span>';
+                  outMain.classList.add('has-value');
+                }
+              }
+            }
+
+            if (switchWrap){
+              var btns = switchWrap.querySelectorAll('.cliente-btn');
+              for (var b=0;b<btns.length;b++){
+                btns[b].addEventListener('click', function(){
+                  for (var k=0;k<btns.length;k++){ btns[k].classList.remove('active'); }
+                  this.classList.add('active');
+                  var tipo = this.getAttribute('data-type') === 'nuovo' ? 'nuovo' : 'gia';
+                  card.setAttribute('data-tipo-cliente', tipo);
+
+                  // Dopo aver scelto il tipo cliente, verifica se possiamo mostrare la rata
+                  maybeShowRatesAndAuto48();
+
+                  if (select && select.value){
+                    calcolaRata();
+                  }
+                });
+              }
+            }
+
+            if (select){
+              select.addEventListener('change', function(){
+                var tipo = card.getAttribute('data-tipo-cliente');
+                if (!tipo){
+                  if (switchWrap){
+                    switchWrap.classList.add('shake');
+                    setTimeout(function(){ switchWrap.classList.remove('shake'); }, 700);
+                  }
+                  alert('Seleziona prima se sei GIÀ cliente Vodafone o NUOVO cliente.');
+                  select.value = "";
+                  if (out){ out.textContent = 'Rata mensile: —'; }
+                  if (outMain){ outMain.textContent = '—'; outMain.classList.remove('has-value'); }
+                  return;
+                }
+                calcolaRata();
+              });
+            }
+
+
+            if (ratePills && ratePills.length){
+              for (var rp=0; rp<ratePills.length; rp++){
+                ratePills[rp].addEventListener('click', function(){
+                  if (!select) return;
+
+                  var hasStoragePills = storagePills && storagePills.length;
+                  var storageSel = card.getAttribute('data-storage-selezionato') || '';
+                  var coloreSel  = card.getAttribute('data-colore-selezionato') || '';
+                  var tipo       = card.getAttribute('data-tipo-cliente') || '';
+
+                  if (hasStoragePills && !storageSel){
+                    var storageWrap = card.querySelector('.storage-switch');
+                    if (storageWrap){
+                      storageWrap.classList.add('shake');
+                      setTimeout(function(){ storageWrap.classList.remove('shake'); }, 700);
+                    }
+                    alert('Seleziona prima il taglio memoria disponibile.');
+                    return;
+                  }
+
+                  if (!coloreSel){
+                    var colorWrap = card.querySelector('.color-switch');
+                    if (colorWrap){
+                      colorWrap.classList.add('shake');
+                      setTimeout(function(){ colorWrap.classList.remove('shake'); }, 700);
+                    }
+                    alert('Seleziona prima il colore disponibile.');
+                    return;
+                  }
+
+                  if (!tipo){
+                    if (switchWrap){
+                      switchWrap.classList.add('shake');
+                      setTimeout(function(){ switchWrap.classList.remove('shake'); }, 700);
+                    }
+                    alert('Seleziona prima se sei GIÀ cliente Vodafone o NUOVO cliente.');
+                    return;
+                  }
+
+                  var mesiVal = this.getAttribute('data-mesi') || '';
+                  // evidenzia pillola selezionata
+                  for (var rp2=0; rp2<ratePills.length; rp2++){
+                    ratePills[rp2].classList.remove('active');
+                  }
+                  this.classList.add('active');
+                  // sincronizza select nascosta e scatena logica esistente
+                  select.value = mesiVal;
+
+                  if (typeof gtag === 'function') {
+                    try {
+                      var modelFull = card.getAttribute('data-nome') || (card.querySelector('.model') ? card.querySelector('.model').textContent.trim() : '');
+                      gtag('event', 'catalog_rate_select', {
+                        event_category: 'catalog',
+                        event_label: modelFull,
+                        rate: mesiVal
+                      });
+                    } catch (e) {}
+                  }
+                  try{
+                    var ev = new Event('change', {bubbles:false});
+                    select.dispatchEvent(ev);
+                  }catch(e){
+                    if (typeof select.onchange === 'function'){
+                      select.onchange();
+                    }
+                  }
+                });
+              }
+            }
+          })(cards[c]);
+        }
+      }
+
+
+      function enhanceCarousel(){
+        try{
+          var grid = document.getElementById('grid');
+          if(!grid) return;
+          var cards = grid.querySelectorAll('.card');
+          if(!cards.length) return;
+
+          function updateCenter(){
+            var rect = grid.getBoundingClientRect();
+            var centerX = rect.left + rect.width / 2;
+            var minDist = Infinity;
+            var active = null;
+
+            cards.forEach(function(card){
+              var r = card.getBoundingClientRect();
+              var cx = r.left + r.width / 2;
+              var d = Math.abs(cx - centerX);
+              if(d < minDist){
+                minDist = d;
+                active = card;
+              }
+            });
+
+            cards.forEach(function(card){
+              card.classList.remove('is-center');
+            });
+            if(active){
+              active.classList.add('is-center');
+            }
+          }
+
+          updateCenter();
+
+          var rafId = null;
+          function onScroll(){
+            if(rafId) cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(updateCenter);
+          }
+
+          grid.removeEventListener('scroll', onScroll);
+          grid.addEventListener('scroll', onScroll);
+          window.addEventListener('resize', updateCenter);
+        }catch(e){
+          console.error('enhanceCarousel error', e);
+        }
+      }
+
+      function render(filter){
+        filter = filter || "Tutti";
+        var grid = document.getElementById("grid");
+        var list = MODELLI_GROUPED.slice();
+
+        // Se si arriva dalla pillola Vision 3D, mostra solo i modelli con almeno una variante AR
+        if (typeof ONLY_3D !== "undefined" && ONLY_3D) {
+          list = list.filter(function(m){
+            if (!AR_MODELS) return false;
+            var vars = m.varianti || [];
+            for (var i=0;i<vars.length;i++){
+              if (AR_MODELS[vars[i].nomeCompleto]) return true;
+            }
+            return false;
+          });
+        }
+
+        if (filter && filter !== "Tutti") {
+          if (filter === "Foldable") {
+            list = list.filter(function(m){
+              var tags = m.tags || [];
+              return tags.indexOf("Foldable") !== -1;
+            });
+          } else if (filter === "3D VISION") {
+            list = list.filter(function(m){
+              if (!AR_MODELS) return false;
+              var vars = m.varianti || [];
+              for (var i=0;i<vars.length;i++){
+                if (AR_MODELS[vars[i].nomeCompleto]) return true;
+              }
+              return false;
+            });
+          } else {
+            list = list.filter(function(m){ return m.brand === filter; });
+          }
+        } 
+
+        // Filtro per fascia di prezzo
+        if (filtroPrezzo && filtroPrezzo !== "all") {
+          list = list.filter(function(m){
+            // prezzo minimo tra le varianti disponibili; fallback al prezzo base del modello
+            var prezzoMin = Infinity;
+            var vars = m.varianti || [];
+            for (var i=0;i<vars.length;i++){
+              var v = vars[i];
+              var cfgv = getConfigProdotto(v.nomeCompleto);
+              if (cfgv && cfgv.stato === "TERMINATO") continue;
+              if (typeof v.prezzo === "number" && v.prezzo > 0 && v.prezzo < prezzoMin){
+                prezzoMin = v.prezzo;
+              }
+            }
+            if (!isFinite(prezzoMin) || prezzoMin <= 0){
+              if (typeof m.prezzo === "number" && m.prezzo > 0){
+                prezzoMin = m.prezzo;
+              } else {
+                prezzoMin = 0;
+              }
+            }
+            if (!prezzoMin) return false;
+
+            if (filtroPrezzo === "0-300") {
+              return prezzoMin <= 300;
+            } else if (filtroPrezzo === "300-1000") {
+              return prezzoMin >= 300 && prezzoMin <= 1000;
+            } else if (filtroPrezzo === "1000-2000") {
+              return prezzoMin >= 1000 && prezzoMin <= 2000;
+            }
+            return true;
+          });
+        }
+
+        var htmlCards = ""; 
+        for (var j=0;j<list.length;j++){
+          htmlCards += cardHTML(list[j]);
+        }
+        grid.innerHTML = htmlCards;
+        attachBehaviors(document);
+        enhanceCarousel();
+      }
+
+      
+      document.getElementById('grid').addEventListener('click', function(e){
+        var btn = e.target.closest('.btn.secondary');
+        if(!btn) return;
+
+        var card   = btn.closest('.card');
+        var model  = card.getAttribute('data-nome') || (card.querySelector('.model') ? card.querySelector('.model').textContent.trim() : '');
+        var select = card.querySelector('.sim-select');
+        var switchWrap = card.querySelector('.cliente-switch');
+        var cfg    = getConfigProdotto(model);
+
+        // 🔒 Prima cosa: memoria
+        var storagePills = card.querySelectorAll('.storage-pill');
+        var hasStoragePills = storagePills && storagePills.length;
+        var storageSel = card.getAttribute('data-storage-selezionato') || '';
+        if (hasStoragePills && !storageSel){
+          var storageWrap = card.querySelector('.storage-switch');
+          if (storageWrap){
+            storageWrap.classList.add('shake');
+            setTimeout(function(){ storageWrap.classList.remove('shake'); }, 700);
+          }
+          alert('Seleziona prima il taglio memoria disponibile.');
+          return;
+        }
+
+        // 🔒 Tipo cliente
+        var tipo = card.getAttribute('data-tipo-cliente') || '';
+        if(!tipo){
+          if (switchWrap){
+            switchWrap.classList.add('shake');
+            setTimeout(function(){ switchWrap.classList.remove('shake'); }, 700);
+          }
+          alert('Seleziona prima se sei GIÀ cliente Vodafone o NUOVO cliente.');
+          return;
+        }
+
+        // 🔒 Durata
+        var mesi   = parseInt(select && select.value ? select.value : "0", 10);
+        if(!mesi){
+          if (select){
+            select.focus();
+            select.style.outline = '2px solid #ff7b00';
+            setTimeout(function(){ select.style.outline=''; }, 900);
+          }
+          alert('Seleziona la durata (mesi) per inviare la simulazione su WhatsApp.');
+          return;
+        }
+
+        var price = parseFloat(card.getAttribute('data-prezzo') || "0");
+        if (isNaN(price)) price = 0;
+
+        var rataBase = price / mesi;
+        var extra = (tipo === 'nuovo') ? EXTRA_VODAFONE : 0;
+        var rataFinal = rataBase + extra;
+
+        var tipoLabel = (tipo === 'nuovo')
+          ? "Nuovo cliente Vodafone (con piano dedicato)"
+          : "Già cliente Vodafone";
+
+        var colori = cfg.colori || [];
+        var coloreSelezionato = card.getAttribute('data-colore-selezionato') || null;
+
+        // 🔒 Colore
+        if (colori.length && !coloreSelezionato){
+          var colorWrap = card.querySelector('.color-switch');
+          if (colorWrap){
+            colorWrap.classList.add('shake');
+            setTimeout(function(){ colorWrap.classList.remove('shake'); }, 700);
+          }
+          alert('Seleziona prima il colore disponibile.');
+          return;
+        }
+
+        var dati = {
+          model: model,
+          tipo: tipo,
+          tipoLabel: tipoLabel,
+          mesi: mesi,
+          price: price,
+          rataBase: rataBase,
+          extra: extra,
+          rataFinal: rataFinal,
+          cardEl: card
+        };
+
+        inviaSimulazioneWhatsApp(dati, coloreSelezionato || null);
+      });
+
+      
+// =======================
+      // ADMIN INTEGRATO (COLORI + STATO) + DOWNLOAD BLOCCO
+      // =======================
+      (function initAdmin(){
+  if (!document.body) return;
+  if (document.getElementById('btn-admin-catalogo')) return;
+
+  // Bottone admin (resta nascosto, lo apri dall’hotspot già esistente)
+  var btn = document.createElement('button');
+  btn.id = 'btn-admin-catalogo';
+  btn.textContent = 'Admin catalogo';
+  btn.style.position = 'fixed';
+  btn.style.right = '12px';
+  btn.style.bottom = '12px';
+  btn.style.zIndex = '9999';
+  btn.style.padding = '6px 12px';
+  btn.style.borderRadius = '999px';
+  btn.style.border = '1px solid rgba(255,255,255,.35)';
+  btn.style.background = 'rgba(5,5,5,.9)';
+  btn.style.color = '#f9fafb';
+  btn.style.fontSize = '11px';
+  btn.style.opacity = '.35';
+  btn.style.cursor = 'pointer';
+  btn.style.backdropFilter = 'blur(6px)';
+  btn.style.display = 'none';
+  btn.onmouseenter = function(){ btn.style.opacity = '1'; };
+  btn.onmouseleave = function(){ btn.style.opacity = '.35'; };
+  document.body.appendChild(btn);
+
+  btn.addEventListener('click', function(){
+    var pwd = prompt("Password admin catalogo:");
+    if (pwd !== "Charlie2007") return;
+
+    var overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.inset = '0';
+    overlay.style.background = 'rgba(0,0,0,.65)';
+    overlay.style.display = 'flex';
+    overlay.style.alignItems = 'center';
+    overlay.style.justifyContent = 'center';
+    overlay.style.zIndex = '10000';
+
+    var panel = document.createElement('div');
+    panel.style.width = '96%';
+    panel.style.maxWidth = '540px';
+    panel.style.maxHeight = '84vh';
+    panel.style.overflow = 'auto';
+    panel.style.borderRadius = '18px';
+    panel.style.background = 'linear-gradient(145deg,#050505,#101010)';
+    panel.style.border = '1px solid rgba(255,215,0,.38)';
+    panel.style.boxShadow = '0 18px 45px rgba(0,0,0,.85)';
+    panel.style.padding = '14px 14px 12px';
+    panel.style.color = '#f9fafb';
+    panel.style.fontSize = '12px';
+
+    var title = document.createElement('div');
+    title.textContent = 'Area Admin Catalogo Re Long';
+    title.style.fontSize = '15px';
+    title.style.fontWeight = '700';
+    title.style.marginBottom = '4px';
+
+    var sub = document.createElement('div');
+    sub.innerHTML =
+      'Gestisci <b>giga</b>, <b>disponibilità</b> e <b>colori</b> per ogni modello.' +
+      '<br><small>Per ogni taglio (256GB, 512GB, 1TB, ecc.) metti la spunta se è attivo e scrivi i colori.</small>' +
+      '<br>Alla fine clicca <b>"Scarica blocco"</b> o <b>"Copia blocco"</b> e sostituisci il blocco <code>CONFIG_PRODOTTI</code> nel file HTML/JSON.';
+    sub.style.fontSize = '11px';
+    sub.style.opacity = '.8';
+    sub.style.marginBottom = '8px';
+
+    var list = document.createElement('div');
+
+    // ===== Raggruppo per modello base (es. "Apple iPhone 17 Pro") + varianti giga =====
+    var gruppi = {};
+    prodotti.forEach(function(p){
+      var nomeCompleto = p.nome || "";
+      var baseName = nomeCompleto;
+      var storageLabel = "";
+      var m = nomeCompleto.match(/^(.*)\s+((64|128|256|512)GB|1TB|2TB)$/i);
+      if (m){
+        baseName = m[1];                  // es: "Apple iPhone 17 Pro"
+        storageLabel = m[2].toUpperCase(); // es: "256GB"
+      }
+
+      var keyGruppo = baseName + "||" + (p.brand || "");
+      if (!gruppi[keyGruppo]){
+        gruppi[keyGruppo] = {
+          baseName: baseName,
+          brand: p.brand || "",
+          varianti: []
+        };
+      }
+      gruppi[keyGruppo].varianti.push({
+        nomeCompleto: nomeCompleto,
+        storage: storageLabel
+      });
+    });
+
+    // Ordino i gruppi per brand + nome modello
+    var groupKeys = Object.keys(gruppi).sort(function(a,b){
+      var ga = gruppi[a];
+      var gb = gruppi[b];
+      if (ga.brand === gb.brand){
+        return ga.baseName.localeCompare(gb.baseName);
+      }
+      return ga.brand.localeCompare(gb.brand);
+    });
+
+    groupKeys.forEach(function(keyG){
+      var g = gruppi[keyG];
+
+      var wrap = document.createElement('div');
+      wrap.style.border = '1px solid rgba(255,255,255,.08)';
+      wrap.style.borderRadius = '12px';
+      wrap.style.padding = '6px 8px 6px';
+      wrap.style.marginBottom = '6px';
+      wrap.style.background = 'rgba(15,15,15,.85)';
+
+      // intestazione modello
+      var head = document.createElement('div');
+      head.style.display = 'flex';
+      head.style.justifyContent = 'space-between';
+      head.style.alignItems = 'center';
+      head.style.marginBottom = '4px';
+
+      var lab = document.createElement('div');
+      lab.style.fontSize = '11px';
+      lab.style.fontWeight = '600';
+
+      // Mostro il modello senza il brand iniziale per leggibilità (es. "iPhone 17 Pro")
+      var displayName = g.baseName;
+      if (displayName.indexOf(g.brand + " ") === 0){
+        displayName = displayName.slice((g.brand + " ").length);
+      }
+      lab.textContent = displayName;
+
+      var brandPill = document.createElement('span');
+      brandPill.textContent = g.brand;
+      brandPill.style.fontSize = '10px';
+      brandPill.style.padding = '2px 8px';
+      brandPill.style.borderRadius = '999px';
+      brandPill.style.background = 'rgba(255,255,255,.08)';
+      brandPill.style.marginLeft = '6px';
+
+      lab.appendChild(brandPill);
+      head.appendChild(lab);
+      wrap.appendChild(head);
+
+      // contenitore varianti giga
+      var variantiBox = document.createElement('div');
+      variantiBox.style.display = 'flex';
+      variantiBox.style.flexDirection = 'column';
+      variantiBox.style.gap = '4px';
+
+      // ordino le varianti per taglio (GB/TB)
+      g.varianti.sort(function(a,b){
+        var sa = a.storage || "";
+        var sb = b.storage || "";
+        return sa.localeCompare(sb);
+      });
+
+      g.varianti.forEach(function(v){
+        var riga = document.createElement('div');
+        riga.style.display = 'flex';
+        riga.style.alignItems = 'center';
+        riga.style.gap = '6px';
+
+        var cfg = getConfigProdotto(v.nomeCompleto);
+
+        // Spunta = DISPONIBILE, senza spunta = TERMINATO
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.dataset.role = 'stato';
+        cb.dataset.nome = v.nomeCompleto;
+        cb.style.transform = 'scale(0.9)';
+        cb.checked = (cfg.stato !== 'TERMINATO');
+
+        var gigaLabel = document.createElement('span');
+        gigaLabel.style.fontSize = '11px';
+        gigaLabel.style.minWidth = '60px';
+        gigaLabel.textContent = v.storage || 'Taglio unico';
+
+        var inpColori = document.createElement('input');
+        inpColori.type = 'text';
+        inpColori.dataset.role = 'colori';
+        inpColori.dataset.nome = v.nomeCompleto;
+        inpColori.style.flex = '1';
+        inpColori.style.borderRadius = '999px';
+        inpColori.style.border = '1px solid rgba(255,255,255,.25)';
+        inpColori.style.background = '#050505';
+        inpColori.style.color = '#f9fafb';
+        inpColori.style.fontSize = '11px';
+        inpColori.style.padding = '4px 8px';
+        inpColori.placeholder = 'Colori per ' + (v.storage || 'modello') + ' (es: Blue, Silver, Black)';
+        inpColori.value = (cfg.colori || []).join(", ");
+
+        riga.appendChild(cb);
+        riga.appendChild(gigaLabel);
+        riga.appendChild(inpColori);
+        variantiBox.appendChild(riga);
+      });
+
+      wrap.appendChild(variantiBox);
+      list.appendChild(wrap);
+    });
+
+    var actions = document.createElement('div');
+    actions.style.display = 'flex';
+    actions.style.flexWrap = 'wrap';
+    actions.style.justifyContent = 'flex-end';
+    actions.style.gap = '8px';
+    actions.style.marginTop = '10px';
+
+    function makeBtn(label, primary){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = label;
+      b.style.borderRadius = '999px';
+      b.style.padding = '6px 14px';
+      b.style.fontSize = '11px';
+      b.style.cursor = 'pointer';
+      b.style.border = '1px solid';
+      if (primary){
+        b.style.borderColor = 'transparent';
+        b.style.background = 'linear-gradient(90deg,#ffdd55,#ff8800)';
+        b.style.color = '#000';
+        b.style.fontWeight = '600';
+      }else{
+        b.style.borderColor = 'rgba(255,255,255,.35)';
+        b.style.background = 'rgba(10,10,10,.9)';
+        b.style.color = '#f9fafb';
+      }
+      return b;
+    }
+
+    var btnScarica = makeBtn('Scarica blocco', true);
+    var btnCopia   = makeBtn('Copia blocco', false);
+    var btnApplica = makeBtn('Applica solo qui', false);
+    var btnChiudi  = makeBtn('Chiudi', false);
+
+    actions.appendChild(btnScarica);
+    actions.appendChild(btnCopia);
+    actions.appendChild(btnApplica);
+    actions.appendChild(btnChiudi);
+
+    panel.appendChild(title);
+    panel.appendChild(sub);
+    panel.appendChild(list);
+    panel.appendChild(actions);
+    overlay.appendChild(panel);
+    document.body.appendChild(overlay);
+
+    // ===== Lettura dati da form (checkbox giga + colori) =====
+    function leggiDaForm(){
+      var allStato = list.querySelectorAll('input[data-role="stato"]');
+      var allColori = list.querySelectorAll('input[data-role="colori"]');
+      var map = {};
+
+      allStato.forEach(function(cb){
+        var nome = cb.dataset.nome;
+        if (!map[nome]) map[nome] = {stato:"DISPONIBILE", colori:[]};
+        map[nome].stato = cb.checked ? "DISPONIBILE" : "TERMINATO";
+      });
+
+      allColori.forEach(function(inp){
+        var nome = inp.dataset.nome;
+        if (!map[nome]) map[nome] = {stato:"DISPONIBILE", colori:[]};
+
+        // Normalizzazione colori:
+        // - separatore principale: virgola
+        // - se mancano le virgole ma ci sono spazi, li separiamo comunque
+        // - rimozione duplicati e spazi in eccesso
+        var raw = (inp.value || "").split(',');
+        var tmp = [];
+        raw.forEach(function(piece){
+          piece.split(/\s+/).forEach(function(part){
+            var c = part.trim();
+            if (c){ tmp.push(c); }
+          });
+        });
+        var unique = [];
+        tmp.forEach(function(c){
+          if (unique.indexOf(c) === -1){ unique.push(c); }
+        });
+        map[nome].colori = unique;
+      });
+
+      return map;
+    }
+
+    function generaBloccoTesto(map){
+      var keys = Object.keys(map).sort();
+      var lines = [];
+      lines.push("var CONFIG_PRODOTTI = {");
+      for (var i=0; i<keys.length; i++){
+        var nome = keys[i];
+        var cfg = map[nome];
+        var stati = (cfg.stato || "DISPONIBILE").replace(/"/g,'\\"');
+        var coloriStr = (cfg.colori || []).map(function(c){
+          return '"'+c.replace(/"/g,'\\"')+'"';
+        }).join(", ");
+        lines.push('  "'+nome.replace(/"/g,'\\"')+'": { stato:"'+stati+'", colori:['+coloriStr+'] }'+(i<keys.length-1?',':''));
+      }
+      lines.push("};");
+      return lines.join("\n");
+    }
+
+    btnChiudi.onclick = function(){
+      document.body.removeChild(overlay);
+    };
+
+    btnApplica.onclick = function(){
+      var map = leggiDaForm();
+      CONFIG_PRODOTTI = cloneConfig(map);
+      salvaConfigLocale();
+      render(filtroCorrente);
+      alert('Configurazione applicata solo su questo dispositivo.\nPer renderla definitiva, scarica o copia il blocco e sostituiscilo nel file HTML/JSON.');
+    };
+
+    btnScarica.onclick = function(){
+      var map = leggiDaForm();
+      var testo = "// Blocco CONFIG_PRODOTTI generato dall'admin del catalogo Re Long\n"
+        + "// Sostituisci l'intero blocco tra:\n"
+        + "//   // === INIZIO BLOCCO CONFIG_PRODOTTI (AUTO-GENERATO) ===\n"
+        + "//   ...\n"
+        + "//   // === FINE BLOCCO CONFIG_PRODOTTI (AUTO-GENERATO) ===\n\n"
+        + "      // === INIZIO BLOCCO CONFIG_PRODOTTI (AUTO-GENERATO) ===\n"
+        + generaBloccoTesto(map)
+        + "\n      // === FINE BLOCCO CONFIG_PRODOTTI (AUTO-GENERATO) ===\n";
+
+      var blob = new Blob([testo], {type:"text/plain;charset=utf-8"});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = "config-catalogo-smartphone.js";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
+
+    btnCopia.onclick = function(){
+      var map = leggiDaForm();
+      var testo = "// Blocco CONFIG_PRODOTTI generato dall'admin del catalogo Re Long\n"
+        + "// Sostituisci l'intero blocco tra:\n"
+        + "//   // === INIZIO BLOCCO CONFIG_PRODOTTI (AUTO-GENERATO) ===\n"
+        + "//   ...\n"
+        + "//   // === FINE BLOCCO CONFIG_PRODOTTI (AUTO-GENERATO) ===\n\n"
+        + "      // === INIZIO BLOCCO CONFIG_PRODOTTI (AUTO-GENERATO) ===\n"
+        + generaBloccoTesto(map)
+        + "\n      // === FINE BLOCCO CONFIG_PRODOTTI (AUTO-GENERATO) ===\n";
+
+      function fallbackCopy(t){
+        var ta = document.createElement('textarea');
+        ta.value = t;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        try{
+          document.execCommand('copy');
+          alert('Blocco copiato negli appunti. Ora incollalo nel file HTML/JSON su GitHub.');
+        }catch(e){
+          alert('Non sono riuscito a copiare automaticamente. Usa il file scaricato.');
+        }
+        document.body.removeChild(ta);
+      }
+
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(testo).then(function(){
+          alert('Blocco copiato negli appunti. Ora incollalo nel file HTML/JSON su GitHub.');
+        }).catch(function(){
+          fallbackCopy(testo);
+        });
+      }else{
+        fallbackCopy(testo);
+      }
+    };
+
+    overlay.addEventListener('click', function(e){
+      if (e.target === overlay){
+        document.body.removeChild(overlay);
+      }
+    });
+  });
+})();
+      // =======================
+      // AR VIEWER 3D
+      // =======================
+      function openAR(glbSrc, usdzSrc){
+        try{
+          var overlay = document.getElementById('arOverlay');
+          var viewer  = document.getElementById('arViewer');
+          if(!overlay || !viewer) return;
+
+          if(glbSrc){
+            viewer.src = glbSrc;
+          }else{
+            viewer.removeAttribute('src');
+          }
+
+          if(usdzSrc){
+            viewer.setAttribute('ios-src', usdzSrc);
+          }else{
+            viewer.removeAttribute('ios-src');
+          }
+
+          overlay.classList.add('show');
+        }catch(e){
+          console.error('Errore openAR', e);
+        }
+      }
+
+      function forceCloseAR(){
+        var overlay = document.getElementById('arOverlay');
+        var viewer  = document.getElementById('arViewer');
+        if(overlay) overlay.classList.remove('show');
+        if(viewer && viewer.pause) viewer.pause();
+      }
+
+      function backdropCloseAR(e){
+        if(e && e.target && e.target.id === 'arOverlay'){
+          forceCloseAR();
+        }
+      }
+
+      window.openAR = openAR;
+      window.forceCloseAR = forceCloseAR;
+      window.backdropCloseAR = backdropCloseAR;
+
+      // =======================
+      // AVVIO
+      // =======================
+      buildFilters();
+      render("Tutti");
+
+    }catch(err){
+      var app = document.getElementById('app');
+      var pre = document.createElement('div'); pre.className='err';
+      pre.textContent = 'Errore JS: ' + (err && err.message ? err.message : String(err));
+      app.insertBefore(pre, app.firstChild);
+      console.error(err);
+    }
+  })();
+  </script>
+
+<div id="rl-hotspot-admin" 
+     style="position:fixed;bottom:0;right:0;width:40px;height:40px;opacity:0;z-index:99999;"></div>
+<script>
+(function(){
+  var spot=document.getElementById('rl-hotspot-admin');
+  if(!spot) return;
+  var taps=0; var last=0;
+  spot.addEventListener('click',function(){
+    var now=Date.now();
+    if(now-last<500){ taps++; } else { taps=1; }
+    last=now;
+    if(taps>=3){
+      taps=0;
+      var btn=document.getElementById('btn-admin-catalogo');
+      if(btn){ btn.click(); }
+    }
+  });
+})();
+</script>
+
+  <a class="wa-floating-bar" href="https://wa.me/3908119578844?text=Ciao%20Re%20Long%2C%20sto%20guardando%20il%20catalogo%20smartphone%203D%20Vision.%20Mi%20aiuti%20a%20scegliere%20il%20modello%20giusto%3F" target="_blank" rel="noopener" onclick="gtag('event', 'click_whatsapp', {event_category:'engagement', event_label:'click_whatsapp_button'});">
+    <span class="wa-dot"></span>
+    <span>Hai dubbi su un modello? Scrivici su WhatsApp 08119578844</span>
+  </a>
+
+  <!-- POPUP ONBOARDING SWIPE -->
+  <div id="popup-swipe" style="
+    position:fixed; inset:0;
+    background:rgba(0,0,0,.78);
+    display:flex; align-items:center; justify-content:center;
+    z-index:99999; backdrop-filter:blur(10px);
+    animation:popupFadeIn .35s ease-out;">
+
+    <div style="
+      width:88%; max-width:380px;
+      background:radial-gradient(circle at 0 0,rgba(255,0,0,.35),transparent 55%),
+                  radial-gradient(circle at 100% 100%,rgba(255,200,0,.3),transparent 60%),
+                  #050505;
+      border-radius:24px;
+      border:1px solid rgba(255,200,0,.55);
+      box-shadow:0 20px 60px rgba(0,0,0,.95);
+      padding:22px 18px 18px;
+      text-align:center;
+      position:relative;
+      overflow:hidden;">
+
+      <div style="position:absolute;inset:-40%;opacity:.28;
+        background:radial-gradient(circle at 0 0,rgba(255,0,0,.6),transparent 55%);
+        mix-blend-mode:screen;"></div>
+
+      <div style="position:relative;z-index:1;">
+        <div style="font-size:17px;font-weight:900;letter-spacing:.03em;margin-bottom:6px;">
+          Naviga il catalogo con lo swipe
+        </div>
+
+        <div style="font-size:13px;opacity:.88;margin-bottom:14px;line-height:1.4;">
+          Scorri <b>verso destra o sinistra</b> per cambiare smartphone,<br>
+          usa i <b>brand in alto</b> per filtrare<br>
+          e prova il <b>Confronto in 3D</b> per i modelli top.
+        </div>
+
+        <div style="font-size:38px;animation:swipeHint 1.4s infinite alternate;">
+          👆 ➡️ ⬅️
+        </div>
+
+        <button id="popup-swipe-close" style="
+          margin-top:18px;
+          padding:8px 22px;
+          border-radius:999px;
+          border:none;
+          background:linear-gradient(90deg,var(--brand1),var(--brand3));
+          color:#000;
+          font-weight:800;
+          letter-spacing:.06em;
+          text-transform:uppercase;
+          cursor:pointer;
+          box-shadow:0 0 22px rgba(255,140,0,.8);">
+          Ho capito
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+  @keyframes swipeHint{
+    0%{ transform:translateX(-10px); opacity:.7; }
+    100%{ transform:translateX(10px); opacity:1; }
+  }
+  @keyframes popupFadeIn{
+    from{ opacity:0; }
+    to{ opacity:1; }
+  }
+  @keyframes popupFadeOut{
+    from{ opacity:1; }
+    to{ opacity:0; }
+  }
+  </style>
+
+  <script>
+  (function(){
+    var KEY = "rl_popup_swipe_v1";
+    var seen = false;
+    try{
+      seen = !!localStorage.getItem(KEY);
+    }catch(e){ seen = false; }
+
+    var el = document.getElementById("popup-swipe");
+    if (!el){
+      return;
+    }
+    if (seen){
+      el.parentNode.removeChild(el);
+      return;
+    }
+
+    var btn = document.getElementById("popup-swipe-close");
+    function closePopup(){
+      try{ localStorage.setItem(KEY,"1"); }catch(e){}
+      if (!el) return;
+      el.style.animation = "popupFadeOut .3s ease-out forwards";
+      setTimeout(function(){
+        if (el && el.parentNode){ el.parentNode.removeChild(el); }
+      }, 260);
+    }
+
+    if (btn){
+      btn.addEventListener("click", function(){
+        closePopup();
+      });
+    }
+
+    // chiusura automatica dopo 5 secondi
+    setTimeout(closePopup, 5000);
+  })();
+  </script>
+
+
+<script>
+(function(){
+  // Animazione prezzo quando si cambia taglio memoria
+  try{
+    document.addEventListener('click', function(e){
+      var pill = e.target.closest ? e.target.closest('.storage-pill') : null;
+      if(!pill) return;
+      var card = pill.closest('.card');
+      if(!card) return;
+      var priceEl = card.querySelector('.price');
+      if(!priceEl) return;
+      priceEl.classList.remove('price-bump');
+      void priceEl.offsetWidth;
+      priceEl.classList.add('price-bump');
+      setTimeout(function(){
+        priceEl && priceEl.classList && priceEl.classList.remove('price-bump');
+      }, 260);
+    });
+  }catch(e){}
+
+  // Swipe hint solo alla prima apertura
+  try{
+    var KEY = 'rl_swipe_hint_v1';
+    if(window.localStorage && !localStorage.getItem(KEY)){
+      var div = document.createElement('div');
+      div.className = 'rl-swipe-hint';
+      div.innerHTML = '<span class="rl-swipe-hint-arrow"></span><span>Swipe a destra e sinistra per sfogliare i modelli</span>';
+      document.addEventListener('DOMContentLoaded', function(){
+        document.body.appendChild(div);
+        setTimeout(function(){
+          if(div && div.parentNode){
+            div.parentNode.removeChild(div);
+          }
+          try{ localStorage.setItem(KEY,'1'); }catch(e){}
+        }, 3200);
+      });
+    }
+  }catch(e){}
+})();
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  try{
+    var grid = document.getElementById('grid');
+    var left = document.querySelector('.ghost-arrow-left');
+    var right = document.querySelector('.ghost-arrow-right');
+    if(!grid || !left || !right) return;
+
+    function updateArrows(){
+      var maxScroll = grid.scrollWidth - grid.clientWidth - 2;
+      if (grid.scrollWidth <= grid.clientWidth + 8){
+        left.classList.remove('show');
+        right.classList.remove('show');
+        return;
+      }
+      left.classList.add('show');
+      right.classList.add('show');
+      if (grid.scrollLeft < 4){
+        left.classList.remove('show');
+      }
+      if (grid.scrollLeft > maxScroll - 4){
+        right.classList.remove('show');
+      }
+    }
+
+    left.addEventListener('click', function(){
+      grid.scrollBy({left: -grid.clientWidth * 0.85, behavior: 'smooth'});
+    });
+    right.addEventListener('click', function(){
+      grid.scrollBy({left: grid.clientWidth * 0.85, behavior: 'smooth'});
+    });
+    grid.addEventListener('scroll', updateArrows);
+    setTimeout(updateArrows, 500);
+  }catch(e){}
+});
+</script>
+
+</body>
+</html>
