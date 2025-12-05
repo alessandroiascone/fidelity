@@ -2154,7 +2154,11 @@ function render(){
 
         // Storico riparazioni a scomparsa
         const repairs = [];
-        if(Array.isArray(it.acceptanceHistory)) repairs.push(...it.acceptanceHistory);
+        let historyCount = 0;
+        if(Array.isArray(it.acceptanceHistory)){
+          historyCount = it.acceptanceHistory.length;
+          repairs.push(...it.acceptanceHistory);
+        }
         if(it.acceptance) repairs.push(it.acceptance);
 
         if(repairs.length){
@@ -2171,6 +2175,11 @@ function render(){
 
           repairs.forEach((r,idx)=>{
             const line=document.createElement('div');
+            line.style.display='flex';
+            line.style.alignItems='center';
+            line.style.justifyContent='space-between';
+            line.style.gap='6px';
+
             const d = r.createdAt ? fmt(r.createdAt) : (it.createdAt ? fmt(it.createdAt) : '');
             const prefix = d ? d+' • ' : '';
 
@@ -2179,7 +2188,46 @@ function render(){
               : '';
             const descTxt = r.quoteDescr ? ` • Lavoro: ${r.quoteDescr}` : '';
 
-            line.textContent = `${prefix}${r.type||''} ${r.brand||''} ${r.model||''} – ${r.issue||''}${quoteTxt}${descTxt}`;
+            const textSpan = document.createElement('span');
+            textSpan.textContent = `${prefix}${r.type||''} ${r.brand||''} ${r.model||''} – ${r.issue||''}${quoteTxt}${descTxt}`;
+            line.appendChild(textSpan);
+
+            const editBtn = document.createElement('button');
+            editBtn.type='button';
+            editBtn.className='btn';
+            editBtn.textContent='Modifica';
+            editBtn.style.padding='2px 8px';
+            editBtn.style.fontSize='10px';
+            editBtn.style.borderRadius='999px';
+
+            editBtn.addEventListener('click', ()=>{
+              const newType = prompt('Tipo dispositivo (Smartphone/Computer/Stampante/Console/Tablet/Altro):', r.type || '');
+              if(newType === null) return;
+              const newBrand = prompt('Marca:', r.brand || '');
+              if(newBrand === null) return;
+              const newModel = prompt('Modello:', r.model || '');
+              if(newModel === null) return;
+              const newIssue = prompt('Difetto:', r.issue || '');
+              if(newIssue === null) return;
+
+              r.type  = String(newType).trim();
+              r.brand = String(newBrand).trim();
+              r.model = String(newModel).trim();
+              r.issue = String(newIssue).trim();
+
+              if(idx < historyCount && Array.isArray(it.acceptanceHistory)){
+                it.acceptanceHistory[idx] = r;
+              } else if(it.acceptance){
+                it.acceptance = r;
+              }
+
+              it.updatedAt = new Date().toISOString();
+              saveLocal();
+              saveToGitHub();
+              render();
+            });
+
+            line.appendChild(editBtn);
             boxRep.appendChild(line);
 
             if(idx === repairs.length-1){
