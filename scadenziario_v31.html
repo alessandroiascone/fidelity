@@ -80,6 +80,7 @@
       color:#04121f;border:0;box-shadow:0 8px 26px rgba(0,140,255,.35);
     }
     .btn.ok{background:linear-gradient(135deg,#1fae60,var(--ok));color:#071b10;border:0}
+    .btn.danger{background:linear-gradient(135deg,#ff6b6b,var(--danger));color:#2b0a0a;border:0}
     .grid2{display:grid;grid-template-columns:1fr;row-gap:10px}
     @media (max-width:360px){ .grid2{grid-template-columns:1fr} }
     label{font-size:12px;color:var(--muted)}
@@ -221,6 +222,19 @@
     .svc-radar-label{
       font-weight:600;
       margin-right:4px;
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid var(--stroke);
+      background:#0a0d14;
+      color:var(--muted);
+      cursor:pointer;
+      appearance:none;
+    }
+    .svc-radar-pills{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:4px;
     }
     .svc-radar-tag{
       padding:3px 8px;
@@ -476,6 +490,39 @@
       box-shadow:0 4px 14px rgba(0,0,0,.6);
       white-space:nowrap;
       transition:.18s ease;
+    }
+
+    .fid-quick-popup{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background:rgba(0,0,0,.7);
+      z-index:9999;
+    }
+    .fid-quick-popup-inner{
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,.04),rgba(0,0,0,.96));
+      border-radius:18px;
+      padding:14px 16px 12px;
+      max-width:420px;
+      width:calc(100% - 40px);
+      box-shadow:0 18px 40px rgba(0,0,0,.85);
+    }
+    .fid-quick-popup-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      font-size:13px;
+      font-weight:600;
+      margin-bottom:10px;
+    }
+    .fid-quick-close{
+      background:transparent;
+      border:0;
+      color:var(--muted);
+      font-size:16px;
+      cursor:pointer;
     }
     .fid-quick-btn:hover{
       transform:translateY(-1px);
@@ -1208,7 +1255,16 @@ function waPacchiSIM(name, phone){
       return walink(phone,t);
     }
     function waDeliveredConfirm(name, phone){
-      const t=`Ciao ${name}, sono Alessandro di Re Long (${RELONG_PHONE}).\nGrazie per aver ritirato il prodotto da Re Long 🙌\nPer qualsiasi necessità futura, scrivimi qui su WhatsApp o passa in negozio.`;
+      const t=`Ciao ${name}, sono Alessandro di Re Long (${RELONG_PHONE}).
+Grazie per aver ritirato il prodotto da Re Long 🙌
+Per qualsiasi necessità futura, scrivimi qui su WhatsApp o passa in negozio.`;
+      return walink(phone,t);
+    }
+    function waNotRepaired(name, phone){
+      const hubUrl = 'https://alessandroiascone.github.io/relong-nfc/relong-hub-v2.html';
+      const t=`Ciao ${name}, sono Alessandro di Re Long (${RELONG_PHONE}).
+Il tuo prodotto è stato ritirato NON riparato.
+Se vuoi dare uno sguardo ai nostri servizi, trovi tutto qui: ${hubUrl}`;
       return walink(phone,t);
     }
     function waReview(name, phone){
@@ -1222,6 +1278,30 @@ function waPacchiSIM(name, phone){
       const euro = amt.toFixed(2).replace('.',',');
       const desc = (descr || 'la tua riparazione').trim();
       const t=`Ciao ${name}, sono Alessandro di Re Long (${RELONG_PHONE}).\nIl preventivo per ${desc} è di € ${euro}.\nConfermi di procedere con l'intervento?`;
+      return walink(phone,t);
+    }
+
+    function waQuoteAccepted(name, phone, amount, descr){
+      const amt = Number(amount||0);
+      const euro = amt.toFixed(2).replace('.',',');
+      const desc = (descr || 'la tua riparazione').trim();
+      const t=`Ciao ${name}, sono Alessandro di Re Long (${RELONG_PHONE}).\nGrazie per aver ACCETTATO il preventivo per ${desc} di € ${euro}.\nTi avviserò non appena il prodotto sarà pronto per il ritiro.`;
+      return walink(phone,t);
+    }
+
+    function waQuoteRejected(name, phone, descr){
+      const desc = (descr || 'la tua riparazione').trim();
+      const t=`Ciao ${name}, sono Alessandro di Re Long (${RELONG_PHONE}).\nHai RIFIUTATO il preventivo per ${desc}.\nTi avviserò quando il prodotto NON riparato sarà disponibile per il ritiro.`;
+      return walink(phone,t);
+    }
+
+    function waReadyNotRepaired(name, phone){
+      const t=`Ciao ${name}, sono Alessandro di Re Long (${RELONG_PHONE}).\nIl tuo prodotto NON riparato è pronto per il ritiro.\nPuoi ritirarlo entro 30 giorni, dopodiché procederemo allo smaltimento e alla distruzione del prodotto.`;
+      return walink(phone,t);
+    }
+
+    function waThanksFidReview(name, phone){
+      const t=`Ciao ${name}, grazie per aver ritirato il prodotto da Re Long 🙌\nIl tuo saldo punti Fidelity è stato aggiornato.\nSe ti va, lasciaci una recensione 5⭐ su Google: ${REVIEW_URL}`;
       return walink(phone,t);
     }
 
@@ -1880,21 +1960,32 @@ Ti auguro Buone Feste 🎄 e ti ricordo che per smartphone, energia e servizi de
     function btnOk(label,fn){
       const b=document.createElement('button'); b.className='btn ok'; b.type='button'; b.textContent=label; b.addEventListener('click', fn); return b;
     }
+    function btnDanger(label,fn){
+      const b=document.createElement('button'); b.className='btn danger'; b.type='button'; b.textContent=label; b.addEventListener('click', fn); return b;
+    }
 
     // Radar servizi – usa i remind con colori e spegne quelli già attivi
-    function appendQuickWA(actions, it){
+    function appendQuickWA(actions, services, it){
       ensureReminders(it);
 
       const radar = document.createElement('div');
       radar.className = 'svc-radar';
 
-      const lbl = document.createElement('span');
+      const lbl = document.createElement('button');
+      lbl.type='button';
       lbl.className = 'svc-radar-label';
-      lbl.textContent = 'Radar servizi:';
+      lbl.textContent = 'Radar servizi ▾';
       radar.appendChild(lbl);
 
       const pillsWrap = document.createElement('div');
       pillsWrap.className = 'radar-pills';
+      pillsWrap.style.display='none';
+
+      lbl.addEventListener('click', ()=>{
+        const open = pillsWrap.style.display!=='none';
+        pillsWrap.style.display = open ? 'none':'flex';
+        lbl.textContent = open ? 'Radar servizi ▾' : 'Radar servizi ▴';
+      });
 
       const byType = {};
       (it.reminders || []).forEach(r=>{
@@ -1940,7 +2031,14 @@ Ti auguro Buone Feste 🎄 e ti ricordo che per smartphone, energia e servizi de
       });
 
       radar.appendChild(pillsWrap);
-      actions.appendChild(radar);
+      // Posiziona Radar servizi sotto "Servizi attivi" nella stessa riga di servizi
+      if(services && services.firstChild){
+        services.insertBefore(radar, services.firstChild.nextSibling);
+      } else if(services){
+        services.appendChild(radar);
+      } else {
+        actions.appendChild(radar);
+      }
     }
 
     function btnDelete(it){
@@ -2238,13 +2336,18 @@ function render(){
         title.appendChild(pointsSpan);
         title.appendChild(editBtn);
 
-        // Servizi attivi cliccabili (attiva/disattiva) – con mapping fisso/fissomobile
+        // Servizi attivi cliccabili (attiva/disattiva) – con menu a tendina
         const svcRow=document.createElement('div');
         svcRow.className='svc-radar';
-        const lblSA=document.createElement('span');
+
+        const lblSA=document.createElement('button');
+        lblSA.type='button';
         lblSA.className='svc-radar-label';
-        lblSA.textContent='Servizi attivi:';
-        svcRow.appendChild(lblSA);
+        lblSA.textContent='Servizi attivi ▾';
+
+        const svcPills=document.createElement('div');
+        svcPills.className='svc-radar-pills';
+        svcPills.style.display='none';
 
         const servicesList=[
           { key:'sim',        label:'SIM',              icon:'📶' },
@@ -2279,9 +2382,17 @@ function render(){
             saveLocal(); saveToGitHub(); render();
           });
 
-          svcRow.appendChild(t);
+          svcPills.appendChild(t);
         });
 
+        lblSA.addEventListener('click', ()=>{
+          const open = svcPills.style.display!=='none';
+          svcPills.style.display = open ? 'none' : 'flex';
+          lblSA.textContent = open ? 'Servizi attivi ▾' : 'Servizi attivi ▴';
+        });
+
+        svcRow.appendChild(lblSA);
+        svcRow.appendChild(svcPills);
         services.appendChild(svcRow);
 
         
@@ -2293,20 +2404,20 @@ function render(){
           repairs.push(...it.acceptanceHistory);
         }
         if(it.acceptance) repairs.push(it.acceptance);
+        const repairsClean = repairs.filter(r => r && typeof r === 'object');
 
-        if(repairs.length){
-          const headerRep = document.createElement('button');
-          headerRep.type='button';
-          headerRep.className='label';
-          headerRep.style.cursor='pointer';
-          headerRep.textContent='Storico riparazioni ▾';
+        const headerRep = document.createElement('button');
+        headerRep.type='button';
+        headerRep.className='label';
+        headerRep.style.cursor='pointer';
+        headerRep.textContent='Storico riparazioni ▾';
 
-          const boxRep = document.createElement('div');
-          boxRep.className='r-line';
-          boxRep.style.display='none';
-          boxRep.style.flexDirection='column';
+        const boxRep = document.createElement('div');
+        boxRep.className='r-line';
+        boxRep.style.display='none';
+        boxRep.style.flexDirection='column';
 
-          repairs.forEach((r,idx)=>{
+        repairsClean.forEach((r,idx)=>{
             const row=document.createElement('div');
             row.style.display='flex';
             row.style.alignItems='center';
@@ -2396,7 +2507,7 @@ function render(){
             row.appendChild(btnWrap);
             boxRep.appendChild(row);
 
-            if(idx === repairs.length-1){
+            if(idx === repairsClean.length-1){
               const chips=document.createElement('div');
               chips.className='r-line';
               chips.style.marginTop='4px';
@@ -2406,7 +2517,9 @@ function render(){
                   ? 'Preventivo in attesa'
                   : it.quoteStatus==='sent'
                     ? 'Preventivo inviato'
-                    : 'Preventivo accettato';
+                    : it.quoteStatus==='rejected'
+                      ? 'Preventivo RIFIUTATO'
+                      : 'Preventivo accettato';
                 const chip1=document.createElement('span');
                 chip1.className='label';
                 let txt = st;
@@ -2432,6 +2545,14 @@ function render(){
             }
           });
 
+          
+          if(!repairsClean.length){
+            const empty=document.createElement('div');
+            empty.className='muted';
+            empty.textContent='Nessuna riparazione registrata.';
+            boxRep.appendChild(empty);
+          }
+
           headerRep.addEventListener('click', ()=>{
             const open = boxRep.style.display==='none';
             boxRep.style.display = open ? 'flex' : 'none';
@@ -2440,7 +2561,7 @@ function render(){
 
           services.appendChild(headerRep);
           services.appendChild(boxRep);
-        }
+
 
         if(it.fromPacchi){
           const pacchiBadge=document.createElement('span');
@@ -2450,7 +2571,7 @@ function render(){
         }
 
         // Radar servizi con remind
-        appendQuickWA(actions, it);
+        appendQuickWA(actions, services, it);
 
         if(it.acceptance){
           // Badge importo preventivo
@@ -2459,56 +2580,19 @@ function render(){
           if(hasQuote && !it.quoteStatus){
             it.quoteStatus='pending';
           }
-          if(hasQuote){
-            const quoteBadge=document.createElement('span');
-            quoteBadge.className='badge-mini';
-            quoteBadge.textContent = '💰 Preventivo: € ' + quoteVal.toFixed(2).replace('.',',');
-            services.appendChild(quoteBadge);
-          }
-
           // Pulsante imposta/modifica preventivo (descrizione + importo)
-          actions.append(btn('Imposta / modifica preventivo', ()=>{
-            if(!it.acceptance) return;
-            const currentDesc = it.acceptance.quoteDescr || '';
-            const desc = prompt('Descrivi il lavoro preventivato (es. sostituzione display + pellicola):', currentDesc);
-            if(desc===null) return;
-
-            const currentAmount = Number(it.acceptance.quote || 0);
-            const defAmountStr = currentAmount>0 ? currentAmount.toFixed(2).replace('.',',') : '';
-            const val = prompt('Inserisci l\'importo del preventivo (es. 79 oppure 79,90):', defAmountStr);
-            if(val===null) return;
-
-            const q = parseFloat(String(val).replace(',','.'));
-            if(!Number.isFinite(q) || q<=0){
-              alert('Importo non valido');
-              return;
-            }
-
-            it.acceptance.quote = q;
-            it.acceptance.quoteDescr = desc;
-            it.quoteStatus = 'pending';
-            it.updatedAt = new Date().toISOString();
-            saveLocal(); saveToGitHub(); render();
-          }));
-
-          // Valori attuali preventivo
-          quoteVal = Number(it.acceptance.quote || 0);
-          hasQuote = Number.isFinite(quoteVal) && quoteVal>0;
-          if(hasQuote && !it.quoteStatus){
-            it.quoteStatus='pending';
-          }
-
-          // Invio preventivo (finché non è accettato)
-          if(it.quoteStatus !== 'accepted'){
-            actions.append(btn('Invia preventivo su WhatsApp', ()=>{
+          // Visibile solo finché il preventivo non è stato né accettato né rifiutato
+          // e solo se la riparazione non è già stata consegnata
+          if(it.quoteStatus !== 'accepted' && it.quoteStatus !== 'rejected' && it.repairStatus !== 'consegnato'){
+            actions.append(btn('Imposta / modifica preventivo', ()=>{
               if(!it.acceptance) return;
-
-              let currentDesc = it.acceptance.quoteDescr || '';
+              const currentDesc = it.acceptance.quoteDescr || '';
               const desc = prompt('Descrivi il lavoro preventivato (es. sostituzione display + pellicola):', currentDesc);
               if(desc===null) return;
 
-              const defAmount = hasQuote ? quoteVal.toFixed(2).replace('.',',') : '';
-              const val = prompt('Conferma/modifica importo preventivo (es. 79 oppure 79,90):', defAmount);
+              const currentAmount = Number(it.acceptance.quote || 0);
+              const defAmountStr = currentAmount>0 ? currentAmount.toFixed(2).replace('.',',') : '';
+              const val = prompt('Inserisci l\'importo del preventivo (es. 79 oppure 79,90):', defAmountStr);
               if(val===null) return;
 
               const q = parseFloat(String(val).replace(',','.'));
@@ -2519,8 +2603,9 @@ function render(){
 
               it.acceptance.quote = q;
               it.acceptance.quoteDescr = desc;
-              it.quoteStatus='sent';
-              it.updatedAt=new Date().toISOString();
+              // Impostando il preventivo lo inviamo SUBITO al cliente via WhatsApp
+              it.quoteStatus = 'sent';
+              it.updatedAt = new Date().toISOString();
               saveLocal(); saveToGitHub();
 
               try{
@@ -2531,98 +2616,143 @@ function render(){
             }));
           }
 
+// Valori attuali preventivo
+          quoteVal = Number(it.acceptance.quote || 0);
+          hasQuote = Number.isFinite(quoteVal) && quoteVal>0;
+          if(hasQuote && !it.quoteStatus){
+            it.quoteStatus='pending';
+          }
+
+
           // Bottone "Preventivo accettato" quando è stato inviato
           if(it.quoteStatus==='sent'){
-            actions.append(btn('Preventivo accettato', ()=>{
+            actions.append(btnOk('Preventivo accettato', ()=>{
+              const q   = Number(it.acceptance && it.acceptance.quote ? it.acceptance.quote : 0);
+              const desc = (it.acceptance && it.acceptance.quoteDescr ? it.acceptance.quoteDescr : '').trim();
               it.quoteStatus='accepted';
+              it.quoteAcceptedAt = new Date().toISOString();
               it.updatedAt=new Date().toISOString();
               saveLocal(); saveToGitHub(); render();
+              try{
+                window.open(waQuoteAccepted(it.name, it.phone, q, desc),'_blank','noopener');
+              }catch{}
+            }));
+            actions.append(btnDanger('Preventivo rifiutato', ()=>{
+              if(!confirm('Confermi che il cliente ha RIFIUTATO il preventivo?')) return;
+              const desc = (it.acceptance && it.acceptance.quoteDescr ? it.acceptance.quoteDescr : '').trim();
+              it.quoteStatus='rejected';
+              it.quoteRejectedAt = new Date().toISOString();
+              it.updatedAt=new Date().toISOString();
+              saveLocal(); saveToGitHub(); render();
+              try{
+                window.open(waQuoteRejected(it.name, it.phone, desc),'_blank','noopener');
+              }catch{}
             }));
           }
 
-          if(it.repairStatus!=='pronto' && it.repairStatus!=='consegnato'){
-            actions.append(btnOk('Da consegnare (avvisa cliente)', ()=>{
-              it.repairStatus='pronto'; it.updatedAt=new Date().toISOString(); saveLocal(); saveToGitHub(); render();
-              window.open(waPickup(it.name, it.phone),'_blank','noopener');
+          
+          const hasQuoteData = !!(it.acceptance && (it.acceptance.quote || it.acceptance.quoteDescr || it.quoteStatus));
+          const quoteDone = hasQuoteData && (it.quoteStatus === 'accepted' || it.quoteStatus === 'rejected');
 
-              if(dashModal && dashModal.classList.contains('on')) updateDashboard();
-            }));
-          } else if(it.repairStatus==='pronto'){
-            actions.append(btn('Ritirato (chiudi pratica)', ()=>{
-              it.repairStatus='consegnato';
-              it.deliveredAt = new Date().toISOString();
-              it.postReviewAt = addDays(new Date(), 3).toISOString();
-              it.postReviewSent = false;
-
-              // Chiedi l'UTILE netto della riparazione per la dashboard
-              let prev = '';
-              if(typeof it.repairProfit === 'number' && !Number.isNaN(it.repairProfit) && it.repairProfit>0){
-                prev = String(it.repairProfit);
-              }
-              const input = prompt('Inserisci il valore UTILE (solo guadagno netto) incassato per questa riparazione:', prev);
-              if(input !== null){
-                const val = Number(input.replace(',','.'));
-                if(Number.isFinite(val) && val>=0){
-                  it.repairProfit = val;
-                }
-              }
-
-              const devType = (it.acceptance && it.acceptance.type ? String(it.acceptance.type).toLowerCase() : '');
-              let delta = 0;
-              if(devType === 'computer'){
-                delta = POINTS_REPAIR_PC;
-              }else if(devType === 'smartphone' || devType === 'tablet'){
-                // Smartphone e Tablet valgono gli stessi punti
-                delta = POINTS_REPAIR_PHONE;
-              }
-              if(delta > 0){
-                const code  = 'repair-' + (devType || 'altro') + '-delivered';
-                const label = 'Riparazione ' + (devType || 'dispositivo') + ' completata';
-                addFidelityMovement(it, code, label, delta);
+          if(quoteDone && it.repairStatus!=='pronto' && it.repairStatus!=='consegnato'){
+            if(it.quoteStatus === 'rejected'){
+              actions.append(btnOk('Da consegnare (prodotto NON riparato)', ()=>{
+                it.repairStatus='pronto';
+                it.notRepaired = true;
+                it.updatedAt=new Date().toISOString();
+                saveLocal(); saveToGitHub(); render();
                 try{
-                  window.open(
-                    waFidelityOperation(it, {
-                      isNew:false,
-                      premiumInfo:null,
-                      ops:[{ key:'riparazione', label, pts: delta }]
-                    }),
-                    '_blank','noopener'
-                  );
+                  window.open(waReadyNotRepaired(it.name, it.phone),'_blank','noopener');
                 }catch{}
-              }
 
-              it.updatedAt = new Date().toISOString();
-              saveLocal();
-              saveToGitHub();
-              render();
+                if(dashModal && dashModal.classList.contains('on')) updateDashboard();
+              }));
+            } else {
+              actions.append(btnOk('Da consegnare (avvisa cliente)', ()=>{
+                it.repairStatus='pronto';
+                it.notRepaired = false;
+                it.updatedAt=new Date().toISOString();
+                saveLocal(); saveToGitHub(); render();
+                try{
+                  window.open(waPickup(it.name, it.phone),'_blank','noopener');
+                }catch{}
 
-              if(dashModal && dashModal.classList.contains('on')) updateDashboard();
-            }));
+                if(dashModal && dashModal.classList.contains('on')) updateDashboard();
+              }));
+            }
+
+          } else if(quoteDone && it.repairStatus==='pronto'){
+            if(it.quoteStatus === 'rejected'){
+              // Chiusura pratica per prodotti NON riparati dopo preventivo rifiutato
+              actions.append(btnOk('Consegnato NON riparato', ()=>{
+                if(!confirm('Confermi che il prodotto è stato riconsegnato NON riparato?')) return;
+                it.repairStatus='consegnato';
+                it.notRepaired = true;
+                it.deliveredAt = new Date().toISOString();
+                it.postReviewAt = null;
+                it.postReviewSent = true;
+
+                try{
+                  window.open(waNotRepaired(it.name, it.phone),'_blank','noopener');
+                }catch{}
+
+                it.updatedAt = new Date().toISOString();
+                saveLocal();
+                saveToGitHub();
+                render();
+
+                if(dashModal && dashModal.classList.contains('on')) updateDashboard();
+              }));
+            } else {
+              actions.append(btnOk('Ritirato (chiudi pratica)', ()=>{
+                it.repairStatus='consegnato';
+                it.deliveredAt = new Date().toISOString();
+                it.postReviewAt = addDays(new Date(), 3).toISOString();
+                it.postReviewSent = false;
+
+                // Chiedi l'UTILE netto della riparazione per la dashboard
+                let prev = '';
+                if(typeof it.repairProfit === 'number' && !Number.isNaN(it.repairProfit) && it.repairProfit>0){
+                  prev = String(it.repairProfit);
+                }
+                const input = prompt('Inserisci il valore UTILE (solo guadagno netto) incassato per questa riparazione:', prev);
+                if(input !== null){
+                  const val = Number(input.replace(',','.'));
+                  if(Number.isFinite(val) && val>=0){
+                    it.repairProfit = val;
+                  }
+                }
+
+                const devType = (it.acceptance && it.acceptance.type ? String(it.acceptance.type).toLowerCase() : '');
+                let delta = 0;
+                if(devType === 'computer'){
+                  delta = POINTS_REPAIR_PC;
+                }else if(devType === 'smartphone' || devType === 'tablet'){
+                  // Smartphone e Tablet valgono gli stessi punti
+                  delta = POINTS_REPAIR_PHONE;
+                }
+                if(delta > 0){
+                  const code  = 'repair-' + (devType || 'altro') + '-delivered';
+                  const label = 'Riparazione ' + (devType || 'dispositivo') + ' completata';
+                  addFidelityMovement(it, code, label, delta);
+                }
+
+                try{
+                  window.open(waThanksFidReview(it.name, it.phone),'_blank','noopener');
+                }catch{}
+
+                it.updatedAt = new Date().toISOString();
+                saveLocal();
+                saveToGitHub();
+                render();
+
+                if(dashModal && dashModal.classList.contains('on')) updateDashboard();
+              }));
+            }
           }
         } else {
-
-          // 👉 Completato per pratiche NON riparazioni: solo chiusura, niente punti
-          if(!it.done){
-            actions.append(btn('Completato', ()=>{
-              try{ window.open(waDeliveredConfirm(it.name, it.phone),'_blank','noopener'); }catch{}
-              it.done = true;
-              it.doneAt = new Date().toISOString();
-
-              it.updatedAt = new Date().toISOString();
-              saveLocal();
-              saveToGitHub();
-              render();
-            }));
-          } else {
-            const lab = document.createElement('span');
-            lab.className = 'label';
-            lab.textContent = 'Pratica completata';
-            actions.append(lab);
-          }
+          // Pulsanti 'Completato' ed 'Elimina' rimossi (gestione manuale)
         }
-
-        // Tasto elimina SEMPRE disponibile
-        actions.append(btnDelete(it));
 
         // Storico punti Fidelity (ultimi movimenti)
         if(fidHistory){
@@ -2655,92 +2785,15 @@ function render(){
 
 // Timeline cliente (ultimi eventi principali)
 if(timeline){
-  const events = [];
-
-  if(it.createdAt){
-    events.push({ d:new Date(it.createdAt), label:'Cliente creato a sistema' });
-  }
-  if(it.fromPacchi && it.createdAt){
-    events.push({ d:new Date(it.createdAt), label:'Registrato da Pacchi' });
-  }
-
-  if(Array.isArray(it.pointsMovements)){
-    it.pointsMovements.forEach(m=>{
-      if(!m) return;
-      const dt = m.at ? new Date(m.at) : null;
-      if(!dt || isNaN(dt)) return;
-      const sign = m.delta>0 ? '+' : '';
-      events.push({
-        d: dt,
-        label: `Fidelity: ${m.label} (${sign}${m.delta} pt)`
-      });
-    });
-  }
-
-  if(Array.isArray(it.reminders)){
-    it.reminders.forEach(r=>{
-      if(!r || !r.type || !r.dueAt) return;
-      const dt = new Date(r.sentAt || r.dueAt);
-      if(!dt || isNaN(dt)) return;
-      const tLabel = typeLabel[r.type] || r.type;
-      const sentTxt = r.sent ? ' (inviato)' : '';
-      events.push({
-        d: dt,
-        label: `Reminder ${tLabel}${sentTxt}`
-      });
-    });
-  }
-
-  if(Array.isArray(it.acceptanceHistory)){
-    it.acceptanceHistory.forEach(a=>{
-      if(!a) return;
-      const dt = a.createdAt ? new Date(a.createdAt) : (it.createdAt ? new Date(it.createdAt) : null);
-      if(!dt || isNaN(dt)) return;
-      const dev = a.type || 'Dispositivo';
-      const desc = (a.brand || '') + ' ' + (a.model || '');
-      events.push({
-        d: dt,
-        label: `Riparazione: ${dev} ${desc}`.trim()
-      });
-    });
-  }
-  if(it.acceptance){
-    const a = it.acceptance;
-    const dt = a.createdAt ? new Date(a.createdAt) : (it.createdAt ? new Date(it.createdAt) : null);
-    if(dt && !isNaN(dt)){
-      const dev = a.type || 'Dispositivo';
-      const desc = (a.brand || '') + ' ' + (a.model || '');
-      events.push({
-        d: dt,
-        label: `Riparazione in corso: ${dev} ${desc}`.trim()
-      });
-    }
-  }
-
-  if(!events.length){
-    timeline.style.display = 'none';
-  } else {
-    events.sort((a,b)=> a.d - b.d);
-    const latest = events.slice(-7);
-    timeline.style.display = '';
-    timeline.innerHTML = '<strong>Timeline cliente:</strong>';
-    const ulTl = document.createElement('ul');
-    ulTl.style.margin = '4px 0 0';
-    ulTl.style.paddingLeft = '18px';
-    ulTl.style.fontSize = '11px';
-    ulTl.style.color = 'var(--muted)';
-    latest.forEach(ev=>{
-      const li = document.createElement('li');
-      li.textContent = fmt(ev.d.toISOString()) + ' – ' + ev.label;
-      ulTl.appendChild(li);
-    });
-    timeline.appendChild(ulTl);
-  }
+  // Timeline cliente nascosta (tracciata solo a livello dati)
+  timeline.style.display = 'none';
+  timeline.innerHTML = '';
 }
 
-        // Strumenti Fidelity singolo cliente
+// Strumenti Fidelity singolo cliente
         const fidRow = document.createElement('div');
         fidRow.className = 'r-line fid-actions';
+        let quickPopup = null;
 
         const bAddPts = document.createElement('button');
         bAddPts.type='button';
@@ -2778,7 +2831,18 @@ if(timeline){
           window.open(url,'_blank','noopener');
         });
 
+        const bAssignQuick = document.createElement('button');
+        bAssignQuick.type='button';
+        bAssignQuick.className='btn fid-btn-ghost';
+        bAssignQuick.innerHTML='🎯 Assegna punti';
+        bAssignQuick.addEventListener('click', ()=>{
+          if(quickPopup){
+            quickPopup.style.display='flex';
+          }
+        });
+
         fidRow.appendChild(bAddPts);
+        fidRow.appendChild(bAssignQuick);
         fidRow.appendChild(bSendCard);
         fidRow.appendChild(bOpenCard);
         actions.appendChild(fidRow);
@@ -2790,8 +2854,8 @@ if(timeline){
         const quickDefs = [
           { key:'repair-pc',         icon:'🖥️', label:'Rip. PC',          cfg:'POINTS_REPAIR_PC',    reason:'Riparazione computer completata' },
           { key:'repair-phone',      icon:'📱', label:'Rip. Smartphone',   cfg:'POINTS_REPAIR_PHONE', reason:'Riparazione smartphone completata' },
-          { key:'kit-cartucche',     icon:'🖨️', label:'Kit 4 cartucce',    cfg:'POINTS_KIT_CARTUCCE',  reason:'Acquisto Kit 4 cartucce compatibili' },
-          { key:'toner',             icon:'🖨️', label:'Toner compat.',     cfg:'POINTS_TONER_COMP',    reason:'Acquisto Toner compatibile' },
+          { key:'kit-cartucche',     icon:'🖨️', label:'Kit 4 cartucce',   cfg:'POINTS_KIT_CARTUCCE',  reason:'Acquisto Kit 4 cartucce compatibili' },
+          { key:'toner',             icon:'🖨️', label:'Toner compat.',    cfg:'POINTS_TONER_COMP',    reason:'Acquisto Toner compatibile' },
           { key:'sim',               icon:'📶', label:'SIM mobile',        cfg:'POINTS_SIM',          reason:'Attivazione SIM mobile' },
           { key:'fisso',             icon:'🏠', label:'Linea fissa',       cfg:'POINTS_FISSO',        reason:'Attivazione linea fissa' },
           { key:'energia',           icon:'⚡', label:'Luce & Gas',        cfg:'POINTS_ENERGIA',      reason:'Attivazione Luce & Gas' },
@@ -2822,7 +2886,7 @@ if(timeline){
               alert('Configura prima i punti corretti nelle impostazioni Fidelity.');
               return;
             }
-            if(!confirm(`Confermi l\'accredito di ${pts} punti per: ${def.label}?`)){
+            if(!confirm(`Confermi l'accredito di ${pts} punti per: ${def.label}?`)){
               return;
             }
             const code = `${def.key}-auto-` + Date.now();
@@ -2834,7 +2898,33 @@ if(timeline){
           quickRow.appendChild(btn);
         });
 
-        actions.appendChild(quickRow);
+        // Popup Assegna punti
+        quickPopup = document.createElement('div');
+        quickPopup.className='fid-quick-popup';
+        quickPopup.style.display='none';
+
+        const quickInner = document.createElement('div');
+        quickInner.className='fid-quick-popup-inner';
+
+        const quickHeader = document.createElement('div');
+        quickHeader.className='fid-quick-popup-header';
+        const quickTitle = document.createElement('span');
+        quickTitle.textContent='Assegna punti Fidelity';
+        const quickClose = document.createElement('button');
+        quickClose.type='button';
+        quickClose.className='fid-quick-close';
+        quickClose.textContent='✕';
+        quickClose.addEventListener('click', ()=>{
+          quickPopup.style.display='none';
+        });
+        quickHeader.appendChild(quickTitle);
+        quickHeader.appendChild(quickClose);
+
+        quickInner.appendChild(quickHeader);
+        quickInner.appendChild(quickRow);
+        quickPopup.appendChild(quickInner);
+        actions.appendChild(quickPopup);
+
 
 // Storico punti a scomparsa
         if(Array.isArray(it.pointsMovements) && it.pointsMovements.length){
@@ -2876,8 +2966,8 @@ if(timeline){
             headerPts.textContent = open ? 'Storico punti ▴' : 'Storico punti ▾';
           });
 
-          points.appendChild(headerPts);
-          points.appendChild(boxPts);
+          services.appendChild(headerPts);
+          services.appendChild(boxPts);
         }
 
 
