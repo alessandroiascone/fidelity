@@ -1296,12 +1296,12 @@ Se vuoi dare uno sguardo ai nostri servizi, trovi tutto qui: ${hubUrl}`;
     }
 
     function waReadyNotRepaired(name, phone){
-      const t=`Ciao ${name}, sono Alessandro di Re Long (${RELONG_PHONE}).\nIl tuo prodotto NON riparato è pronto per il ritiro.\nPuoi ritirarlo entro 30 giorni, dopodiché procederemo allo smaltimento e alla distruzione del prodotto.`;
+      const t=`Ciao ${name}, sono Alessandro di Re Long (${RELONG_PHONE}).\nIl tuo prodotto NON riparato è pronto per il ritiro.\nPuoi ritirarlo entro 30 giorni, dopodiché saremo costretti a procedere allo smaltimento e distruzione del prodotto.`;
       return walink(phone,t);
     }
 
     function waThanksFidReview(name, phone){
-      const t=`Ciao ${name}, grazie per aver ritirato il prodotto da Re Long 🙌\nIl tuo saldo punti Fidelity è stato aggiornato.\nSe ti va, lasciaci una recensione 5⭐ su Google: ${REVIEW_URL}`;
+      const t=`Ciao ${name}, grazie per aver ritirato il prodotto da Re Long 🙌\nIl tuo saldo punti Fidelity è stato aggiornato.\nSe ti va, lasciaci una recensione 5 stelle su Google⭐: ${REVIEW_URL}`;
       return walink(phone,t);
     }
 
