@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,notice">
+  <title>Re Long • Gift Card</title>
+  <style>
+    :root{
+      --bg:#07070b;--card:rgba(255,255,255,.06);--stroke:rgba(255,255,255,.10);
+      --txt:#f6f7fb;--mut:rgba(246,247,251,.72);--acc:#ff2a6d;--acc2:#ff8a00;
+      --good:#19c37d;--bad:#ff3b30;
+      font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+    }
+    body{margin:0;background:
+      radial-gradient(1200px 800px at 15% 15%, rgba(255,42,109,.18), transparent 50%),
+      radial-gradient(900px 600px at 85% 35%, rgba(255,138,0,.18), transparent 55%),
+      radial-gradient(700px 500px at 45% 95%, rgba(90,120,255,.14), transparent 55%),
+      var(--bg);
+      color:var(--txt);
+      min-height:100vh;
+      display:flex;align-items:center;justify-content:center;
+      padding:16px;
+    }
+    .wrap{width:min(720px,100%);}
+    .brand{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+    .logo{font-weight:800;letter-spacing:.3px;font-size:18px}
+    .pill{font-size:12px;color:var(--mut);border:1px solid var(--stroke);padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.03)}
+    .card{border:1px solid var(--stroke);background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 22px 55px rgba(0,0,0,.45)}
+    header{padding:18px 18px 10px;border-bottom:1px solid var(--stroke)}
+    h1{margin:0;font-size:18px}
+    .sub{margin-top:6px;color:var(--mut);font-size:12px;line-height:1.35}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px 18px}
+    .kpi{border:1px solid var(--stroke);background:rgba(255,255,255,.03);border-radius:14px;padding:12px}
+    .kpi .t{color:var(--mut);font-size:11px}
+    .kpi .v{font-size:20px;font-weight:800;margin-top:6px}
+    .kpi .s{margin-top:6px;color:var(--mut);font-size:11px}
+    .row{padding:0 18px 18px}
+    .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    button,a.btn{cursor:pointer;border:none;border-radius:12px;padding:10px 12px;font-weight:700;
+      background:linear-gradient(90deg,var(--acc),var(--acc2));
+      color:#0b0b0f;text-decoration:none;display:inline-flex;align-items:center;gap:8px;
+    }
+    .btn-ghost{background:rgba(255,255,255,.06);color:var(--txt);border:1px solid var(--stroke)}
+    .mov{border-top:1px solid var(--stroke);padding:14px 18px 18px}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th,td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+    th{color:var(--mut);font-weight:700}
+    .delta.pos{color:var(--good);font-weight:800}
+    .delta.neg{color:var(--bad);font-weight:800}
+    .err{padding:18px;color:var(--bad);font-weight:700}
+    .hint{color:var(--mut);font-size:11px;margin-top:8px;line-height:1.35}
+    .mono{font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+    @media (max-width:520px){ .grid{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo">Re Long Informatica</div>
+      <div class="pill">Gift Card • saldo & movimenti</div>
+    </div>
+
+    <div class="card" id="card">
+      <header>
+        <h1 id="title">Caricamento Gift Card…</h1>
+        <div class="sub" id="sub"></div>
+      </header>
+
+      <div class="grid">
+        <div class="kpi">
+          <div class="t">Saldo disponibile</div>
+          <div class="v" id="balance">—</div>
+          <div class="s" id="status">—</div>
+        </div>
+        <div class="kpi">
+          <div class="t">Codice Gift Card</div>
+          <div class="v mono" id="code">—</div>
+          <div class="s" id="exp">—</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="btns">
+          <a class="btn" id="waBtn" target="_blank" rel="noopener">📲 Contatta Re Long su WhatsApp</a>
+          <button class="btn-ghost" id="copyBtn">📋 Copia codice</button>
+        </div>
+        <div class="hint">
+          Questo link è <strong>solo in lettura</strong>. Per usare la Gift Card: passa in negozio o scrivi su WhatsApp indicando il codice.
+        </div>
+      </div>
+
+      <div class="mov">
+        <h3 style="margin:0 0 10px;font-size:13px">Movimenti</h3>
+        <div id="movWrap"></div>
+        <div class="hint">Se non vedi i movimenti: può essere che la Gift Card sia stata appena creata e i dati non sono ancora stati pubblicati.</div>
+      </div>
+    </div>
+
+    <div class="hint" style="margin-top:10px">
+      Tech note (per te Alex): questa pagina legge il file dati pubblico su GitHub (raw). Se cambi repo/branch/path, puoi passarli nei parametri:
+      <span class="mono">?code=...&owner=...&repo=...&branch=...&path=...</span>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const RELONG_PHONE = '08119578844';
+
+  function qs(k){ return new URLSearchParams(location.search).get(k); }
+  function euro(n){
+    const v = Number(n||0);
+    return '€ ' + v.toFixed(2).replace('.',',');
+  }
+  function fmt(iso){
+    try{
+      const d = new Date(iso);
+      return d.toLocaleString('it-IT',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+    }catch{ return iso || ''; }
+  }
+  function waLink(text){
+    return `https://wa.me/39${RELONG_PHONE}?text=${encodeURIComponent(text)}`;
+  }
+
+  const code = (qs('code')||'').trim();
+  const owner  = (qs('owner')  || 'alessandroiascone').trim();
+  const repo   = (qs('repo')   || 'fidelity').trim();
+  const branch = (qs('branch') || 'main').trim();
+  const path   = (qs('path')   || 'data/items.json').trim();
+
+  const title = document.getElementById('title');
+  const sub   = document.getElementById('sub');
+  const balEl = document.getElementById('balance');
+  const codeEl= document.getElementById('code');
+  const expEl = document.getElementById('exp');
+  const statusEl = document.getElementById('status');
+  const movWrap = document.getElementById('movWrap');
+  const waBtn = document.getElementById('waBtn');
+  const copyBtn = document.getElementById('copyBtn');
+
+  if(!code){
+    title.textContent = 'Codice mancante';
+    document.getElementById('card').innerHTML = '<div class="err">Questo link non contiene il parametro <span class="mono">code</span>.</div>';
+    return;
+  }
+
+  codeEl.textContent = code;
+  waBtn.href = waLink(`Ciao Re Long 👋\nVorrei usare la Gift Card.\nCodice: ${code}\nMi dici il saldo e come procediamo?`);
+  copyBtn.addEventListener('click', async ()=>{
+    try{
+      await navigator.clipboard.writeText(code);
+      copyBtn.textContent = '✅ Copiato';
+      setTimeout(()=>copyBtn.textContent='📋 Copia codice', 1200);
+    }catch{
+      alert('Non riesco a copiare automaticamente. Seleziona e copia il codice: '+code);
+    }
+  });
+
+  const rawUrl = `https://raw.githubusercontent.com/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/${encodeURIComponent(branch)}/${path.replace(/^\/+/,'')}`;
+
+  async function load(){
+    title.textContent = 'Caricamento Gift Card…';
+    sub.textContent = 'Sto leggendo i dati pubblici…';
+    try{
+      const res = await fetch(rawUrl, { cache: 'no-store' });
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data = await res.json();
+      const items = Array.isArray(data) ? data : (Array.isArray(data.items) ? data.items : []);
+      let hit = null;
+
+      for(const it of items){
+        const gcs = (it && Array.isArray(it.giftCards)) ? it.giftCards : [];
+        for(const gc of gcs){
+          if(gc && String(gc.code||'').trim().toUpperCase() === code.toUpperCase()){
+            hit = gc;
+            break;
+          }
+        }
+        if(hit) break;
+      }
+
+      if(!hit){
+        title.textContent = 'Gift Card non trovata';
+        sub.textContent = 'Controlla il codice o chiedi a Re Long su WhatsApp.';
+        balEl.textContent = '—';
+        statusEl.textContent = 'Stato: non trovato';
+        movWrap.innerHTML = '<div class="err">Nessuna Gift Card con questo codice nei dati pubblici.</div>';
+        return;
+      }
+
+      const bal = Number(hit.balance||0);
+      title.textContent = 'Gift Card Re Long';
+      sub.textContent = (hit.to && hit.to.name) ? `Destinatario: ${hit.to.name}` : 'Gift Card attiva';
+      balEl.textContent = euro(bal);
+      statusEl.textContent = `Stato: ${hit.status || 'active'}`;
+      expEl.textContent = hit.exp ? ('Valida fino al: '+hit.exp) : 'Nessuna scadenza';
+      codeEl.textContent = hit.code || code;
+
+      const movs = Array.isArray(hit.movements) ? hit.movements.slice() : [];
+      if(!movs.length){
+        movWrap.innerHTML = '<div class="hint">Nessun movimento registrato.</div>';
+        return;
+      }
+      movs.sort((a,b)=> new Date(b.at||0) - new Date(a.at||0));
+
+      const tbl = document.createElement('table');
+      tbl.innerHTML = '<thead><tr><th>Data</th><th>Descrizione</th><th>Variazione</th><th>Saldo</th></tr></thead>';
+      const tb = document.createElement('tbody');
+
+      movs.forEach(m=>{
+        const tr = document.createElement('tr');
+        const d = document.createElement('td'); d.textContent = fmt(m.at);
+        const l = document.createElement('td'); l.textContent = m.label || 'Movimento';
+        const de = document.createElement('td');
+        const delta = Number(m.delta||0);
+        de.textContent = (delta>=0?'+':'') + euro(Math.abs(delta)).replace('€ ','');
+        de.className = 'delta ' + (delta>=0?'pos':'neg');
+        const a = document.createElement('td'); a.textContent = euro(m.after);
+        tr.appendChild(d); tr.appendChild(l); tr.appendChild(de); tr.appendChild(a);
+        tb.appendChild(tr);
+      });
+
+      tbl.appendChild(tb);
+      movWrap.innerHTML = '';
+      movWrap.appendChild(tbl);
+    }catch(err){
+      title.textContent = 'Errore di caricamento';
+      sub.textContent = 'Non riesco a leggere i dati pubblici.';
+      movWrap.innerHTML = `<div class="err">Errore: ${String(err.message||err)}</div>
+        <div class="hint">URL dati: <span class="mono">${rawUrl}</span></div>`;
+    }
+  }
+
+  load();
+})();
+</script>
+</body>
+</html>
