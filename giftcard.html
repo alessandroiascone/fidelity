@@ -1,237 +1,727 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,notice">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Re Long • Gift Card</title>
+  <meta name="theme-color" content="#090a0f" />
   <style>
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
     :root{
-      --bg:#07070b;--card:rgba(255,255,255,.06);--stroke:rgba(255,255,255,.10);
-      --txt:#f6f7fb;--mut:rgba(246,247,251,.72);--acc:#ff2a6d;--acc2:#ff8a00;
-      --good:#19c37d;--bad:#ff3b30;
-      font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      --bg0:#05060a;
+      --bg1:#090a12;
+      --card:rgba(255,255,255,.06);
+      --stroke:rgba(255,255,255,.10);
+      --txt:#f4f6ff;
+      --muted:rgba(210,220,255,.72);
+
+      /* Re Long vibes */
+      --hot1:#ff0033;
+      --hot2:#ff7a00;
+      --neo1:#00a3ff;
+      --neo2:#66d1ff;
+
+      --ok:#25D366;
+      --danger:#ff4d4f;
+
+      --r:22px;
     }
-    body{margin:0;background:
-      radial-gradient(1200px 800px at 15% 15%, rgba(255,42,109,.18), transparent 50%),
-      radial-gradient(900px 600px at 85% 35%, rgba(255,138,0,.18), transparent 55%),
-      radial-gradient(700px 500px at 45% 95%, rgba(90,120,255,.14), transparent 55%),
-      var(--bg);
+
+    body{
+      min-height:100svh;
+      font-family:system-ui,-apple-system,Inter,Roboto,sans-serif;
       color:var(--txt);
-      min-height:100vh;
-      display:flex;align-items:center;justify-content:center;
-      padding:16px;
+      background: radial-gradient(80% 80% at 20% 10%, #161122 0%, var(--bg0) 45%, #04040a 100%);
+      overflow-x:hidden;
     }
-    .wrap{width:min(720px,100%);}
-    .brand{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
-    .logo{font-weight:800;letter-spacing:.3px;font-size:18px}
-    .pill{font-size:12px;color:var(--mut);border:1px solid var(--stroke);padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.03)}
-    .card{border:1px solid var(--stroke);background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 22px 55px rgba(0,0,0,.45)}
-    header{padding:18px 18px 10px;border-bottom:1px solid var(--stroke)}
-    h1{margin:0;font-size:18px}
-    .sub{margin-top:6px;color:var(--mut);font-size:12px;line-height:1.35}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px 18px}
-    .kpi{border:1px solid var(--stroke);background:rgba(255,255,255,.03);border-radius:14px;padding:12px}
-    .kpi .t{color:var(--mut);font-size:11px}
-    .kpi .v{font-size:20px;font-weight:800;margin-top:6px}
-    .kpi .s{margin-top:6px;color:var(--mut);font-size:11px}
-    .row{padding:0 18px 18px}
-    .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-    button,a.btn{cursor:pointer;border:none;border-radius:12px;padding:10px 12px;font-weight:700;
-      background:linear-gradient(90deg,var(--acc),var(--acc2));
-      color:#0b0b0f;text-decoration:none;display:inline-flex;align-items:center;gap:8px;
+
+    /* cinematic background */
+    .bg{
+      position:fixed; inset:0; z-index:-2;
+      background:
+        radial-gradient(45% 55% at 18% 20%, rgba(255,0,70,.22), transparent 62%),
+        radial-gradient(55% 55% at 78% 22%, rgba(255,122,0,.18), transparent 62%),
+        radial-gradient(60% 70% at 70% 78%, rgba(0,163,255,.20), transparent 65%),
+        radial-gradient(40% 40% at 26% 82%, rgba(102,209,255,.12), transparent 65%);
+      filter:saturate(1.05) contrast(1.05);
     }
-    .btn-ghost{background:rgba(255,255,255,.06);color:var(--txt);border:1px solid var(--stroke)}
-    .mov{border-top:1px solid var(--stroke);padding:14px 18px 18px}
-    table{width:100%;border-collapse:collapse;font-size:12px}
-    th,td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
-    th{color:var(--mut);font-weight:700}
-    .delta.pos{color:var(--good);font-weight:800}
-    .delta.neg{color:var(--bad);font-weight:800}
-    .err{padding:18px;color:var(--bad);font-weight:700}
-    .hint{color:var(--mut);font-size:11px;margin-top:8px;line-height:1.35}
-    .mono{font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
-    @media (max-width:520px){ .grid{grid-template-columns:1fr} }
+    .grid{
+      position:fixed; inset:-2px; z-index:-1;
+      background:
+        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(70% 70% at 50% 30%, rgba(0,0,0,1), rgba(0,0,0,.25) 55%, transparent 75%);
+      opacity:.35;
+      transform:translateZ(0);
+    }
+    .noise{
+      position:fixed; inset:0; z-index:-1;
+      pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+      mix-blend-mode:overlay;
+      opacity:.35;
+    }
+
+    .wrap{width:min(980px, calc(100% - 34px)); margin:28px auto 40px; display:flex; flex-direction:column; gap:14px}
+
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+    }
+    .logo{
+      width:40px;height:40px;border-radius:14px;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(255,255,255,.25), rgba(255,255,255,0) 55%),
+        linear-gradient(135deg, var(--hot1), var(--hot2));
+      box-shadow:0 18px 42px rgba(255,0,70,.22), 0 10px 28px rgba(255,122,0,.16);
+      border:1px solid rgba(255,255,255,.14);
+      position:relative;
+      overflow:hidden;
+    }
+    .logo:after{
+      content:"";
+      position:absolute; inset:-80%;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+      transform:rotate(25deg);
+      animation:shine 6.5s ease-in-out infinite;
+    }
+    @keyframes shine{
+      0%,55%{transform:translateX(-35%) rotate(25deg)}
+      70%{transform:translateX(35%) rotate(25deg)}
+      100%{transform:translateX(35%) rotate(25deg)}
+    }
+    .brand h1{font-size:16px;font-weight:900;letter-spacing:.2px}
+    .brand .sub{font-size:12px;color:var(--muted); margin-top:2px}
+
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:9px 12px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+      box-shadow:0 16px 38px rgba(0,0,0,.45);
+      color:#eaf1ff;
+      font-weight:800; font-size:12px;
+      user-select:none;
+    }
+    .chip i{width:8px;height:8px;border-radius:999px;display:inline-block;background:linear-gradient(135deg,var(--neo1),var(--neo2)); box-shadow:0 0 12px rgba(0,163,255,.65)}
+
+    .panel{
+      border:1px solid var(--stroke);
+      border-radius:var(--r);
+      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+      box-shadow:0 26px 60px rgba(0,0,0,.55);
+      overflow:hidden;
+      position:relative;
+    }
+    .panel:before{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        radial-gradient(120% 90% at 15% 10%, rgba(255,0,70,.18), transparent 55%),
+        radial-gradient(120% 90% at 80% 20%, rgba(255,122,0,.14), transparent 58%),
+        radial-gradient(120% 100% at 70% 85%, rgba(0,163,255,.16), transparent 60%);
+      opacity:.9;
+      pointer-events:none;
+    }
+    .panel-inner{position:relative; padding:18px; display:grid; grid-template-columns: 360px 1fr; gap:14px}
+    @media (max-width:900px){ .panel-inner{grid-template-columns:1fr} }
+
+    /* Gift card visual (wow part) */
+    .gc-visual{
+      border-radius:18px;
+      min-height:220px;
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.12);
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255,255,255,.18), transparent 45%),
+        radial-gradient(circle at 80% 30%, rgba(255,255,255,.10), transparent 55%),
+        linear-gradient(135deg, rgba(255,0,70,.88), rgba(255,122,0,.92));
+      box-shadow:0 28px 70px rgba(255,0,70,.18), 0 18px 48px rgba(255,122,0,.12);
+      transform:perspective(900px) rotateX(0deg) rotateY(0deg);
+      transition:transform .14s ease, box-shadow .14s ease;
+      will-change:transform;
+    }
+    .gc-visual:after{
+      content:"";
+      position:absolute; inset:-120%;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,.42), transparent);
+      transform:rotate(25deg);
+      animation:cardShine 5.8s ease-in-out infinite;
+      opacity:.8;
+    }
+    @keyframes cardShine{
+      0%,45%{transform:translateX(-30%) rotate(25deg)}
+      60%{transform:translateX(30%) rotate(25deg)}
+      100%{transform:translateX(30%) rotate(25deg)}
+    }
+    .gc-visual .gc-top{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+      padding:16px 16px 0;
+    }
+    .gc-title{
+      font-weight:950; letter-spacing:.4px;
+      text-transform:uppercase;
+      font-size:12px;
+      opacity:.95;
+    }
+    .gc-mark{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.22);
+      background:rgba(0,0,0,.18);
+      backdrop-filter: blur(10px);
+      font-size:11px;
+      font-weight:900;
+      display:inline-flex; align-items:center; gap:6px;
+    }
+    .gc-mark b{letter-spacing:.22px}
+    .gc-mid{
+      padding:12px 16px 0;
+      display:grid; gap:8px;
+    }
+    .gc-balance{
+      font-size:34px; font-weight:1000; letter-spacing:.2px; line-height:1.05;
+      text-shadow:0 10px 26px rgba(0,0,0,.25);
+    }
+    .gc-meta{
+      display:flex; gap:10px; flex-wrap:wrap;
+      font-size:12px; font-weight:700;
+      opacity:.95;
+    }
+    .gc-pill{
+      padding:6px 10px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.22);
+      background:rgba(0,0,0,.14);
+      backdrop-filter: blur(10px);
+    }
+    .gc-bottom{
+      position:absolute; left:16px; right:16px; bottom:14px;
+      display:flex; align-items:flex-end; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    }
+    .gc-code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-weight:950;
+      letter-spacing:.24em;
+      font-size:12px;
+      background:rgba(0,0,0,.18);
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.20);
+      backdrop-filter: blur(10px);
+    }
+    .gc-bar{
+      width:110px;height:36px;border-radius:12px;
+      border:1px solid rgba(255,255,255,.18);
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,.55) 0 2px, rgba(255,255,255,0) 2px 5px);
+      opacity:.9;
+      box-shadow:0 12px 24px rgba(0,0,0,.18);
+    }
+
+    /* right side */
+    .info{
+      display:flex; flex-direction:column; gap:12px;
+    }
+    .head{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    }
+    .head h2{
+      font-size:18px; font-weight:950; letter-spacing:.2px;
+    }
+    .head .who{margin-top:4px; font-size:12px; color:var(--muted)}
+    .badges{
+      display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end;
+    }
+    .badge{
+      padding:7px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.20);
+      backdrop-filter: blur(10px);
+      font-weight:900;
+      font-size:11px;
+    }
+    .badge.ok{border-color:rgba(37,211,102,.28); box-shadow:0 0 16px rgba(37,211,102,.18)}
+    .badge.warn{border-color:rgba(255,215,0,.25); box-shadow:0 0 16px rgba(255,215,0,.12)}
+    .badge.used{border-color:rgba(255,77,79,.26); box-shadow:0 0 16px rgba(255,77,79,.16)}
+
+    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    @media (max-width:520px){ .grid2{grid-template-columns:1fr} }
+
+    .box{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.20);
+      backdrop-filter: blur(10px);
+      border-radius:16px;
+      padding:12px 12px;
+      min-height:74px;
+    }
+    .k{font-size:11px;color:var(--muted); letter-spacing:.14em; text-transform:uppercase}
+    .v{margin-top:6px;font-size:16px;font-weight:950}
+    .small{margin-top:4px;font-size:12px;color:var(--muted)}
+
+    .btnrow{display:flex; gap:10px; flex-wrap:wrap}
+    .btn{
+      appearance:none; border:0; cursor:pointer;
+      padding:12px 14px;
+      border-radius:16px;
+      font-weight:950;
+      letter-spacing:.2px;
+      display:inline-flex; align-items:center; gap:10px;
+      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+      user-select:none;
+      text-decoration:none;
+    }
+    .btn:active{transform:translateY(1px)}
+    .btn.wa{
+      background:linear-gradient(135deg,var(--hot1),var(--hot2));
+      color:#140103;
+      box-shadow:0 18px 46px rgba(255,0,70,.22), 0 12px 34px rgba(255,122,0,.16);
+    }
+    .btn.wa:hover{filter:brightness(1.03)}
+    .btn.ghost{
+      background:rgba(255,255,255,.06);
+      color:#eaf1ff;
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow:0 16px 40px rgba(0,0,0,.35);
+    }
+    .btn.ghost:hover{filter:brightness(1.06)}
+    .btn svg{width:18px;height:18px}
+
+    .divider{
+      height:1px;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+      margin:2px 0 0;
+    }
+
+    .mov{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.16);
+      backdrop-filter: blur(10px);
+      border-radius:18px;
+      padding:12px 12px 10px;
+    }
+    .mov h3{
+      font-size:12px; text-transform:uppercase; letter-spacing:.18em;
+      color:var(--muted);
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-bottom:10px;
+    }
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0 8px;
+      font-size:13px;
+    }
+    thead th{
+      text-align:left;
+      font-size:11px;
+      color:rgba(210,220,255,.65);
+      font-weight:900;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      padding:0 10px;
+    }
+    tbody tr{
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px;
+      overflow:hidden;
+    }
+    tbody td{
+      padding:10px;
+      border-top:1px solid rgba(255,255,255,.04);
+    }
+    tbody tr td:first-child{border-top-left-radius:14px;border-bottom-left-radius:14px}
+    tbody tr td:last-child{border-top-right-radius:14px;border-bottom-right-radius:14px}
+
+    .pos{color:#7cf2a3;font-weight:900}
+    .neg{color:#ffb3b3;font-weight:900}
+
+    .foot{
+      margin-top:10px;
+      font-size:11px;
+      color:rgba(210,220,255,.62);
+      line-height:1.45;
+    }
+
+    /* tiny toast */
+    .toast{
+      position:fixed; right:18px; bottom:18px;
+      background:rgba(0,0,0,.55);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:14px;
+      padding:10px 12px;
+      backdrop-filter: blur(10px);
+      box-shadow:0 18px 44px rgba(0,0,0,.55);
+      font-size:13px;
+      opacity:0;
+      transform:translateY(10px);
+      transition:.22s ease;
+      z-index:9999;
+    }
+    .toast.on{opacity:1; transform:translateY(0)}
   </style>
 </head>
 <body>
+  <div class="bg"></div>
+  <div class="grid"></div>
+  <div class="noise"></div>
+
   <div class="wrap">
-    <div class="brand">
-      <div class="logo">Re Long Informatica</div>
-      <div class="pill">Gift Card • saldo & movimenti</div>
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Re Long Informatica</h1>
+          <div class="sub">Gift Card • saldo & movimenti</div>
+        </div>
+      </div>
+      <div class="chip"><i></i> Verifica in tempo reale</div>
     </div>
 
-    <div class="card" id="card">
-      <header>
-        <h1 id="title">Caricamento Gift Card…</h1>
-        <div class="sub" id="sub"></div>
-      </header>
+    <div class="panel" id="card">
+      <div class="panel-inner">
 
-      <div class="grid">
-        <div class="kpi">
-          <div class="t">Saldo disponibile</div>
-          <div class="v" id="balance">—</div>
-          <div class="s" id="status">—</div>
+        <!-- WOW CARD -->
+        <div class="gc-visual" id="tiltCard" aria-label="Gift Card Re Long">
+          <div class="gc-top">
+            <div class="gc-title">Gift Card • Re Long</div>
+            <div class="gc-mark">🎁 <b>PREMIUM</b></div>
+          </div>
+
+          <div class="gc-mid">
+            <div class="gc-balance" id="balance">—</div>
+            <div class="gc-meta">
+              <span class="gc-pill" id="status">Stato: —</span>
+              <span class="gc-pill" id="exp">Valida fino a: —</span>
+            </div>
+          </div>
+
+          <div class="gc-bottom">
+            <div class="gc-code" id="code">—</div>
+            <div class="gc-bar" aria-hidden="true"></div>
+          </div>
         </div>
-        <div class="kpi">
-          <div class="t">Codice Gift Card</div>
-          <div class="v mono" id="code">—</div>
-          <div class="s" id="exp">—</div>
+
+        <!-- DETAILS -->
+        <div class="info">
+          <div class="head">
+            <div>
+              <h2 id="title">Gift Card Re Long</h2>
+              <div class="who" id="sub">Destinatario: —</div>
+            </div>
+            <div class="badges" id="badgeWrap"></div>
+          </div>
+
+          <div class="grid2">
+            <div class="box">
+              <div class="k">Saldo disponibile</div>
+              <div class="v" id="balanceDup">—</div>
+              <div class="small">Usabile su prodotti e servizi</div>
+            </div>
+            <div class="box">
+              <div class="k">Codice Gift Card</div>
+              <div class="v" id="codeDup">—</div>
+              <div class="small">Mostralo in negozio o su WhatsApp</div>
+            </div>
+          </div>
+
+          <div class="btnrow">
+            <a class="btn wa" id="waBtn" href="#" target="_blank" rel="noopener">
+              <span>Contatta Re Long su WhatsApp</span>
+            </a>
+            <button class="btn ghost" id="copyBtn" type="button">
+              <span>Copia codice</span>
+            </button>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="mov">
+            <h3>
+              <span>Movimenti</span>
+              <span style="font-size:11px;color:rgba(210,220,255,.62);letter-spacing:.08em;text-transform:none">solo lettura</span>
+            </h3>
+            <div id="movWrap"></div>
+            <div class="foot">
+              Se non vedi i movimenti, può essere che la Gift Card sia appena stata creata e i dati non sono ancora stati pubblicati.
+
+              Per usare la Gift Card: passa in negozio o scrivi su WhatsApp indicando il codice.
+            </div>
+          </div>
+
         </div>
       </div>
-
-      <div class="row">
-        <div class="btns">
-          <a class="btn" id="waBtn" target="_blank" rel="noopener">📲 Contatta Re Long su WhatsApp</a>
-          <button class="btn-ghost" id="copyBtn">📋 Copia codice</button>
-        </div>
-        <div class="hint">
-          Questo link è <strong>solo in lettura</strong>. Per usare la Gift Card: passa in negozio o scrivi su WhatsApp indicando il codice.
-        </div>
-      </div>
-
-      <div class="mov">
-        <h3 style="margin:0 0 10px;font-size:13px">Movimenti</h3>
-        <div id="movWrap"></div>
-        <div class="hint">Se non vedi i movimenti: può essere che la Gift Card sia stata appena creata e i dati non sono ancora stati pubblicati.</div>
-      </div>
-    </div>
-
-    <div class="hint" style="margin-top:10px">
-      Tech note (per te Alex): questa pagina legge il file dati pubblico su GitHub (raw). Se cambi repo/branch/path, puoi passarli nei parametri:
-      <span class="mono">?code=...&owner=...&repo=...&branch=...&path=...</span>
     </div>
   </div>
 
-<script>
-(function(){
-  const RELONG_PHONE = '08119578844';
+  <div class="toast" id="toast">Copiato ✅</div>
 
-  function qs(k){ return new URLSearchParams(location.search).get(k); }
-  function euro(n){
-    const v = Number(n||0);
-    return '€ ' + v.toFixed(2).replace('.',',');
-  }
-  function fmt(iso){
-    try{
-      const d = new Date(iso);
-      return d.toLocaleString('it-IT',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
-    }catch{ return iso || ''; }
-  }
-  function waLink(text){
-    return `https://wa.me/39${RELONG_PHONE}?text=${encodeURIComponent(text)}`;
-  }
+  <script>
+  (function(){
+    const RELONG_PHONE = '08119578844';
 
-  const code = (qs('code')||'').trim();
-  const owner  = (qs('owner')  || 'alessandroiascone').trim();
-  const repo   = (qs('repo')   || 'fidelity').trim();
-  const branch = (qs('branch') || 'main').trim();
-  const path   = (qs('path')   || 'data/items.json').trim();
-
-  const title = document.getElementById('title');
-  const sub   = document.getElementById('sub');
-  const balEl = document.getElementById('balance');
-  const codeEl= document.getElementById('code');
-  const expEl = document.getElementById('exp');
-  const statusEl = document.getElementById('status');
-  const movWrap = document.getElementById('movWrap');
-  const waBtn = document.getElementById('waBtn');
-  const copyBtn = document.getElementById('copyBtn');
-
-  if(!code){
-    title.textContent = 'Codice mancante';
-    document.getElementById('card').innerHTML = '<div class="err">Questo link non contiene il parametro <span class="mono">code</span>.</div>';
-    return;
-  }
-
-  codeEl.textContent = code;
-  waBtn.href = waLink(`Ciao Re Long 👋\nVorrei usare la Gift Card.\nCodice: ${code}\nMi dici il saldo e come procediamo?`);
-  copyBtn.addEventListener('click', async ()=>{
-    try{
-      await navigator.clipboard.writeText(code);
-      copyBtn.textContent = '✅ Copiato';
-      setTimeout(()=>copyBtn.textContent='📋 Copia codice', 1200);
-    }catch{
-      alert('Non riesco a copiare automaticamente. Seleziona e copia il codice: '+code);
+    function qs(k){ return new URLSearchParams(location.search).get(k); }
+    function esc(s){ return String(s||'').replace(/[&<>\"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','\\':'&#92;' }[c]||c)); }
+    function fmtEUR(n){
+      const x = Number(n||0);
+      return x.toLocaleString('it-IT',{style:'currency',currency:'EUR'});
     }
-  });
+    function fmtDT(iso){
+      try{
+        const d = new Date(iso);
+        return d.toLocaleString('it-IT',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+      }catch(e){ return iso||''; }
+    }
+    function walink(phone, text){ return `https://wa.me/39${phone}?text=${encodeURIComponent(text)}`; }
 
-  const rawUrl = `https://raw.githubusercontent.com/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/${encodeURIComponent(branch)}/${path.replace(/^\/+/,'')}`;
+    const codeParam = qs('code') || '';
+    const owner = qs('owner') || 'alessandroiascone';
+    const repo  = qs('repo')  || 'fidelity';
+    const branch= qs('branch')|| 'main';
+    const path  = qs('path')  || 'data/items.json';
 
-  async function load(){
-    title.textContent = 'Caricamento Gift Card…';
-    sub.textContent = 'Sto leggendo i dati pubblici…';
-    try{
-      const res = await fetch(rawUrl, { cache: 'no-store' });
-      if(!res.ok) throw new Error('HTTP '+res.status);
-      const data = await res.json();
-      const items = Array.isArray(data) ? data : (Array.isArray(data.items) ? data.items : []);
-      let hit = null;
+    const title = document.getElementById('title');
+    const sub = document.getElementById('sub');
+    const balance = document.getElementById('balance');
+    const status = document.getElementById('status');
+    const code = document.getElementById('code');
+    const exp = document.getElementById('exp');
+    const card = document.getElementById('card');
+    const movWrap = document.getElementById('movWrap');
+    const waBtn = document.getElementById('waBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const toast = document.getElementById('toast');
 
-      for(const it of items){
-        const gcs = (it && Array.isArray(it.giftCards)) ? it.giftCards : [];
-        for(const gc of gcs){
-          if(gc && String(gc.code||'').trim().toUpperCase() === code.toUpperCase()){
-            hit = gc;
-            break;
+    // duplicates in right boxes
+    const balanceDup = document.getElementById('balanceDup');
+    const codeDup = document.getElementById('codeDup');
+    const badgeWrap = document.getElementById('badgeWrap');
+
+    function setBadge(kind, text){
+      const el = document.createElement('span');
+      el.className = 'badge ' + kind;
+      el.textContent = text;
+      badgeWrap.appendChild(el);
+    }
+
+    function toastOn(msg){
+      toast.textContent = msg || 'Copiato ✅';
+      toast.classList.add('on');
+      setTimeout(()=>toast.classList.remove('on'), 1400);
+    }
+
+    function renderMovements(list){
+      if(!Array.isArray(list) || list.length===0){
+        movWrap.innerHTML = '<div style="padding:8px 10px;color:rgba(210,220,255,.70);font-size:13px">Nessun movimento trovato.</div>';
+        return;
+      }
+      const rows = list
+        .slice()
+        .sort((a,b)=> (new Date(b.at||b.date||0)) - (new Date(a.at||a.date||0)))
+        .map(m=>{
+          const dt = fmtDT(m.at || m.date);
+          const desc = esc(m.label || m.desc || m.description || 'Movimento');
+          const delta = Number(m.delta || m.amount || 0);
+          const deltaTxt = (delta>=0?'+':'') + fmtEUR(delta);
+          const cls = delta>=0?'pos':'neg';
+          const bal = (m.balanceAfter!=null)? fmtEUR(m.balanceAfter) : '';
+          return `<tr>
+            <td>${esc(dt)}</td>
+            <td>${desc}</td>
+            <td class="${cls}">${esc(deltaTxt)}</td>
+            <td>${esc(bal)}</td>
+          </tr>`;
+        }).join('');
+      movWrap.innerHTML = `
+        <table>
+          <thead>
+            <tr><th>Data</th><th>Descrizione</th><th>Variazione</th><th>Saldo</th></tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+    }
+
+    function normalizeGift(it){
+      // Supporta sia giftCards[] che giftCard singola
+      const gifts = Array.isArray(it.giftCards) ? it.giftCards : (it.giftCard ? [it.giftCard] : []);
+      if(!gifts.length) return null;
+
+      // match by code
+      const byCode = gifts.find(g=> String(g.code||'').toUpperCase() === String(codeParam||'').toUpperCase());
+      const g = byCode || gifts[0];
+
+      // status derive
+      let st = String(g.status||'active').toLowerCase();
+      if(st!=='active' && st!=='partial' && st!=='used') st='active';
+
+      return {
+        code: g.code || codeParam || '—',
+        initialValue: Number(g.initialValue ?? g.value ?? 0),
+        balance: Number(g.balance ?? g.remaining ?? 0),
+        createdAt: g.createdAt || it.createdAt,
+        expAt: g.expAt || g.expiresAt || g.validUntil || null,
+        status: st,
+        recipient: g.recipientName || it.giftRecipient || it.name || '',
+        movements: Array.isArray(g.history) ? g.history : (Array.isArray(g.movements) ? g.movements : [])
+      };
+    }
+
+    async function load(){
+      if(!codeParam){
+        title.textContent = 'Gift Card Re Long';
+        sub.textContent = 'Inserisci un codice valido nel link.';
+        balance.textContent = '—';
+        status.textContent = 'Stato: —';
+        code.textContent = '—';
+        exp.textContent = 'Valida fino a: —';
+        balanceDup.textContent = '—';
+        codeDup.textContent = '—';
+        movWrap.innerHTML = '<div style="padding:8px 10px;color:rgba(210,220,255,.70)">Codice mancante.</div>';
+        setBadge('used','CODICE MANCANTE');
+        return;
+      }
+
+      // wa button text
+      waBtn.href = walink(RELONG_PHONE, `Ciao Re Long 👋\nVorrei usare la mia Gift Card.\nCodice: ${codeParam}`);
+
+      const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`;
+      try{
+        const res = await fetch(rawUrl, {cache:'no-store'});
+        if(!res.ok) throw new Error('HTTP '+res.status);
+        const data = await res.json();
+        const arr = Array.isArray(data) ? data : [];
+
+        // find giftcard by scanning customers
+        let found = null;
+        for(const it of arr){
+          const g = normalizeGift(it);
+          if(!g) continue;
+          if(String(g.code||'').toUpperCase() === String(codeParam||'').toUpperCase()){
+            found = g; break;
           }
         }
-        if(hit) break;
+
+        if(!found){
+          title.textContent = 'Gift Card non trovata';
+          sub.textContent = 'Controlla il codice o scrivici su WhatsApp.';
+          balance.textContent = '—';
+          status.textContent = 'Stato: —';
+          code.textContent = codeParam;
+          exp.textContent = 'Valida fino a: —';
+          balanceDup.textContent = '—';
+          codeDup.textContent = codeParam;
+          movWrap.innerHTML = '<div style="padding:8px 10px;color:rgba(210,220,255,.70)">Nessuna Gift Card corrispondente nel database.</div>';
+          setBadge('used','NON TROVATA');
+          return;
+        }
+
+        // render main
+        title.textContent = 'Gift Card Re Long';
+        sub.textContent = found.recipient ? ('Destinatario: ' + found.recipient) : 'Destinatario: —';
+
+        const balTxt = fmtEUR(found.balance);
+        balance.textContent = balTxt;
+        balanceDup.textContent = balTxt;
+
+        const codeTxt = String(found.code||codeParam).toUpperCase();
+        code.textContent = codeTxt;
+        codeDup.textContent = codeTxt;
+
+        // exp
+        if(found.expAt){
+          try{
+            const d = new Date(found.expAt);
+            exp.textContent = 'Valida fino a: ' + d.toLocaleDateString('it-IT',{year:'numeric',month:'2-digit',day:'2-digit'});
+          }catch(e){
+            exp.textContent = 'Valida fino a: ' + String(found.expAt);
+          }
+        }else{
+          exp.textContent = 'Valida fino a: —';
+        }
+
+        // status badge + label
+        const stMap = {active:['ok','ATTIVA'], partial:['warn','PARZIALE'], used:['used','ESAURITA']};
+        const [kind,label] = stMap[found.status] || ['ok','ATTIVA'];
+        status.textContent = 'Stato: ' + label.toLowerCase();
+        setBadge(kind, label);
+
+        // movements: add computed balanceAfter if missing
+        const movs = (found.movements || []).map(m=>({ ...m }));
+        // If history doesn't include balanceAfter, compute from initial and deltas in chronological order
+        const hasBalanceAfter = movs.some(m => m.balanceAfter!=null);
+        if(!hasBalanceAfter){
+          const ordered = movs.slice().sort((a,b)=> (new Date(a.at||a.date||0)) - (new Date(b.at||b.date||0)));
+          let cur = Number(found.initialValue || found.balance || 0);
+          // try infer cur by applying deltas to reach current balance: use initialValue if present else compute from first
+          if(Number.isFinite(found.initialValue) && found.initialValue>0){
+            cur = found.initialValue;
+          }else{
+            // fallback: set cur = found.balance and walk backwards
+            cur = found.balance;
+          }
+          // forward compute if initialValue known
+          if(Number.isFinite(found.initialValue) && found.initialValue>0){
+            for(const mm of ordered){
+              const d = Number(mm.delta || mm.amount || 0);
+              cur += d;
+              mm.balanceAfter = cur;
+            }
+          }
+        }
+        renderMovements(movs);
+
+      }catch(err){
+        title.textContent = 'Errore di lettura dati';
+        sub.textContent = 'Non riesco a caricare i movimenti. Riprova tra poco.';
+        movWrap.innerHTML = `<div style="padding:8px 10px;color:rgba(210,220,255,.70)">Errore: ${esc(String(err.message||err))}</div>`;
+        setBadge('used','OFFLINE');
       }
-
-      if(!hit){
-        title.textContent = 'Gift Card non trovata';
-        sub.textContent = 'Controlla il codice o chiedi a Re Long su WhatsApp.';
-        balEl.textContent = '—';
-        statusEl.textContent = 'Stato: non trovato';
-        movWrap.innerHTML = '<div class="err">Nessuna Gift Card con questo codice nei dati pubblici.</div>';
-        return;
-      }
-
-      const bal = Number(hit.balance||0);
-      title.textContent = 'Gift Card Re Long';
-      sub.textContent = (hit.to && hit.to.name) ? `Destinatario: ${hit.to.name}` : 'Gift Card attiva';
-      balEl.textContent = euro(bal);
-      statusEl.textContent = `Stato: ${hit.status || 'active'}`;
-      expEl.textContent = hit.exp ? ('Valida fino al: '+hit.exp) : 'Nessuna scadenza';
-      codeEl.textContent = hit.code || code;
-
-      const movs = Array.isArray(hit.movements) ? hit.movements.slice() : [];
-      if(!movs.length){
-        movWrap.innerHTML = '<div class="hint">Nessun movimento registrato.</div>';
-        return;
-      }
-      movs.sort((a,b)=> new Date(b.at||0) - new Date(a.at||0));
-
-      const tbl = document.createElement('table');
-      tbl.innerHTML = '<thead><tr><th>Data</th><th>Descrizione</th><th>Variazione</th><th>Saldo</th></tr></thead>';
-      const tb = document.createElement('tbody');
-
-      movs.forEach(m=>{
-        const tr = document.createElement('tr');
-        const d = document.createElement('td'); d.textContent = fmt(m.at);
-        const l = document.createElement('td'); l.textContent = m.label || 'Movimento';
-        const de = document.createElement('td');
-        const delta = Number(m.delta||0);
-        de.textContent = (delta>=0?'+':'') + euro(Math.abs(delta)).replace('€ ','');
-        de.className = 'delta ' + (delta>=0?'pos':'neg');
-        const a = document.createElement('td'); a.textContent = euro(m.after);
-        tr.appendChild(d); tr.appendChild(l); tr.appendChild(de); tr.appendChild(a);
-        tb.appendChild(tr);
-      });
-
-      tbl.appendChild(tb);
-      movWrap.innerHTML = '';
-      movWrap.appendChild(tbl);
-    }catch(err){
-      title.textContent = 'Errore di caricamento';
-      sub.textContent = 'Non riesco a leggere i dati pubblici.';
-      movWrap.innerHTML = `<div class="err">Errore: ${String(err.message||err)}</div>
-        <div class="hint">URL dati: <span class="mono">${rawUrl}</span></div>`;
     }
-  }
 
-  load();
-})();
-</script>
+    copyBtn.addEventListener('click', async ()=>{
+      const txt = code.textContent || codeParam || '';
+      try{
+        await navigator.clipboard.writeText(txt);
+        toastOn('Codice copiato ✅');
+      }catch(e){
+        // fallback
+        const ta=document.createElement('textarea');
+        ta.value=txt; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); ta.remove();
+        toastOn('Codice copiato ✅');
+      }
+    });
+
+    // tilt effect (desktop)
+    const tilt = document.getElementById('tiltCard');
+    if(tilt){
+      let raf=0;
+      const onMove=(e)=>{
+        const r=tilt.getBoundingClientRect();
+        const x=(e.clientX - r.left)/r.width;
+        const y=(e.clientY - r.top)/r.height;
+        const rx = (0.5 - y) * 10;
+        const ry = (x - 0.5) * 12;
+        cancelAnimationFrame(raf);
+        raf=requestAnimationFrame(()=>{
+          tilt.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+        });
+      };
+      const onLeave=()=>{
+        tilt.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg)';
+      };
+      tilt.addEventListener('mousemove', onMove);
+      tilt.addEventListener('mouseleave', onLeave);
+      tilt.addEventListener('touchstart', onLeave, {passive:true});
+    }
+
+    load();
+  })();
+  </script>
 </body>
 </html>
