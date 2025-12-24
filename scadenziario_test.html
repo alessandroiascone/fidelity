@@ -143,7 +143,9 @@
     .item{border:1px solid var(--stroke);border-radius:16px;background:#0a0d14;margin-bottom:10px;overflow:hidden}
     .item .head{width:100%; display:flex; gap:10px; alignitems:center;padding:12px 14px;background:transparent;color:#eaf2ff;border:0;cursor:pointer;font-weight:800;letter-spacing:.2px;text-align:left;justify-content:space-between}
     .details{padding:12px 14px; border-top:1px solid var(--stroke)}
-    .fid-history{display:none!important}
+    
+    .gift-history{font-size:12px;color:var(--muted)}
+.fid-history{display:none!important}
     .r-line{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px}
     .wa-btn{font-size:12px;padding:6px 8px;border-radius:999px;border:1px solid rgba(0,140,255,.22);background:linear-gradient(180deg,rgba(0,140,255,.08),rgba(0,140,255,.02));color:#dbeaff;text-decoration:none;display:inline-flex;gap:6px;align-items:center}
     .wa-btn.ok{background:linear-gradient(135deg,#1fae60,var(--ok));color:#071b10;border-color:transparent}
@@ -222,6 +224,13 @@
     .svc-radar-label{
       font-weight:600;
       margin-right:4px;
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid var(--stroke);
+      background:#0a0d14;
+      color:var(--muted);
+      cursor:pointer;
+      appearance:none;
     }
     .svc-radar-pills{
       display:flex;
@@ -614,6 +623,7 @@
           <button type="button" class="tbtn" data-key="gas">Gas</button>
           <button type="button" class="tbtn" data-key="rate">Smartphone a Rate</button>
           <button type="button" class="tbtn" data-key="premium">Acquisti premium</button>
+          <button type="button" class="tbtn" data-key="giftcard">Gift Card 🎁</button>
 
           <div class="fidelity-pill" id="fidelityPill">
             💳 Fidelity Card INCLUSA • 20 punti di benvenuto per ogni nuovo cliente registrato
@@ -661,7 +671,52 @@
       </div>
 
       <div style="grid-column:1/-1">
-        <button id="insertBtn" class="btn primary" disabled>Inserisci</button>
+  
+      <div style="grid-column:1/-1;display:none" id="giftWrap">
+        <div class="dash" style="padding:12px 12px">
+          <div class="label" style="margin-bottom:8px">
+            🎁 <strong>Gift Card Re Long</strong> — carica un credito e genera un codice regalo (stile Zara/Zalando).
+          </div>
+
+          <div class="grid2">
+            <div>
+              <label>Importo da caricare (€)</label>
+              <input id="gc_amount" type="number" min="5" step="1" placeholder="Esempio: 50">
+            </div>
+            <div>
+              <label>Valida fino al</label>
+              <input id="gc_exp" type="date">
+            </div>
+
+            <div>
+              <label>Nome destinatario (opz.)</label>
+              <input id="gc_to_name" placeholder="Esempio: Maria">
+            </div>
+            <div>
+              <label>Telefono destinatario (opz.)</label>
+              <input id="gc_to_phone" placeholder="3331234567" inputmode="numeric">
+            </div>
+
+            <div style="grid-column:1/-1">
+              <label>Messaggio regalo (opz.)</label>
+              <textarea id="gc_message" placeholder="Esempio: Buon Natale! Usa questa Gift Card da Re Long per quello che vuoi 🎄"></textarea>
+            </div>
+
+            <div style="grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap">
+              <button type="button" class="btn" id="gcQuick50">+50€</button>
+              <button type="button" class="btn" id="gcQuick100">+100€</button>
+              <button type="button" class="btn" id="gcQuick150">+150€</button>
+              <button type="button" class="btn" id="gcQuick200">+200€</button>
+            </div>
+
+            <div class="label" style="grid-column:1/-1;font-size:11px;margin-top:4px">
+              Nota: il destinatario riceve un link pubblico per vedere saldo e movimenti (solo in lettura).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button id="insertBtn" class="btn primary" disabled>Inserisci</button>
       </div>
     </div>
   </section>
@@ -842,6 +897,7 @@ sono Alessandro di Re Long (08119578844)..."></textarea>
         <div class="r-line actions"></div>
         <div class="r-line points"></div>
         <div class="r-line fid-history"></div>
+        <div class="r-line gift-history"></div>
         <div class="r-line timeline"></div>
         <div class="r-line reminders"></div>
         <div class="r-line review"></div>
@@ -929,6 +985,73 @@ sono Alessandro di Re Long (08119578844)..."></textarea>
     const STORE_KEY='relong-scadenzario-v32b';
     const GH_CFG_KEY='relong-gh-config-v31', GH_TOKEN_KEY='relong-gh-token-v31';
     const FIDELITY_URL='https://alessandroiascone.github.io/fidelity/fidelity.html';
+
+    const GIFTCARD_PORTAL_URL = 'https://alessandroiascone.github.io/relong-nfc/giftcard.html';
+    const GIFTCARD_PTS_PER_50 = 10; // ogni 50€ caricati -> 10 punti (per chi compra la gift card)
+
+    function genGiftCode(){
+      // Codice breve, leggibile, stile "RL-8F3K-2ZQ9"
+      const abc = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      const part = ()=>Array.from({length:4},()=>abc[Math.floor(Math.random()*abc.length)]).join('');
+      return `RL-${part()}-${part()}`;
+    }
+    function normalizeMoney(v){
+      const n = Number(String(v||'').replace(',','.'));
+      return Number.isFinite(n) ? n : 0;
+    }
+    function gcPointsFromAmount(amount){
+      const a = Math.floor(Math.max(0, amount) / 50);
+      return a * GIFTCARD_PTS_PER_50;
+    }
+    function ensureGiftFields(it){
+      if(!Array.isArray(it.giftCards)) it.giftCards = [];
+    }
+    function addGiftMovement(gc, id, label, delta){
+      if(!Array.isArray(gc.movements)) gc.movements = [];
+      const before = Number(gc.balance||0) || 0;
+      const after  = before + (Number(delta)||0);
+      gc.movements.push({ id, at: new Date().toISOString(), label, delta, before, after });
+      gc.balance = after;
+    }
+
+    function waGiftCardRecipient(toName, toPhone, buyerName, gc){
+      const link = `${GIFTCARD_PORTAL_URL}?code=${encodeURIComponent(gc.code)}`;
+      const msg =
+`Ciao ${toName || '👋'}, sono Alessandro di Re Long (${RELONG_PHONE}).
+
+🎁 Hai ricevuto una Gift Card Re Long!
+
+• Codice: ${gc.code}
+• Credito: € ${Number(gc.balance||0).toFixed(2).replace('.',',')}
+${gc.exp ? `• Valida fino al: ${gc.exp}` : ''}
+
+${gc.message ? `Messaggio: ${gc.message}
+` : ''}Puoi controllare saldo e movimenti qui:
+${link}
+
+Quando vuoi usarla, passa in negozio oppure scrivimi su WhatsApp indicando il codice 😉`;
+      return walink(toPhone, msg);
+    }
+
+    function waGiftCardBuyer(it, gc){
+      const link = `${GIFTCARD_PORTAL_URL}?code=${encodeURIComponent(gc.code)}`;
+      const msg =
+`Ciao ${it.name}, sono Alessandro di Re Long (${RELONG_PHONE}).
+
+✅ Gift Card Re Long creata!
+
+• Codice: ${gc.code}
+• Credito: € ${Number(gc.balance||0).toFixed(2).replace('.',',')}
+${gc.exp ? `• Valida fino al: ${gc.exp}` : ''}
+
+Link per controllare saldo e movimenti:
+${link}
+
+Se vuoi, dimmi il nome/telefono del destinatario e gliela inviamo subito su WhatsApp 🎁`;
+      return walink(it.phone, msg);
+    }
+
+
     const MAPS_URL='https://maps.app.goo.gl/s4ytGUBeGDAEaFG59';
     const REVIEW_URL='http://g.page/r/CeN076xNHzDmEAE/review';
     const RELONG_PHONE='08119578844';
@@ -1289,12 +1412,12 @@ Se vuoi dare uno sguardo ai nostri servizi, trovi tutto qui: ${hubUrl}`;
     }
 
     function waReadyNotRepaired(name, phone){
-      const t=`Ciao ${name}, sono Alessandro di Re Long (${RELONG_PHONE}).\nIl tuo prodotto NON riparato è pronto per il ritiro.\nPuoi ritirarlo entro 30 giorni, dopodiché procederemo allo smaltimento e alla distruzione del prodotto.`;
+      const t=`Ciao ${name}, sono Alessandro di Re Long (${RELONG_PHONE}).\nIl tuo prodotto NON riparato è pronto per il ritiro.\nPuoi ritirarlo entro 30 giorni, dopodiché saremo costretti a procedere allo smaltimento e distruzione del prodotto.`;
       return walink(phone,t);
     }
 
     function waThanksFidReview(name, phone){
-      const t=`Ciao ${name}, grazie per aver ritirato il prodotto da Re Long 🙌\nIl tuo saldo punti Fidelity è stato aggiornato.\nSe ti va, lasciaci una recensione 5⭐ su Google: ${REVIEW_URL}`;
+      const t=`Ciao ${name}, grazie per aver ritirato il prodotto da Re Long 🙌\nIl tuo saldo punti Fidelity è stato aggiornato.\nSe ti va, lasciaci una recensione 5 stelle su Google⭐: ${REVIEW_URL}`;
       return walink(phone,t);
     }
 
@@ -1417,7 +1540,8 @@ ${cardUrl}`;
       pacchi:     ['sim','energia','fissomobile','rate'],
       premium:    ['sim','energia','fissomobile','rate'],
       riparazione:['sim','energia','fissomobile','rate'],
-      preventivi: []
+      preventivi: [],
+      giftcard:  ['sim','energia','fissomobile','rate']
     };
 
     function shuffle(arr){
@@ -1492,6 +1616,7 @@ ${cardUrl}`;
       const b=e.target.closest('.tbtn'); if(!b) return;
       const k=b.dataset.key; const on=!b.classList.contains('active');
       if(k==='riparazione') $('#acceptWrap').style.display = on? 'block':'none';
+      if(k==='giftcard') $('#giftWrap').style.display = on? 'block':'none';
       b.classList.toggle('active',on);
       if(on) activeSet.add(k); else activeSet.delete(k);
       updateInsertState();
@@ -1523,6 +1648,31 @@ ${cardUrl}`;
     const insertBtn = document.getElementById('insertBtn');
     const fidelityPill = document.getElementById('fidelityPill');
 
+    const giftWrap = document.getElementById('giftWrap');
+    const gcAmount = document.getElementById('gc_amount');
+    const gcExp    = document.getElementById('gc_exp');
+    const gcToName = document.getElementById('gc_to_name');
+    const gcToPhone= document.getElementById('gc_to_phone');
+    const gcMsg    = document.getElementById('gc_message');
+    const gcQuick50  = document.getElementById('gcQuick50');
+    const gcQuick100 = document.getElementById('gcQuick100');
+    const gcQuick150 = document.getElementById('gcQuick150');
+    const gcQuick200 = document.getElementById('gcQuick200');
+
+    function gcSetAmount(v){
+      if(!gcAmount) return;
+      const cur = normalizeMoney(gcAmount.value);
+      const next = Math.max(0, cur + Number(v||0));
+      gcAmount.value = String(Math.round(next));
+      updateInsertState();
+    }
+    if(gcQuick50)  gcQuick50.addEventListener('click', ()=>gcSetAmount(50));
+    if(gcQuick100) gcQuick100.addEventListener('click', ()=>gcSetAmount(100));
+    if(gcQuick150) gcQuick150.addEventListener('click', ()=>gcSetAmount(150));
+    if(gcQuick200) gcQuick200.addEventListener('click', ()=>gcSetAmount(200));
+
+
+
     function findByPhone(p){ const np=normalizePhone(p); return items.find(x=>normalizePhone(x.phone)===np); }
     function findByName(n){ const nn=normalizeName(n); return items.find(x=>normalizeName(x.name)===nn); }
 
@@ -1532,6 +1682,10 @@ ${cardUrl}`;
       if(!n || !/\s/.test(n)) return false;
       if(!p || p.length<7) return false;
       if(activeSet.size === 0) return false;
+      if(activeSet.has('giftcard')){
+        const a = normalizeMoney((gcAmount && gcAmount.value) || 0);
+        if(!a || a < 5) return false;
+      }
       return true;
     }
 
@@ -1544,6 +1698,10 @@ ${cardUrl}`;
 
     nameInput.addEventListener('input', updateInsertState);
     phoneInput.addEventListener('input', updateInsertState);
+
+    if(gcAmount) gcAmount.addEventListener('input', updateInsertState);
+    if(gcExp) gcExp.addEventListener('change', updateInsertState);
+
 
     nameInput.addEventListener('blur', ()=>{
       const n = nameInput.value;
@@ -1566,6 +1724,7 @@ ${cardUrl}`;
       if(!Array.isArray(it.pointsMovements)) it.pointsMovements = [];
       if(!Array.isArray(it.activated)) it.activated = [];
       if(!Array.isArray(it.acceptanceHistory)) it.acceptanceHistory = [];
+      if(!Array.isArray(it.giftCards)) it.giftCards = [];
       if(!it.id) it.id = String(Date.now())+'-'+Math.random().toString(16).slice(2);
     }
 
@@ -1646,6 +1805,11 @@ ${cardUrl}`;
             pts   = POINTS_RATE;
             code  = 'rate-signup';
             label = 'Pratica smartphone a rate';
+          } else if(k === 'giftcard'){
+            const amount = normalizeMoney((gcAmount && gcAmount.value) || 0);
+            pts   = gcPointsFromAmount(amount);
+            code  = 'giftcard-load';
+            label = `Gift Card — ricarica € ${amount.toFixed(2).replace('.',',')}`;
           }
 
           if(pts > 0){
@@ -1735,7 +1899,60 @@ ${cardUrl}`;
         }
       }catch{}
 
-      ensureReminders(found);
+      
+      // 🎁 Gestione Gift Card (creazione + invio link)
+      if(activeSet.has('giftcard')){
+        ensureGiftFields(found);
+
+        const amount = normalizeMoney((gcAmount && gcAmount.value) || 0);
+        if(amount < 5){
+          showToast('Importo Gift Card non valido','err');
+        } else {
+          const code = genGiftCode();
+          const exp  = (gcExp && gcExp.value) ? String(gcExp.value) : '';
+          const toName = (gcToName && gcToName.value || '').trim();
+          const toPhone = normalizePhone((gcToPhone && gcToPhone.value) || '');
+          const message = (gcMsg && gcMsg.value || '').trim();
+
+          const gc = {
+            code,
+            createdAt: new Date().toISOString(),
+            exp,
+            from: { name: found.name || name, phone: found.phone || phone },
+            to: { name: toName, phone: toPhone },
+            message,
+            balance: 0,
+            movements: [],
+            status: 'active'
+          };
+
+          addGiftMovement(gc, `load-${Date.now()}`, 'Ricarica Gift Card', amount);
+          found.giftCards.push(gc);
+
+          // WA buyer (sempre, se ha telefono)
+          try{
+            if(found.phone){
+              window.open(waGiftCardBuyer(found, gc), '_blank','noopener');
+            }
+          }catch{}
+
+          // WA destinatario (se compilato)
+          try{
+            if(toPhone){
+              window.open(waGiftCardRecipient(toName, toPhone, found.name, gc), '_blank','noopener');
+            }
+          }catch{}
+
+          // Pulizia campi Gift Card
+          if(gcAmount) gcAmount.value = '';
+          if(gcExp) gcExp.value = '';
+          if(gcToName) gcToName.value = '';
+          if(gcToPhone) gcToPhone.value = '';
+          if(gcMsg) gcMsg.value = '';
+        }
+      }
+
+ensureReminders(found);
       found.updatedAt=new Date().toISOString();
 
       saveLocal(); saveToGitHub(); render();
@@ -1958,7 +2175,7 @@ Ti auguro Buone Feste 🎄 e ti ricordo che per smartphone, energia e servizi de
     }
 
     // Radar servizi – usa i remind con colori e spegne quelli già attivi
-    function appendQuickWA(actions, it){
+    function appendQuickWA(actions, services, it){
       ensureReminders(it);
 
       const radar = document.createElement('div');
@@ -2024,7 +2241,14 @@ Ti auguro Buone Feste 🎄 e ti ricordo che per smartphone, energia e servizi de
       });
 
       radar.appendChild(pillsWrap);
-      actions.appendChild(radar);
+      // Posiziona Radar servizi sotto "Servizi attivi" nella stessa riga di servizi
+      if(services && services.firstChild){
+        services.insertBefore(radar, services.firstChild.nextSibling);
+      } else if(services){
+        services.appendChild(radar);
+      } else {
+        actions.appendChild(radar);
+      }
     }
 
     function btnDelete(it){
@@ -2333,6 +2557,7 @@ function render(){
 
         const svcPills=document.createElement('div');
         svcPills.className='svc-radar-pills';
+        svcPills.style.display='none';
 
         const servicesList=[
           { key:'sim',        label:'SIM',              icon:'📶' },
@@ -2340,7 +2565,8 @@ function render(){
           { key:'energia',    label:'Energia',          icon:'⚡' },
           { key:'gas',        label:'Gas',              icon:'🔥' },
           { key:'rate',       label:'Rate',             icon:'📱' },
-          { key:'premium',    label:'Acquisti premium', icon:'💎' }
+          { key:'premium',    label:'Acquisti premium', icon:'💎' },
+          { key:'giftcard',  label:'Gift Card',        icon:'🎁' }
         ];
 
         const actSet=new Set(it.activated || []);
@@ -2556,7 +2782,7 @@ function render(){
         }
 
         // Radar servizi con remind
-        appendQuickWA(actions, it);
+        appendQuickWA(actions, services, it);
 
         if(it.acceptance){
           // Badge importo preventivo
@@ -2565,56 +2791,19 @@ function render(){
           if(hasQuote && !it.quoteStatus){
             it.quoteStatus='pending';
           }
-          if(hasQuote){
-            const quoteBadge=document.createElement('span');
-            quoteBadge.className='badge-mini';
-            quoteBadge.textContent = '💰 Preventivo: € ' + quoteVal.toFixed(2).replace('.',',');
-            services.appendChild(quoteBadge);
-          }
-
           // Pulsante imposta/modifica preventivo (descrizione + importo)
-          actions.append(btn('Imposta / modifica preventivo', ()=>{
-            if(!it.acceptance) return;
-            const currentDesc = it.acceptance.quoteDescr || '';
-            const desc = prompt('Descrivi il lavoro preventivato (es. sostituzione display + pellicola):', currentDesc);
-            if(desc===null) return;
-
-            const currentAmount = Number(it.acceptance.quote || 0);
-            const defAmountStr = currentAmount>0 ? currentAmount.toFixed(2).replace('.',',') : '';
-            const val = prompt('Inserisci l\'importo del preventivo (es. 79 oppure 79,90):', defAmountStr);
-            if(val===null) return;
-
-            const q = parseFloat(String(val).replace(',','.'));
-            if(!Number.isFinite(q) || q<=0){
-              alert('Importo non valido');
-              return;
-            }
-
-            it.acceptance.quote = q;
-            it.acceptance.quoteDescr = desc;
-            it.quoteStatus = 'pending';
-            it.updatedAt = new Date().toISOString();
-            saveLocal(); saveToGitHub(); render();
-          }));
-
-          // Valori attuali preventivo
-          quoteVal = Number(it.acceptance.quote || 0);
-          hasQuote = Number.isFinite(quoteVal) && quoteVal>0;
-          if(hasQuote && !it.quoteStatus){
-            it.quoteStatus='pending';
-          }
-
-          // Invio preventivo (finché non è accettato)
-          if(it.quoteStatus !== 'accepted'){
-            actions.append(btn('Invia preventivo su WhatsApp', ()=>{
+          // Visibile solo finché il preventivo non è stato né accettato né rifiutato
+          // e solo se la riparazione non è già stata consegnata
+          if(it.quoteStatus !== 'accepted' && it.quoteStatus !== 'rejected' && it.repairStatus !== 'consegnato'){
+            actions.append(btn('Imposta / modifica preventivo', ()=>{
               if(!it.acceptance) return;
-
-              let currentDesc = it.acceptance.quoteDescr || '';
+              const currentDesc = it.acceptance.quoteDescr || '';
               const desc = prompt('Descrivi il lavoro preventivato (es. sostituzione display + pellicola):', currentDesc);
               if(desc===null) return;
 
-              const defAmount = hasQuote ? quoteVal.toFixed(2).replace('.',',') : '';
-              const val = prompt('Conferma/modifica importo preventivo (es. 79 oppure 79,90):', defAmount);
+              const currentAmount = Number(it.acceptance.quote || 0);
+              const defAmountStr = currentAmount>0 ? currentAmount.toFixed(2).replace('.',',') : '';
+              const val = prompt('Inserisci l\'importo del preventivo (es. 79 oppure 79,90):', defAmountStr);
               if(val===null) return;
 
               const q = parseFloat(String(val).replace(',','.'));
@@ -2625,8 +2814,9 @@ function render(){
 
               it.acceptance.quote = q;
               it.acceptance.quoteDescr = desc;
-              it.quoteStatus='sent';
-              it.updatedAt=new Date().toISOString();
+              // Impostando il preventivo lo inviamo SUBITO al cliente via WhatsApp
+              it.quoteStatus = 'sent';
+              it.updatedAt = new Date().toISOString();
               saveLocal(); saveToGitHub();
 
               try{
@@ -2636,6 +2826,14 @@ function render(){
               render();
             }));
           }
+
+// Valori attuali preventivo
+          quoteVal = Number(it.acceptance.quote || 0);
+          hasQuote = Number.isFinite(quoteVal) && quoteVal>0;
+          if(hasQuote && !it.quoteStatus){
+            it.quoteStatus='pending';
+          }
+
 
           // Bottone "Preventivo accettato" quando è stato inviato
           if(it.quoteStatus==='sent'){
@@ -2693,56 +2891,11 @@ function render(){
                 if(dashModal && dashModal.classList.contains('on')) updateDashboard();
               }));
             }
+
           } else if(quoteDone && it.repairStatus==='pronto'){
-            actions.append(btnOk('Ritirato (chiudi pratica)', ()=>{
-              it.repairStatus='consegnato';
-              it.deliveredAt = new Date().toISOString();
-              it.postReviewAt = addDays(new Date(), 3).toISOString();
-              it.postReviewSent = false;
-
-              // Chiedi l'UTILE netto della riparazione per la dashboard
-              let prev = '';
-              if(typeof it.repairProfit === 'number' && !Number.isNaN(it.repairProfit) && it.repairProfit>0){
-                prev = String(it.repairProfit);
-              }
-              const input = prompt('Inserisci il valore UTILE (solo guadagno netto) incassato per questa riparazione:', prev);
-              if(input !== null){
-                const val = Number(input.replace(',','.'));
-                if(Number.isFinite(val) && val>=0){
-                  it.repairProfit = val;
-                }
-              }
-
-              const devType = (it.acceptance && it.acceptance.type ? String(it.acceptance.type).toLowerCase() : '');
-              let delta = 0;
-              if(devType === 'computer'){
-                delta = POINTS_REPAIR_PC;
-              }else if(devType === 'smartphone' || devType === 'tablet'){
-                // Smartphone e Tablet valgono gli stessi punti
-                delta = POINTS_REPAIR_PHONE;
-              }
-              if(delta > 0){
-                const code  = 'repair-' + (devType || 'altro') + '-delivered';
-                const label = 'Riparazione ' + (devType || 'dispositivo') + ' completata';
-                addFidelityMovement(it, code, label, delta);
-              }
-
-              try{
-                window.open(waThanksFidReview(it.name, it.phone),'_blank','noopener');
-              }catch{}
-
-              it.updatedAt = new Date().toISOString();
-              saveLocal();
-              saveToGitHub();
-              render();
-
-              if(dashModal && dashModal.classList.contains('on')) updateDashboard();
-            }));
-
-            // Chiusura pratica per prodotti NON riparati dopo preventivo rifiutato
-
             if(it.quoteStatus === 'rejected'){
-              actions.append(btn('Consegnato NON riparato', ()=>{
+              // Chiusura pratica per prodotti NON riparati dopo preventivo rifiutato
+              actions.append(btnOk('Consegnato NON riparato', ()=>{
                 if(!confirm('Confermi che il prodotto è stato riconsegnato NON riparato?')) return;
                 it.repairStatus='consegnato';
                 it.notRepaired = true;
@@ -2761,32 +2914,56 @@ function render(){
 
                 if(dashModal && dashModal.classList.contains('on')) updateDashboard();
               }));
+            } else {
+              actions.append(btnOk('Ritirato (chiudi pratica)', ()=>{
+                it.repairStatus='consegnato';
+                it.deliveredAt = new Date().toISOString();
+                it.postReviewAt = addDays(new Date(), 3).toISOString();
+                it.postReviewSent = false;
+
+                // Chiedi l'UTILE netto della riparazione per la dashboard
+                let prev = '';
+                if(typeof it.repairProfit === 'number' && !Number.isNaN(it.repairProfit) && it.repairProfit>0){
+                  prev = String(it.repairProfit);
+                }
+                const input = prompt('Inserisci il valore UTILE (solo guadagno netto) incassato per questa riparazione:', prev);
+                if(input !== null){
+                  const val = Number(input.replace(',','.'));
+                  if(Number.isFinite(val) && val>=0){
+                    it.repairProfit = val;
+                  }
+                }
+
+                const devType = (it.acceptance && it.acceptance.type ? String(it.acceptance.type).toLowerCase() : '');
+                let delta = 0;
+                if(devType === 'computer'){
+                  delta = POINTS_REPAIR_PC;
+                }else if(devType === 'smartphone' || devType === 'tablet'){
+                  // Smartphone e Tablet valgono gli stessi punti
+                  delta = POINTS_REPAIR_PHONE;
+                }
+                if(delta > 0){
+                  const code  = 'repair-' + (devType || 'altro') + '-delivered';
+                  const label = 'Riparazione ' + (devType || 'dispositivo') + ' completata';
+                  addFidelityMovement(it, code, label, delta);
+                }
+
+                try{
+                  window.open(waThanksFidReview(it.name, it.phone),'_blank','noopener');
+                }catch{}
+
+                it.updatedAt = new Date().toISOString();
+                saveLocal();
+                saveToGitHub();
+                render();
+
+                if(dashModal && dashModal.classList.contains('on')) updateDashboard();
+              }));
             }
           }
         } else {
-
-          // 👉 Completato per pratiche NON riparazioni: solo chiusura, niente punti
-          if(!it.done){
-            actions.append(btn('Completato', ()=>{
-              try{ window.open(waDeliveredConfirm(it.name, it.phone),'_blank','noopener'); }catch{}
-              it.done = true;
-              it.doneAt = new Date().toISOString();
-
-              it.updatedAt = new Date().toISOString();
-              saveLocal();
-              saveToGitHub();
-              render();
-            }));
-          } else {
-            const lab = document.createElement('span');
-            lab.className = 'label';
-            lab.textContent = 'Pratica completata';
-            actions.append(lab);
-          }
+          // Pulsanti 'Completato' ed 'Elimina' rimossi (gestione manuale)
         }
-
-        // Tasto elimina SEMPRE disponibile
-        actions.append(btnDelete(it));
 
         // Storico punti Fidelity (ultimi movimenti)
         if(fidHistory){
@@ -2816,136 +2993,56 @@ function render(){
           }
         }
 
+        // 🎁 Storico Gift Card (ultime card)
+        const giftHistory = clone.querySelector('.gift-history');
+        if(giftHistory){
+          const gcs = Array.isArray(it.giftCards) ? it.giftCards.slice() : [];
+          if(!gcs.length){
+            giftHistory.style.display = 'none';
+          } else {
+            giftHistory.style.display = '';
+            gcs.sort((a,b)=> new Date(b.createdAt||0) - new Date(a.createdAt||0));
+            const latest = gcs.slice(0,3);
+            giftHistory.innerHTML = '<strong>Gift Card (ultime):</strong>';
+            const ul = document.createElement('ul');
+            ul.style.margin = '4px 0 0';
+            ul.style.paddingLeft = '18px';
+            ul.style.fontSize = '11px';
+            ul.style.color = 'var(--muted)';
+            latest.forEach(gc=>{
+              const li = document.createElement('li');
+              const euro = Number(gc.balance||0).toFixed(2).replace('.',',');
+              const when = gc.createdAt ? fmt(gc.createdAt) : '';
+              li.textContent = `${when} • ${gc.code} • € ${euro}${gc.to && gc.to.name ? ' → '+gc.to.name : ''}`;
+              ul.appendChild(li);
+            });
+            giftHistory.appendChild(ul);
+
+            const openBtn = document.createElement('button');
+            openBtn.type='button';
+            openBtn.className='btn';
+            openBtn.style.marginLeft='8px';
+            openBtn.textContent='Apri Gift Card';
+            openBtn.addEventListener('click', ()=>{
+              const last = gcs[0];
+              const link = `${GIFTCARD_PORTAL_URL}?code=${encodeURIComponent(last.code)}`;
+              window.open(link,'_blank','noopener');
+            });
+            giftHistory.appendChild(openBtn);
+          }
+        }
+
+
+
 
 // Timeline cliente (ultimi eventi principali)
 if(timeline){
-  const events = [];
-
-  if(it.createdAt){
-    events.push({ d:new Date(it.createdAt), label:'Cliente creato a sistema' });
-  }
-  if(it.fromPacchi && it.createdAt){
-    events.push({ d:new Date(it.createdAt), label:'Registrato da Pacchi' });
-  }
-
-  if(Array.isArray(it.pointsMovements)){
-    it.pointsMovements.forEach(m=>{
-      if(!m) return;
-      const dt = m.at ? new Date(m.at) : null;
-      if(!dt || isNaN(dt)) return;
-      const sign = m.delta>0 ? '+' : '';
-      events.push({
-        d: dt,
-        label: `Fidelity: ${m.label} (${sign}${m.delta} pt)`
-      });
-    });
-  }
-
-  if(Array.isArray(it.reminders)){
-    it.reminders.forEach(r=>{
-      if(!r || !r.type || !r.dueAt) return;
-      const dt = new Date(r.sentAt || r.dueAt);
-      if(!dt || isNaN(dt)) return;
-      const tLabel = typeLabel[r.type] || r.type;
-      const sentTxt = r.sent ? ' (inviato)' : '';
-      events.push({
-        d: dt,
-        label: `Reminder ${tLabel}${sentTxt}`
-      });
-    });
-  }
-
-  if(Array.isArray(it.acceptanceHistory)){
-    it.acceptanceHistory.forEach(a=>{
-      if(!a) return;
-      const dt = a.createdAt ? new Date(a.createdAt) : (it.createdAt ? new Date(it.createdAt) : null);
-      if(!dt || isNaN(dt)) return;
-      const dev = a.type || 'Dispositivo';
-      const desc = (a.brand || '') + ' ' + (a.model || '');
-      events.push({
-        d: dt,
-        label: `Riparazione: ${dev} ${desc}`.trim()
-      });
-    });
-  }
-  if(it.acceptance){
-    const a = it.acceptance;
-    const dt = a.createdAt ? new Date(a.createdAt) : (it.createdAt ? new Date(it.createdAt) : null);
-    if(dt && !isNaN(dt)){
-      const dev = a.type || 'Dispositivo';
-      const desc = (a.brand || '') + ' ' + (a.model || '');
-      events.push({
-        d: dt,
-        label: `Riparazione in corso: ${dev} ${desc}`.trim()
-      });
-    }
-  }
-
-  // Eventi legati al preventivo
-  if(it.quoteStatus === 'sent' && it.acceptance && it.acceptance.quote){
-    const dt = it.updatedAt ? new Date(it.updatedAt) : (it.createdAt ? new Date(it.createdAt) : null);
-    if(dt && !isNaN(dt)){
-      const desc = (it.acceptance.quoteDescr || 'riparazione').trim();
-      events.push({
-        d: dt,
-        label: `Preventivo inviato: ${desc}`
-      });
-    }
-  }
-  if(it.quoteStatus === 'accepted' && it.quoteAcceptedAt){
-    const dt = new Date(it.quoteAcceptedAt);
-    if(dt && !isNaN(dt)){
-      const desc = (it.acceptance?.quoteDescr || 'riparazione').trim();
-      events.push({
-        d: dt,
-        label: `Preventivo ACCETTATO: ${desc}`
-      });
-    }
-  }
-  if(it.quoteStatus === 'rejected' && it.quoteRejectedAt){
-    const dt = new Date(it.quoteRejectedAt);
-    if(dt && !isNaN(dt)){
-      const desc = (it.acceptance?.quoteDescr || 'riparazione').trim();
-      events.push({
-        d: dt,
-        label: `Preventivo RIFIUTATO dal cliente: ${desc}`
-      });
-    }
-  }
-
-  // Eventi riconsegna non riparata
-  if(it.notRepaired && it.deliveredAt){
-    const dt = new Date(it.deliveredAt);
-    if(dt && !isNaN(dt)){
-      events.push({
-        d: dt,
-        label: 'Prodotto riconsegnato NON riparato'
-      });
-    }
-  }
-
-  if(!events.length){
-    timeline.style.display = 'none';
-  } else {
-    events.sort((a,b)=> a.d - b.d);
-    const latest = events.slice(-7);
-    timeline.style.display = '';
-    timeline.innerHTML = '<strong>Timeline cliente:</strong>';
-    const ulTl = document.createElement('ul');
-    ulTl.style.margin = '4px 0 0';
-    ulTl.style.paddingLeft = '18px';
-    ulTl.style.fontSize = '11px';
-    ulTl.style.color = 'var(--muted)';
-    latest.forEach(ev=>{
-      const li = document.createElement('li');
-      li.textContent = fmt(ev.d.toISOString()) + ' – ' + ev.label;
-      ulTl.appendChild(li);
-    });
-    timeline.appendChild(ulTl);
-  }
+  // Timeline cliente nascosta (tracciata solo a livello dati)
+  timeline.style.display = 'none';
+  timeline.innerHTML = '';
 }
 
-        // Strumenti Fidelity singolo cliente
+// Strumenti Fidelity singolo cliente
         const fidRow = document.createElement('div');
         fidRow.className = 'r-line fid-actions';
         let quickPopup = null;
@@ -3121,8 +3218,8 @@ if(timeline){
             headerPts.textContent = open ? 'Storico punti ▴' : 'Storico punti ▾';
           });
 
-          points.appendChild(headerPts);
-          points.appendChild(boxPts);
+          services.appendChild(headerPts);
+          services.appendChild(boxPts);
         }
 
 
