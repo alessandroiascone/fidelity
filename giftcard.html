@@ -144,7 +144,7 @@ th{color:var(--muted);font-size:11px}
         <div class="sub">Controlla saldo e movimenti in tempo reale</div>
       </div>
     </div>
-    <div class="status">Attiva</div>
+    <div class="status" id="statusEl">Caricamento…</div>
   </div>
 
   <div class="grid">
@@ -152,7 +152,7 @@ th{color:var(--muted);font-size:11px}
     <!-- CARD SINISTRA -->
     <div class="card">
       <div class="card-title" id="recipientName">Gift Card Re Long</div>
-      <div class="card-sub">Codice: RL-XXXX-YYYY</div>
+      <div class="card-sub" id="codeLine">Codice: —</div>
 
       <div class="hero">
         <img
@@ -164,7 +164,7 @@ th{color:var(--muted);font-size:11px}
 
       <div class="saldo">
         <span>Saldo disponibile</span>
-        <strong>€ 50,00</strong>
+        <strong id="balanceEl">€ —</strong>
       </div>
 
       <button class="btn btn-wa"
@@ -187,15 +187,16 @@ th{color:var(--muted);font-size:11px}
 
       <div class="table-wrap">
         <table>
-          <tr>
-            <th>Data</th><th>Descrizione</th><th>Var.</th><th>Saldo</th>
-          </tr>
-          <tr>
-            <td>24/12/2024 14:20</td>
-            <td>Ricarica Gift Card</td>
-            <td class="green">+ 50,00</td>
-            <td>€ 50,00</td>
-          </tr>
+          <thead>
+            <tr>
+              <th>Data</th><th>Descrizione</th><th>Var.</th><th>Saldo</th>
+            </tr>
+          </thead>
+          <tbody id="movTbody">
+            <tr>
+              <td colspan="4" style="color:var(--muted);font-size:12px">Caricamento movimenti…</td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -203,15 +204,154 @@ th{color:var(--muted);font-size:11px}
   </div>
 </div>
 
+
 <script>
-(function(){
-  const params = new URLSearchParams(window.location.search);
-  const name = params.get('recipient');
-  if(name){
-    const el = document.getElementById('recipientName');
-    if(el){
-      el.textContent = decodeURIComponent(name.replace(/\+/g,' '));
+(async function(){
+  const RELONG_PHONE = '08119578844';
+  const HUB_URL = 'https://alessandroiascone.github.io/relong-nfc/relong-hub-v2.html';
+  const MAPS_URL = 'https://maps.app.goo.gl/s4ytGUBeGDAEaFG59';
+
+  const qs = new URLSearchParams(window.location.search);
+  const code = (qs.get('code') || '').trim();
+
+  const statusEl = document.getElementById('statusEl');
+  const nameEl = document.getElementById('recipientName');
+  const codeEl = document.getElementById('codeLine');
+  const balEl  = document.getElementById('balanceEl');
+  const tbody  = document.getElementById('movTbody');
+
+  function euro(n){
+    const v = Number(n||0);
+    return '€ ' + v.toFixed(2).replace('.',',');
+  }
+  function fmtDate(iso){
+    try{
+      const d = new Date(iso);
+      if(isNaN(d)) return '';
+      return d.toLocaleString('it-IT', {year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+    }catch(e){ return ''; }
+  }
+  function setStatus(label, ok=true){
+    if(!statusEl) return;
+    statusEl.textContent = label;
+    statusEl.style.color = ok ? '#caffd8' : '#ffd1d1';
+  }
+
+  if(!code){
+    setStatus('Codice mancante', false);
+    if(codeEl) codeEl.textContent = 'Codice: (manca ?code=...)';
+    if(tbody) tbody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);font-size:12px">Apri il link completo ricevuto su WhatsApp.</td></tr>';
+    return;
+  }
+
+  if(codeEl) codeEl.textContent = 'Codice: ' + code;
+
+  async function fetchItems(){
+    // Stessa cartella di giftcard.html → /fidelity/data/items.json
+    const url = './data/items.json?v=' + Date.now();
+    const res = await fetch(url, {cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    if(!Array.isArray(json)) throw new Error('Formato dati non valido');
+    return json;
+  }
+
+  function findGift(items, code){
+    for(const it of items){
+      if(!it || !Array.isArray(it.giftCards)) continue;
+      const gc = it.giftCards.find(g => (g && String(g.code||'').trim() === code));
+      if(gc) return { owner: it, gc };
     }
+    return null;
+  }
+
+  try{
+    const items = await fetchItems();
+    const found = findGift(items, code);
+
+    if(!found){
+      setStatus('Non trovata', false);
+      if(nameEl) nameEl.textContent = 'Gift Card non trovata';
+      if(balEl) balEl.textContent = euro(0);
+      if(tbody) tbody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);font-size:12px">Il codice non risulta nei nostri dati. Se pensi sia un errore, scrivici su WhatsApp.</td></tr>';
+      return;
+    }
+
+    const { owner, gc } = found;
+
+    // Nome mostrato: destinatario se presente, altrimenti anagrafica cliente
+    const displayName = (gc.to && gc.to.name) ? gc.to.name : (owner.name || 'Gift Card Re Long');
+    if(nameEl) nameEl.textContent = displayName;
+
+    const balance = Number(gc.balance || 0) || 0;
+    if(balEl) balEl.textContent = euro(balance);
+
+    // Stato + scadenza
+    let expired = false;
+    if(gc.exp){
+      const exp = new Date(gc.exp);
+      if(!isNaN(exp)){
+        exp.setHours(23,59,59,999);
+        expired = (Date.now() > exp.getTime());
+      }
+    }
+    const active = (gc.status || 'active') === 'active' && !expired;
+    setStatus(active ? 'Attiva' : (expired ? 'Scaduta' : 'Non attiva'), active);
+
+    // Movimenti
+    const movs = Array.isArray(gc.movements) ? gc.movements.slice() : [];
+    movs.sort((a,b)=> new Date(b.at||0) - new Date(a.at||0));
+
+    if(!tbody) return;
+    if(!movs.length){
+      tbody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);font-size:12px">Nessun movimento.</td></tr>';
+    }else{
+      tbody.innerHTML = '';
+      for(const m of movs){
+        const tr = document.createElement('tr');
+
+        const td1=document.createElement('td');
+        td1.textContent = fmtDate(m.at);
+        const td2=document.createElement('td');
+        td2.textContent = m.label || 'Movimento';
+        const td3=document.createElement('td');
+        const d = Number(m.delta||0) || 0;
+        td3.textContent = (d>=0?'+ ':'- ') + euro(Math.abs(d)).replace('€ ','');
+        td3.className = d>=0 ? 'green' : '';
+        const td4=document.createElement('td');
+        const after = (m.after!=null) ? Number(m.after) : (balance);
+        td4.textContent = euro(after);
+
+        tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3); tr.appendChild(td4);
+        tbody.appendChild(tr);
+      }
+    }
+
+    // Bottone WA: precompila messaggio con codice
+    const waBtn = document.querySelector('.btn.btn-wa');
+    if(waBtn){
+      const txt =
+`Ciao Re Long 👋
+vorrei usare la mia Gift Card:
+
+• Codice: ${code}
+• Intestatario: ${displayName}
+
+Mi aiutate a procedere?`;
+      waBtn.onclick = ()=> window.open('https://wa.me/39'+RELONG_PHONE+'?text='+encodeURIComponent(txt),'_blank','noopener');
+    }
+
+    // Link azioni: teniamoli come sono, ma se qualcuno li ha cambiati li ripristiniamo
+    const buttons = document.querySelectorAll('.actions button');
+    if(buttons && buttons.length>=2){
+      buttons[0].onclick = ()=> window.open(MAPS_URL,'_blank','noopener');
+      buttons[1].onclick = ()=> window.open(HUB_URL,'_blank','noopener');
+    }
+
+  }catch(err){
+    console.error(err);
+    setStatus('Errore dati', false);
+    if(tbody) tbody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);font-size:12px">Errore nel caricamento dati. Riprova tra poco o contattaci su WhatsApp.</td></tr>';
   }
 })();
 </script>
