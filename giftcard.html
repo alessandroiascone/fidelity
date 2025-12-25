@@ -151,7 +151,7 @@ th{color:var(--muted);font-size:11px}
 
     <!-- CARD SINISTRA -->
     <div class="card">
-      <div class="card-title">Gift Card Re Long</div>
+      <div class="card-title" id="recipientName">Gift Card Re Long</div>
       <div class="card-sub">Codice: RL-XXXX-YYYY</div>
 
       <div class="hero">
@@ -202,5 +202,19 @@ th{color:var(--muted);font-size:11px}
 
   </div>
 </div>
+
+<script>
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get('recipient');
+  if(name){
+    const el = document.getElementById('recipientName');
+    if(el){
+      el.textContent = decodeURIComponent(name.replace(/\+/g,' '));
+    }
+  }
+})();
+</script>
+
 </body>
 </html>
