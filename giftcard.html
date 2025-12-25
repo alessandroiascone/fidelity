@@ -2,169 +2,199 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ReLong • Gift Card</title>
 
 <style>
+:root{
+  --bg:#0b0f16;
+  --card:rgba(18,24,38,.78);
+  --stroke:rgba(255,255,255,.08);
+  --muted:#aab0c0;
+  --orange1:#ff8a3d;
+  --orange2:#ff3d00;
+  --blue1:#3aa0ff;
+  --green:#3ddc97;
+}
+*{box-sizing:border-box}
 body{
   margin:0;
   font-family:system-ui,-apple-system,Segoe UI,Roboto;
-  background:radial-gradient(1200px 600px at 10% 10%, #4a1020, transparent 40%),
-             radial-gradient(1200px 600px at 90% 10%, #0b2b4a, transparent 40%),
-             #0b0f16;
+  background:
+    radial-gradient(1200px 600px at 10% 10%, #4a1020, transparent 40%),
+    radial-gradient(1200px 600px at 90% 10%, #0b2b4a, transparent 40%),
+    var(--bg);
   color:#fff;
 }
-.wrapper{
-  max-width:1200px;
-  margin:auto;
-  padding:30px 20px;
+.wrapper{max-width:1200px;margin:auto;padding:28px 20px}
+.header{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px
 }
-.grid{
-  display:grid;
-  grid-template-columns:1.2fr .8fr;
-  gap:20px;
+.header-left{display:flex;align-items:center;gap:10px}
+.dot{
+  width:14px;height:14px;border-radius:50%;
+  background:linear-gradient(135deg,var(--orange1),var(--orange2))
 }
+.header h1{font-size:18px;margin:0}
+.sub{font-size:13px;color:var(--muted)}
+.status{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 12px;border-radius:999px;
+  background:rgba(0,0,0,.35);border:1px solid var(--stroke);
+  font-size:12px;color:#caffd8
+}
+.status::before{
+  content:"";width:8px;height:8px;border-radius:50%;
+  background:var(--green);box-shadow:0 0 10px var(--green)
+}
+
+.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:20px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+
 .card{
-  background:rgba(18,24,38,.7);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:18px;
-  backdrop-filter:blur(10px);
+  background:var(--card);
+  border:1px solid var(--stroke);
+  border-radius:22px;
+  backdrop-filter:blur(12px);
+  box-shadow:0 20px 50px rgba(0,0,0,.45);
   padding:18px;
 }
-.header{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-bottom:10px;
-}
-.dot{
-  width:14px;
-  height:14px;
-  border-radius:50%;
-  background:linear-gradient(135deg,#ff8a3d,#ff3d00);
-}
-h1{font-size:18px;margin:0}
-.sub{font-size:13px;color:#aaa}
 
-.render{
-  margin:15px 0;
-  text-align:center;
+.card-title{font-size:16px;font-weight:800;margin:0 0 8px}
+.card-sub{font-size:12px;color:var(--muted);margin-bottom:12px}
+
+.hero{
+  position:relative;
+  border-radius:18px;
+  background:
+    radial-gradient(120% 120% at 20% 80%, rgba(255,140,0,.25), transparent 55%),
+    radial-gradient(120% 120% at 80% 20%, rgba(0,140,255,.25), transparent 55%),
+    #070a12;
+  padding:14px;
+  margin-bottom:14px;
 }
-.render img{
-  max-width:100%;
-  height:auto;
+.hero img{
+  width:100%;
+  max-width:360px;
+  display:block;
+  margin:auto;
+  filter:drop-shadow(0 30px 40px rgba(0,0,0,.8));
 }
 
 .saldo{
-  background:rgba(0,0,0,.3);
-  border-radius:14px;
+  background:rgba(0,0,0,.35);
+  border:1px solid var(--stroke);
+  border-radius:16px;
   padding:14px;
+  margin-bottom:12px
 }
-.saldo span{color:#aaa;font-size:13px}
-.saldo strong{font-size:28px;display:block;margin-top:5px}
+.saldo span{font-size:12px;color:var(--muted)}
+.saldo strong{display:block;font-size:30px;margin-top:4px}
 
 .btn{
-  margin-top:12px;
-  background:linear-gradient(135deg,#ff8a3d,#ff3d00);
-  border:none;
-  color:#1a0d00;
-  font-weight:800;
-  padding:14px;
-  border-radius:14px;
   width:100%;
+  border:none;
+  border-radius:16px;
+  padding:14px;
+  font-weight:900;
   cursor:pointer;
-}
-
-.actions{
-  display:flex;
-  gap:10px;
   margin-top:10px;
 }
+.btn-wa{
+  background:linear-gradient(135deg,var(--orange1),var(--orange2));
+  color:#1a0d00;
+  box-shadow:0 0 28px rgba(255,120,0,.6);
+}
+.actions{display:flex;gap:10px;margin-top:10px}
 .actions button{
   flex:1;
   background:#0f1422;
   color:#fff;
-  border:1px solid rgba(255,255,255,.1);
+  border:1px solid var(--stroke);
   padding:10px;
-  border-radius:12px;
+  border-radius:14px;
   cursor:pointer;
 }
 
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:10px;
+.table-wrap{
+  background:rgba(0,0,0,.25);
+  border:1px solid var(--stroke);
+  border-radius:16px;
+  overflow:hidden
 }
+table{width:100%;border-collapse:collapse}
 th,td{
-  padding:10px 6px;
-  border-bottom:1px solid rgba(255,255,255,.08);
-  text-align:left;
+  padding:10px 8px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  font-size:13px;text-align:left
 }
-th{color:#aaa;font-size:12px}
-.green{color:#3ddc97;font-weight:700}
-
-@media(max-width:900px){
-  .grid{grid-template-columns:1fr}
-}
+th{color:var(--muted);font-size:11px}
+.green{color:var(--green);font-weight:800}
 </style>
 </head>
 
 <body>
 <div class="wrapper">
 
-<div class="header">
-  <div class="dot"></div>
-  <div>
-    <h1>ReLong • Gift Card</h1>
-    <div class="sub">Controlla saldo e movimenti in tempo reale</div>
-  </div>
-</div>
-
-<div class="grid">
-
-<div class="card">
-  <h1>Gift Card Re Long</h1>
-
-  <div class="render">
-    <img src="render_final.png" alt="Gift Card Re Long">
+  <div class="header">
+    <div class="header-left">
+      <div class="dot"></div>
+      <div>
+        <h1>ReLong • Gift Card</h1>
+        <div class="sub">Controlla saldo e movimenti in tempo reale</div>
+      </div>
+    </div>
+    <div class="status">Attiva</div>
   </div>
 
-  <div class="saldo">
-    <span>Saldo disponibile</span>
-    <strong>€ 50,00</strong>
+  <div class="grid">
+
+    <!-- CARD SINISTRA -->
+    <div class="card">
+      <div class="card-title">Gift Card Re Long</div>
+      <div class="card-sub">Codice: RL-XXXX-YYYY</div>
+
+      <div class="hero">
+        <img src="render_giftcard_premium.webp" alt="Gift Card Re Long">
+      </div>
+
+      <div class="saldo">
+        <span>Saldo disponibile</span>
+        <strong>€ 50,00</strong>
+      </div>
+
+      <button class="btn btn-wa"
+        onclick="window.open('https://wa.me/3908119578844','_blank')">
+        Contatta Re Long su WhatsApp
+      </button>
+
+      <div class="actions">
+        <button onclick="navigator.clipboard.writeText('RL-XXXX-YYYY')">Copia codice</button>
+        <button onclick="navigator.clipboard.writeText(location.href)">Copia link</button>
+      </div>
+    </div>
+
+    <!-- CARD DESTRA -->
+    <div class="card">
+      <div class="card-title">Movimenti</div>
+      <div class="card-sub">Storico completo</div>
+
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Data</th><th>Descrizione</th><th>Var.</th><th>Saldo</th>
+          </tr>
+          <tr>
+            <td>24/12/2024 14:20</td>
+            <td>Ricarica Gift Card</td>
+            <td class="green">+ 50,00</td>
+            <td>€ 50,00</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
   </div>
-
-  <button class="btn"
-    onclick="window.open('https://wa.me/3908119578844','_blank')">
-    Contatta Re Long • WhatsApp
-  </button>
-
-  <div class="actions">
-    <button onclick="navigator.clipboard.writeText('RL-XXXX-YYYY')">
-      Copia codice
-    </button>
-    <button onclick="navigator.clipboard.writeText(location.href)">
-      Copia link
-    </button>
-  </div>
-</div>
-
-<div class="card">
-  <h1>Movimenti</h1>
-  <table>
-    <tr>
-      <th>Data</th><th>Descrizione</th><th>Var.</th><th>Saldo</th>
-    </tr>
-    <tr>
-      <td>24/12/2024 14:20</td>
-      <td>Ricarica Gift Card</td>
-      <td class="green">+ 50,00</td>
-      <td>€ 50,00</td>
-    </tr>
-  </table>
-</div>
-
-</div>
 </div>
 </body>
 </html>
