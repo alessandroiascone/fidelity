@@ -13,7 +13,6 @@
   --muted:#aab0c0;
   --orange1:#ff8a3d;
   --orange2:#ff3d00;
-  --blue1:#3aa0ff;
   --green:#3ddc97;
 }
 *{box-sizing:border-box}
@@ -28,7 +27,7 @@ body{
 }
 .wrapper{max-width:1200px;margin:auto;padding:28px 20px}
 .header{
-  display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:18px
 }
 .header-left{display:flex;align-items:center;gap:10px}
 .dot{
@@ -60,16 +59,12 @@ body{
   padding:18px;
 }
 
-.card-title{font-size:16px;font-weight:800;margin:0 0 8px}
+.card-title{font-size:18px;font-weight:800;margin:0 0 6px}
 .card-sub{font-size:12px;color:var(--muted);margin-bottom:12px}
 
 .hero{
-  position:relative;
   border-radius:18px;
-  background:
-    radial-gradient(120% 120% at 20% 80%, rgba(255,140,0,.25), transparent 55%),
-    radial-gradient(120% 120% at 80% 20%, rgba(0,140,255,.25), transparent 55%),
-    #070a12;
+  background:#070a12;
   padding:14px;
   margin-bottom:14px;
 }
@@ -149,22 +144,18 @@ th{color:var(--muted);font-size:11px}
 
   <div class="grid">
 
-    <!-- CARD SINISTRA -->
     <div class="card">
-      <div class="card-title">Gift Card Re Long</div>
-      <div class="card-sub">Codice: RL-XXXX-YYYY</div>
+      <div class="card-title" id="gcOwner">Gift Card Re Long</div>
+      <div class="card-sub" id="gcMeta">Gift Card Re Long</div>
 
       <div class="hero">
-        <img
-          src="./render_giftcard_premium.webp"
-          alt="Gift Card Re Long"
-          onerror="this.onerror=null; this.src='./render_giftcard_premium.png';"
-        >
+        <img src="./render_giftcard_premium.webp"
+             onerror="this.onerror=null;this.src='./render_giftcard_premium.png';">
       </div>
 
       <div class="saldo">
         <span>Saldo disponibile</span>
-        <strong>€ 50,00</strong>
+        <strong id="gcBalance">€ 0,00</strong>
       </div>
 
       <button class="btn btn-wa"
@@ -173,26 +164,18 @@ th{color:var(--muted);font-size:11px}
       </button>
 
       <div class="actions">
-        <button onclick="navigator.clipboard.writeText('RL-XXXX-YYYY')">Copia codice</button>
+        <button onclick="navigator.clipboard.writeText(window.__GC.code)">Copia codice</button>
         <button onclick="navigator.clipboard.writeText(location.href)">Copia link</button>
       </div>
     </div>
 
-    <!-- CARD DESTRA -->
     <div class="card">
       <div class="card-title">Movimenti</div>
       <div class="card-sub">Storico completo</div>
-
       <div class="table-wrap">
         <table>
           <tr>
             <th>Data</th><th>Descrizione</th><th>Var.</th><th>Saldo</th>
-          </tr>
-          <tr>
-            <td>24/12/2024 14:20</td>
-            <td>Ricarica Gift Card</td>
-            <td class="green">+ 50,00</td>
-            <td>€ 50,00</td>
           </tr>
         </table>
       </div>
@@ -200,5 +183,34 @@ th{color:var(--muted);font-size:11px}
 
   </div>
 </div>
+
+<script>
+(function(){
+  const q = new URLSearchParams(location.search);
+  const nome = q.get('nome') || '';
+  const cognome = q.get('cognome') || '';
+  const codice = q.get('codice') || 'RL-XXXX-YYYY';
+  const saldo = q.get('saldo');
+
+  const owner = (nome + ' ' + cognome).trim();
+
+  document.getElementById('gcOwner').textContent =
+    owner || 'Gift Card Re Long';
+
+  document.getElementById('gcMeta').textContent =
+    'Gift Card Re Long • Codice: ' + codice;
+
+  if (saldo !== null) {
+    const v = Number(saldo);
+    if (!isNaN(v)) {
+      document.getElementById('gcBalance').textContent =
+        '€ ' + v.toLocaleString('it-IT',{minimumFractionDigits:2});
+    }
+  }
+
+  window.__GC = { code: codice };
+})();
+</script>
+
 </body>
 </html>
