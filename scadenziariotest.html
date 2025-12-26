@@ -141,7 +141,7 @@
     .tbtn{display:flex;align-items:center;justify-content:center;min-height:46px;padding:10px 12px;border-radius:14px;border:1px solid rgba(0,140,255,.22);background:linear-gradient(180deg,rgba(0,140,255,.10),rgba(0,140,255,.03));color:#dbeaff;font-weight:700;letter-spacing:.2px;cursor:pointer;transition:.2s ease}
     .tbtn.active{background:linear-gradient(135deg,var(--elec3),var(--elec2));color:#04121f;border-color:transparent;box-shadow:0 10px 30px rgba(0,140,255,.35)}
     .item{border:1px solid var(--stroke);border-radius:16px;background:#0a0d14;margin-bottom:10px;overflow:hidden}
-    .item .head{width:100%; display:flex; gap:10px; alignitems:center;padding:12px 14px;background:transparent;color:#eaf2ff;border:0;cursor:pointer;font-weight:800;letter-spacing:.2px;text-align:left;justify-content:space-between}
+    .item .head{width:100%; display:flex; gap:10px; align-items:center;padding:12px 14px;background:transparent;color:#eaf2ff;border:0;cursor:pointer;font-weight:800;letter-spacing:.2px;text-align:left;justify-content:space-between}
     .details{padding:12px 14px; border-top:1px solid var(--stroke)}
     
     .gift-history{font-size:12px;color:var(--muted)}
@@ -1931,7 +1931,7 @@ ${cardUrl}`;
             createdAt: new Date().toISOString(),
             exp,
             from: { name: buyerName || '', phone: buyerPhone || '' },
-            to: { name: name, phone: phone },
+            to:{name:toName,phone:toPhone},
             message,
             balance: 0,
             movements: [],
