@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>ReLong • Scadenzario v32b (Pacchi + Reminder + Dashboard)</title>
   <meta name="theme-color" content="#0a0a0a" />
+<link rel="manifest" href="./manifest-scadenziario.json" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Re Long Gestionale" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <style>
     *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
     :root{
@@ -1554,6 +1561,8 @@ body.dash-open{
       <button id="backupBtn" class="btn">Backup clienti &amp; Fidelity</button>
       <button id="importBackupBtn" class="btn">Importa backup</button>
       <button id="cfgSync" class="btn">Imposta Sync GitHub</button>
+      <button id="installAppBtn" class="btn primary" style="display:none">📲 Installa app</button>
+      <div id="installHint" class="label" style="margin-top:8px">Installazione app: verifica disponibilità…</div>
       <div class="utility-section-title">Azioni elenco</div>
       <button id="bulkFidelity" class="btn utility-action-btn">✨ Operazione Fidelity massiva</button>
       <button id="waBroadcast" class="btn utility-action-btn">📣 Messaggio WhatsApp massivo</button>
@@ -5774,6 +5783,103 @@ function editClient(id){
   overlay.addEventListener('click', (ev)=>{ if(ev.target === overlay) closeClientSheet(); });
   document.addEventListener('keydown', (ev)=>{ if(ev.key === 'Escape') closeClientSheet(); });
   bindSheetActions();
+})();
+</script>
+
+
+<script>
+(function(){
+  const installBtn = document.getElementById('installAppBtn');
+  const installHint = document.getElementById('installHint');
+  let deferredInstallPrompt = null;
+
+  function inStandalone(){
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  }
+
+  function isIOS(){
+    return /iphone|ipad|ipod/i.test(navigator.userAgent || '');
+  }
+
+  function hasShowToast(){
+    return typeof window.showToast === 'function';
+  }
+
+  function notify(msg, type='ok'){
+    if(hasShowToast()) window.showToast(msg, type);
+  }
+
+  function refreshInstallUi(){
+    if(!installBtn || !installHint) return;
+
+    if(inStandalone()){
+      installBtn.style.display = 'none';
+      installHint.textContent = 'App già installata su questo dispositivo ✅';
+      return;
+    }
+
+    installBtn.style.display = 'inline-flex';
+
+    if(deferredInstallPrompt){
+      installBtn.textContent = '📲 Installa app';
+      installHint.textContent = 'Tocca qui per installare il gestionale come app sul dispositivo.';
+      return;
+    }
+
+    if(isIOS()){
+      installBtn.textContent = '📲 Aggiungi alla Home';
+      installHint.textContent = 'Su iPhone/iPad: Condividi → Aggiungi a schermata Home.';
+      return;
+    }
+
+    installBtn.textContent = '📲 Installa app';
+    installHint.textContent = 'Se non compare il popup, apri il menu del browser e tocca Installa app.';
+  }
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    refreshInstallUi();
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredInstallPrompt = null;
+    refreshInstallUi();
+    notify('App installata ✅', 'ok');
+  });
+
+  if(installBtn){
+    installBtn.addEventListener('click', async () => {
+      if(deferredInstallPrompt){
+        deferredInstallPrompt.prompt();
+        try {
+          await deferredInstallPrompt.userChoice;
+        } catch(e) {}
+        deferredInstallPrompt = null;
+        refreshInstallUi();
+        return;
+      }
+
+      if(isIOS()){
+        notify('Su iPhone/iPad usa Condividi → Aggiungi a schermata Home', 'ok');
+        return;
+      }
+
+      notify('Apri il menu del browser e tocca Installa app', 'ok');
+    });
+  }
+
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw-scadenziario.js').catch(err => {
+        console.warn('SW non registrato', err);
+      });
+    });
+  }
+
+  document.addEventListener('visibilitychange', refreshInstallUi);
+  window.addEventListener('load', refreshInstallUi);
+  refreshInstallUi();
 })();
 </script>
 
