@@ -1,0 +1,21 @@
+PACCHETTO PWA INSTALLABILE — RE LONG GESTIONALE
+
+File da caricare TUTTI nella stessa cartella del sito:
+- scadenziario_v31_pwa_installabile.html
+- manifest-scadenziario.json
+- sw-scadenziario.js
+- icon-192.png
+- icon-512.png
+- apple-touch-icon.png
+
+COME FUNZIONA
+1) Carica tutti i file sul sito in HTTPS.
+2) Apri dal telefono il file HTML online, non dal file manager locale.
+3) Apri Utility.
+4) Tocca "Installa app" quando disponibile.
+
+NOTE IMPORTANTI
+- L'installazione PWA funziona da URL https://, non da file locale.
+- Su Android appare il popup oppure l'opzione "Installa app" nel browser.
+- Su iPhone/iPad: Condividi → Aggiungi a schermata Home.
+- Il logo dell'app e del collegamento Home è già configurato con le icone incluse.
