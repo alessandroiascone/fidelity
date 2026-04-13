@@ -1561,6 +1561,8 @@ body.dash-open{
       <button id="backupBtn" class="btn">Backup clienti &amp; Fidelity</button>
       <button id="importBackupBtn" class="btn">Importa backup</button>
       <button id="cfgSync" class="btn">Imposta Sync GitHub</button>
+      <button id="diagSync" class="btn">Diagnostica Sync</button>
+      <button id="resetSync" class="btn danger">Reset Sync</button>
       <button id="installAppBtn" class="btn primary" style="display:none">📲 Installa app</button>
       <div id="installHint" class="label" style="margin-top:8px">Installazione app: verifica disponibilità…</div>
       <div class="utility-section-title">Azioni elenco</div>
@@ -1926,7 +1928,7 @@ sono Alessandro di Re Long (08119578844)..."></textarea>
    <script>
     const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
     const STORE_KEY='relong-scadenzario-v32b';
-    const GH_CFG_KEY='relong-gh-config-v31', GH_TOKEN_KEY='relong-gh-token-v31';
+    const GH_CFG_KEY='relong-gh-config-v31', GH_TOKEN_KEY='relong-gh-token-v31', GH_LAST_ERROR_KEY='relong-gh-last-error-v31';
     const FIDELITY_URL='https://alessandroiascone.github.io/fidelity/fidelity.html';
 
     const GIFTCARD_PORTAL_URL = 'https://alessandroiascone.github.io/fidelity/giftcard.html';
@@ -2159,7 +2161,7 @@ Grazie davvero 🙏`;
       return {name:'BRONZE',emoji:'🥉', class:'lvl-bronze',min:0,    next:150};
     }
 
-    const syncState=$('#syncState'), cfgBtn=$('#cfgSync'), syncBubble=$('#syncBubble'), utilityToggle=$('#utilityToggle'), utilityPanel=$('#utilityPanel');
+    const syncState=$('#syncState'), cfgBtn=$('#cfgSync'), diagSyncBtn=$('#diagSync'), resetSyncBtn=$('#resetSync'), syncBubble=$('#syncBubble'), utilityToggle=$('#utilityToggle'), utilityPanel=$('#utilityPanel');
 
     function ghEncodePath(path){
       return String(path||'')
@@ -2171,13 +2173,47 @@ Grazie davvero 🙏`;
         .join('/');
     }
 
+    function ghReadLastError(){
+      try{ return JSON.parse(localStorage.getItem(GH_LAST_ERROR_KEY)||'null'); }catch{return null}
+    }
+
+    function ghStoreLastError(phase, err, extra=''){
+      try{
+        const detail = String(err?.detail || err?.messageText || err?.message || extra || '').trim();
+        localStorage.setItem(GH_LAST_ERROR_KEY, JSON.stringify({
+          ts:new Date().toISOString(),
+          phase:String(phase||''),
+          status:Number(err?.status || err?.code || 0) || 0,
+          detail
+        }));
+      }catch{}
+    }
+
+    function ghClearLastError(){
+      try{ localStorage.removeItem(GH_LAST_ERROR_KEY); }catch{}
+    }
+
     function ghErrorLabel(err){
       const status = Number(err?.status || err?.code || 0);
+      const detail = String(err?.detail || err?.messageText || err?.message || '').trim();
       if(status===401) return 'Token non valido';
-      if(status===403) return 'Token senza permessi';
+      if(status===403){
+        if(/rate limit/i.test(detail)) return 'GitHub rate limit';
+        return 'Token senza permessi';
+      }
       if(status===404) return 'Repo / branch / percorso non trovati';
       if(status===409) return 'Conflitto GitHub';
+      if(status===422) return 'Richiesta GitHub non valida';
+      if(status===0 && /Failed to fetch/i.test(detail)) return 'Rete / CORS / connessione';
+      if(status) return 'Errore GitHub '+status;
       return 'Disconnesso';
+    }
+
+    function ghErrorDetail(err){
+      const status = Number(err?.status || err?.code || 0);
+      const detail = String(err?.detail || err?.messageText || err?.message || '').trim();
+      const prefix = status ? ('HTTP '+status+' • ') : '';
+      return (prefix + (detail || ghErrorLabel(err))).trim();
     }
 
     function parseGitHubJson(meta){
@@ -2218,8 +2254,18 @@ Grazie davvero 🙏`;
         const url=`https://api.github.com/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}/contents/${this.apiPath(path)}?ref=${encodeURIComponent(c.branch||'main')}`;
         const res=await fetch(url,{ headers:this.headers(false) });
         if(!res.ok){
+          let detail='';
+          try{
+            const raw=await res.text();
+            detail=raw;
+            try{
+              const parsed=JSON.parse(raw||'{}');
+              detail=String(parsed?.message || parsed?.error || raw || '').trim();
+            }catch{}
+          }catch{}
           const err=new Error('GET '+res.status);
           err.status=res.status;
+          err.detail=detail;
           throw err;
         }
         return res.json();
@@ -2248,8 +2294,18 @@ Grazie davvero 🙏`;
           res=await fetch(url,{method:'PUT',headers:this.headers(true),body:JSON.stringify(body)});
         }
         if(!res.ok){
+          let detail='';
+          try{
+            const raw=await res.text();
+            detail=raw;
+            try{
+              const parsed=JSON.parse(raw||'{}');
+              detail=String(parsed?.message || parsed?.error || raw || '').trim();
+            }catch{}
+          }catch{}
           const err=new Error('PUT '+res.status);
           err.status=res.status;
+          err.detail=detail;
           throw err;
         }
         return res.json();
@@ -2275,7 +2331,7 @@ Grazie davvero 🙏`;
       const repo=(prompt('Repository', currentCfg.repo || 'fidelity')||'').trim();
       const branch=(prompt('Branch', currentCfg.branch || 'main')||'main').trim() || 'main';
       const path=(prompt('Percorso file dati', currentCfg.path || 'data/items.json')||'data/items.json').trim() || 'data/items.json';
-      const token=(prompt('Token GitHub classic (scope repo / contents:write)','')||GH.token()||'').trim();
+      const token=(prompt('Token GitHub (classic repo oppure fine-grained con Contents: Read and write)','')||GH.token()||'').trim();
       if(!owner||!repo||!token) return alert('Compila owner / repo / token GitHub');
       localStorage.setItem(GH_CFG_KEY, JSON.stringify({owner,repo,branch,path,tokenStored:true}));
       localStorage.setItem(GH_TOKEN_KEY, token);
@@ -2284,7 +2340,8 @@ Grazie davvero 🙏`;
       if(ok){
         showToast('Sync configurato ✅','ok');
       }else{
-        showToast('Sync GitHub KO: controlla token, branch e percorso file','err');
+        const last=ghReadLastError();
+        showToast('Sync GitHub KO: '+(last?.detail || 'controlla token, branch e percorso file'),'err');
       }
     });
 
@@ -2295,8 +2352,48 @@ Grazie davvero 🙏`;
         if(!cfg || !GH.token()){
           cfgBtn.click();
         }else{
-          alert('Sync GitHub attivo. Puoi comunque riconfigurare dalle Utility o modificare il token.');
+          const last=ghReadLastError();
+          if(last && /disconnesso|errore|token|repo|branch|percorso|rate limit|richiesta|rete/i.test(syncState?.textContent||'')){
+            alert('Configurazione attuale\nOwner: '+(cfg.owner||'-')+'\nRepo: '+(cfg.repo||'-')+'\nBranch: '+(cfg.branch||'-')+'\nPath: '+(cfg.path||'-')+'\n\nUltimo errore: '+(last.detail || ghErrorLabel(last)));
+          }else{
+            alert('Sync GitHub attivo. Puoi comunque riconfigurare dalle Utility o modificare il token.');
+          }
         }
+      });
+    }
+
+    if(diagSyncBtn){
+      diagSyncBtn.addEventListener('click', async ()=>{
+        const cfg=GH.cfg();
+        const tk=GH.token();
+        if(!cfg || !tk){
+          alert('Sync non configurato. Prima inserisci owner, repo, branch, path e token GitHub.');
+          return;
+        }
+        syncBadge(false, 'Sync: Diagnostica…', 'Diagnostica GitHub in corso');
+        try{
+          await GH.get(cfg.path||'data/items.json');
+          ghClearLastError();
+          syncBadge(true, 'Sync: Lettura OK', 'Diagnostica lettura GitHub OK');
+          showToast('Diagnostica OK: lettura GitHub riuscita ✅','ok');
+        }catch(e){
+          ghStoreLastError('diag-read', e);
+          const detail=ghErrorDetail(e);
+          syncBadge(false, 'Sync: '+ghErrorLabel(e), detail);
+          alert('Diagnostica Sync KO\n\nOwner: '+(cfg.owner||'-')+'\nRepo: '+(cfg.repo||'-')+'\nBranch: '+(cfg.branch||'-')+'\nPath: '+(cfg.path||'-')+'\n\nErrore: '+detail);
+        }
+      });
+    }
+
+    if(resetSyncBtn){
+      resetSyncBtn.addEventListener('click', ()=>{
+        const ok=confirm('Vuoi cancellare configurazione e token GitHub salvati in questo browser?');
+        if(!ok) return;
+        localStorage.removeItem(GH_CFG_KEY);
+        localStorage.removeItem(GH_TOKEN_KEY);
+        ghClearLastError();
+        syncBadge(false, 'Sync: Disconnesso', 'Configurazione GitHub rimossa');
+        showToast('Configurazione Sync rimossa da questo browser','ok');
       });
     }
 
@@ -2373,8 +2470,10 @@ Grazie davvero 🙏`;
               return;
             }
           }
-          syncBadge(false, 'Sync: '+ghErrorLabel(e), 'Lettura GitHub KO');
-          showToast('Lettura GitHub KO, uso archivio locale','err');
+          ghStoreLastError('load', e);
+          const detail=ghErrorDetail(e);
+          syncBadge(false, 'Sync: '+ghErrorLabel(e), detail);
+          showToast('Lettura GitHub KO: '+detail,'err');
         }
       }
       items=loadLocal();
@@ -2384,10 +2483,13 @@ Grazie davvero 🙏`;
       if(cfg && tk){
         try{
           await GH.put(p, JSON.stringify(items||[]), msg || 'Scadenzario v32b sync');
+          ghClearLastError();
           syncBadge(true, 'Sync: Connesso', 'Scrittura GitHub OK');
           return true;
         }catch(e){
-          syncBadge(false, 'Sync: '+ghErrorLabel(e), 'Scrittura GitHub KO');
+          ghStoreLastError('save', e);
+          const detail=ghErrorDetail(e);
+          syncBadge(false, 'Sync: '+ghErrorLabel(e), detail);
           return false;
         }
       }
@@ -4836,6 +4938,10 @@ function autoBackupScheduler(){
 }
 updateBackupInfoUI();
 autoBackupScheduler();
+const __ghLast=ghReadLastError();
+if(__ghLast && syncState){
+  syncBadge(false, 'Sync: '+ghErrorLabel(__ghLast), ghErrorDetail(__ghLast));
+}
 
 document.addEventListener('DOMContentLoaded', async ()=>{
       await loadFromGitHubOrLocal();
