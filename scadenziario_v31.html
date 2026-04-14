@@ -2459,6 +2459,7 @@ Grazie davvero 🙏`;
           const json=parseGitHubJson(meta);
           items=Array.isArray(json)? json:[];
           saveLocal();
+          window.__ghLastSavedText = JSON.stringify(items||[]);
           syncBadge(true, 'Sync: Connesso', 'Lettura GitHub OK');
           return;
         }catch(e){
@@ -2478,23 +2479,72 @@ Grazie davvero 🙏`;
       }
       items=loadLocal();
     }
-    async function saveToGitHub(msg){
-      const cfg=GH.cfg(); const tk=GH.token(); const p=cfg?.path||'data/items.json';
-      if(cfg && tk){
+    let __ghSavePromise = null;
+    let __ghSaveDirty = false;
+    let __ghLastSavedText = window.__ghLastSavedText || null;
+    let __ghLastSaveMessage = 'Scadenzario v32b sync';
+
+    async function __ghPutWithRetry(path, text, msg){
+      let lastErr=null;
+      for(let attempt=0; attempt<4; attempt++){
         try{
-          await GH.put(p, JSON.stringify(items||[]), msg || 'Scadenzario v32b sync');
-          ghClearLastError();
-          syncBadge(true, 'Sync: Connesso', 'Scrittura GitHub OK');
+          await GH.put(path, text, msg);
           return true;
         }catch(e){
-          ghStoreLastError('save', e);
-          const detail=ghErrorDetail(e);
-          syncBadge(false, 'Sync: '+ghErrorLabel(e), detail);
-          return false;
+          lastErr=e;
+          if(Number(e?.status)!==409 || attempt===3) throw e;
+          await new Promise(r=>setTimeout(r, 250*(attempt+1)));
         }
       }
-      syncBadge(false, 'Sync: Disconnesso', 'Config GitHub assente');
-      return false;
+      throw lastErr || new Error('PUT fallita');
+    }
+
+    async function saveToGitHub(msg){
+      const cfg=GH.cfg(); const tk=GH.token(); const p=cfg?.path||'data/items.json';
+      if(!(cfg && tk)){
+        syncBadge(false, 'Sync: Disconnesso', 'Config GitHub assente');
+        return false;
+      }
+
+      __ghSaveDirty = true;
+      if(msg) __ghLastSaveMessage = msg;
+
+      if(__ghSavePromise) return __ghSavePromise;
+
+      __ghSavePromise = (async ()=>{
+        let allOk = true;
+        try{
+          while(__ghSaveDirty){
+            __ghSaveDirty = false;
+            const payload = JSON.stringify(items||[]);
+
+            if(payload === __ghLastSavedText && !__ghSaveDirty){
+              ghClearLastError();
+              syncBadge(true, 'Sync: Connesso', 'Nessuna modifica da sincronizzare');
+              continue;
+            }
+
+            try{
+              await __ghPutWithRetry(p, payload, __ghLastSaveMessage || 'Scadenzario v32b sync');
+              __ghLastSavedText = payload;
+              window.__ghLastSavedText = payload;
+              ghClearLastError();
+              syncBadge(true, 'Sync: Connesso', 'Scrittura GitHub OK');
+            }catch(e){
+              ghStoreLastError('save', e);
+              const detail=ghErrorDetail(e);
+              syncBadge(false, 'Sync: '+ghErrorLabel(e), detail);
+              allOk = false;
+              break;
+            }
+          }
+          return allOk;
+        }finally{
+          __ghSavePromise = null;
+        }
+      })();
+
+      return __ghSavePromise;
     }
 
     function walink(phone, text){ return `https://wa.me/39${phone}?text=${encodeURIComponent(text)}`; }
@@ -4904,7 +4954,8 @@ function updateBackupInfoUI(){
     const meta=JSON.parse(raw);
     const d=new Date(meta.ts);
     const pad=n=>String(n).padStart(2,'0');
-    box.textContent="Ultimo backup: "+pad(d.getDate())+"/"+pad(d.getMonth()+1)+"/"+d.getFullYear()+" "+pad(d.getHours())+":"+pad(d.getMinutes())+" ("+meta.source+")";
+    const source = (typeof meta.source === 'string' ? meta.source : (meta.source?.label || meta.source?.name || 'manuale'));
+    box.textContent="Ultimo backup: "+pad(d.getDate())+"/"+pad(d.getMonth()+1)+"/"+d.getFullYear()+" "+pad(d.getHours())+":"+pad(d.getMinutes())+" ("+source+")";
   }catch{ box.textContent="Ultimo backup: n/d"; }
 }
 
@@ -5006,9 +5057,13 @@ function editClient(id){
     if(it.eventHistory.length > 30) it.eventHistory = it.eventHistory.slice(0,30);
   }
 
+  let __persistSyncTimer = null;
   function persist(opts={}){
     try{ saveLocal(); }catch(e){}
-    Promise.resolve().then(()=>saveToGitHub()).catch(()=>false);
+    clearTimeout(__persistSyncTimer);
+    __persistSyncTimer = setTimeout(()=>{
+      saveToGitHub().catch(()=>false);
+    }, 180);
     if(opts.renderUI !== false){
       try{ render(); }catch(e){}
     }
@@ -6065,121 +6120,6 @@ function editClient(id){
   document.addEventListener('visibilitychange', refreshInstallUi);
   window.addEventListener('load', refreshInstallUi);
   refreshInstallUi();
-})();
-</script>
-
-
-<script>
-(function(){
-  const PATCH_ID = 'relong_sync_serial_fix_v1';
-  if(window[PATCH_ID]) return;
-  window[PATCH_ID] = true;
-
-  const sleep = (ms)=>new Promise(r=>setTimeout(r, ms));
-  const originalGhPut = GH && typeof GH.put === 'function' ? GH.put.bind(GH) : null;
-  let saveInFlight = null;
-  let saveQueued = false;
-  let lastMsg = 'Scadenzario sync serializzato';
-
-  function readSyncPath(){
-    const cfg = GH && typeof GH.cfg === 'function' ? GH.cfg() : null;
-    return (cfg && cfg.path) ? cfg.path : 'data/items.json';
-  }
-
-  if(originalGhPut){
-    GH.put = async function(path, text, msg){
-      let lastErr = null;
-      for(let attempt=0; attempt<5; attempt++){
-        try{
-          return await originalGhPut(path, text, msg);
-        }catch(e){
-          lastErr = e;
-          if(Number(e?.status) !== 409) throw e;
-          await sleep(220 * (attempt + 1));
-        }
-      }
-      throw lastErr;
-    };
-  }
-
-  async function performSerializedSave(msg){
-    const cfg = GH.cfg();
-    const tk = GH.token();
-    const p = readSyncPath();
-    if(!(cfg && tk)){
-      syncBadge(false, 'Sync: Disconnesso', 'Config GitHub assente');
-      return false;
-    }
-    try{
-      const snapshot = JSON.stringify(Array.isArray(items) ? items : []);
-      await GH.put(p, snapshot, msg || 'Scadenzario sync serializzato');
-      ghClearLastError();
-      syncBadge(true, 'Sync: Connesso', 'Scrittura GitHub OK');
-      return true;
-    }catch(e){
-      ghStoreLastError('save', e);
-      const detail = ghErrorDetail(e);
-      syncBadge(false, 'Sync: '+ghErrorLabel(e), detail);
-      return false;
-    }
-  }
-
-  saveToGitHub = function(msg){
-    lastMsg = msg || lastMsg || 'Scadenzario sync serializzato';
-    saveQueued = true;
-    if(saveInFlight) return saveInFlight;
-
-    saveInFlight = (async ()=>{
-      let ok = true;
-      while(saveQueued){
-        saveQueued = false;
-        ok = await performSerializedSave(lastMsg);
-      }
-      return ok;
-    })().finally(()=>{
-      saveInFlight = null;
-    });
-
-    return saveInFlight;
-  };
-
-  if(typeof persist === 'function'){
-    const basePersist = persist;
-    persist = function(opts={}){
-      try{ saveLocal(); }catch(e){}
-      saveToGitHub('Persist sync serializzato');
-      if(opts.renderUI !== false){
-        try{ render(); }catch(e){}
-      }
-    };
-    persist.__basePersist = basePersist;
-  }
-
-  if(typeof updateBackupInfoUI === 'function'){
-    updateBackupInfoUI = function(){
-      const box = document.getElementById('lastBackupInfo');
-      if(!box) return;
-      const raw = localStorage.getItem('scad_lastBackup');
-      if(!raw){
-        box.textContent = 'Ultimo backup: nessuno';
-        return;
-      }
-      try{
-        const meta = JSON.parse(raw);
-        const d = new Date(meta.ts);
-        const pad = n => String(n).padStart(2,'0');
-        const source = typeof meta.source === 'string'
-          ? meta.source
-          : (meta.source && typeof meta.source === 'object' && meta.source.label)
-            ? String(meta.source.label)
-            : 'manual';
-        box.textContent = 'Ultimo backup: ' + pad(d.getDate()) + '/' + pad(d.getMonth()+1) + '/' + d.getFullYear() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ' (' + source + ')';
-      }catch{
-        box.textContent = 'Ultimo backup: n/d';
-      }
-    };
-    try{ updateBackupInfoUI(); }catch(e){}
-  }
 })();
 </script>
 
