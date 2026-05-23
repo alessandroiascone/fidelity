@@ -90,104 +90,6 @@
         linear-gradient(90deg, rgba(0,0,0,.20), transparent 22%, transparent 76%, rgba(0,0,0,.16));
     }
 
-    .qr-panel{
-      position:absolute;
-      right:4.2vw;
-      bottom:4.2vh;
-      z-index:9;
-      display:flex;
-      align-items:center;
-      gap:1.2vw;
-      padding:1vw 1.15vw;
-      border:1px solid rgba(255,255,255,.16);
-      border-radius:22px;
-      background:linear-gradient(135deg, rgba(0,0,0,.28), rgba(0,0,0,.08));
-      box-shadow:0 0 28px rgba(255,255,255,.10), inset 0 1px 0 rgba(255,255,255,.12);
-      backdrop-filter: blur(5px);
-    }
-    .qr-panel img{
-      width:min(9.2vw, 178px);
-      height:min(9.2vw, 178px);
-      display:block;
-      border-radius:8px;
-      box-shadow:0 0 18px rgba(255,255,255,.22);
-      background:#fff;
-    }
-    .qr-text{
-      color:var(--silver);
-      text-shadow:0 2px 18px rgba(0,0,0,.9);
-      line-height:1.1;
-      letter-spacing:.02em;
-      white-space:nowrap;
-    }
-    .qr-text .small{
-      font-size:clamp(14px, 1.18vw, 24px);
-      color:var(--soft);
-    }
-    .qr-text .wa{
-      display:block;
-      margin-top:.22em;
-      font-size:clamp(18px, 1.48vw, 30px);
-      font-weight:800;
-    }
-    .qr-text .num{
-      display:block;
-      margin-top:.42em;
-      font-size:clamp(18px, 1.6vw, 34px);
-      font-weight:900;
-      letter-spacing:.08em;
-    }
-
-    .progress{
-      position:absolute;
-      left:0;
-      bottom:0;
-      height:4px;
-      width:100%;
-      z-index:10;
-      background:rgba(255,255,255,.08);
-      overflow:hidden;
-    }
-    .progress span{
-      display:block;
-      height:100%;
-      width:0%;
-      background:linear-gradient(90deg, rgba(255,255,255,.35), rgba(255,255,255,.95), var(--gold));
-      animation: progress var(--slide-time) linear infinite;
-      box-shadow:0 0 18px rgba(255,255,255,.5);
-    }
-    @keyframes progress{ from{width:0%} to{width:100%} }
-
-    .controls{
-      position:absolute;
-      left:2vw;
-      bottom:2.4vh;
-      z-index:15;
-      display:flex;
-      gap:.6rem;
-      opacity:0;
-      transition:.25s ease;
-    }
-    body.show-cursor .controls{ opacity:1; }
-    button{
-      border:1px solid rgba(255,255,255,.18);
-      background:rgba(0,0,0,.45);
-      color:#fff;
-      border-radius:999px;
-      padding:.7rem 1rem;
-      font-weight:700;
-      letter-spacing:.02em;
-      backdrop-filter: blur(8px);
-    }
-
-    @media (max-width: 900px){
-      .qr-panel{
-        right:2.4vw;
-        bottom:3.2vh;
-        transform:scale(.82);
-        transform-origin:right bottom;
-      }
-    }
   </style>
 </head>
 <body>
@@ -209,6 +111,7 @@
       </div>
     </aside>
 
+    <!-- QR fisso rimosso: le slide contengono già il proprio QR, così evitiamo sovrapposizioni. -->
     <div class="controls">
       <button id="prev" type="button">Indietro</button>
       <button id="toggle" type="button">Pausa</button>
